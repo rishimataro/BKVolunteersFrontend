@@ -34,10 +34,17 @@ export const ForgotPasswordForm = () => {
         <div>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label
+                        className="block text-gray-700 text-sm font-bold mb-1.5"
+                        htmlFor="email"
+                    >
+                        Địa chỉ email
+                    </Label>
                     <div className="mt-1">
                         <Input
                             id="email"
+                            className="w-full  pr-4 py-3 bg-gray-50 border border-gray-300 text-gray-800 placeholder:text-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-bk-blue focus:border-bk-blue transition-all"
+                            placeholder="example@sv1.dut.udn.vn"
                             name="email"
                             type="email"
                             autoComplete="email"
@@ -49,10 +56,10 @@ export const ForgotPasswordForm = () => {
                 <div>
                     <Button
                         type="submit"
-                        className="w-full"
+                        className="w-full flex items-center justify-center bg-bk-blue hover:bg-bk-blue/90 text-white font-bold h-[50px] rounded-lg transition duration-200 shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
                         disabled={mutation.isPending}
                     >
-                        {mutation.isPending ? 'Sending...' : 'Send Reset Link'}
+                        {mutation.isPending ? 'Đang gửi...' : 'Gửi liên kết'}
                     </Button>
                 </div>
             </form>

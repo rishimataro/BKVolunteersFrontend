@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
@@ -45,11 +44,17 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
         <div>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div>
-                    <Label htmlFor="firstName">First Name</Label>
+                    <Label
+                        className="block text-gray-700 text-sm font-bold mb-1.5"
+                        htmlFor="firstName"
+                    >
+                        Tên
+                    </Label>
                     <div className="mt-1">
                         <Input
                             id="firstName"
                             type="text"
+                            className="w-full bg-gray-50 border border-gray-300 text-gray-800 placeholder:text-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-bk-blue focus:border-bk-blue transition-all"
                             {...registerField('firstName')}
                         />
                         {errors.firstName && (
@@ -61,10 +66,16 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="lastName">Last Name</Label>
+                    <Label
+                        className="block text-gray-700 text-sm font-bold mb-1.5"
+                        htmlFor="lastName"
+                    >
+                        Họ và tên đệm
+                    </Label>
                     <div className="mt-1">
                         <Input
                             id="lastName"
+                            className="w-full bg-gray-50 border border-gray-300 text-gray-800 placeholder:text-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-bk-blue focus:border-bk-blue transition-all"
                             type="text"
                             {...registerField('lastName')}
                         />
@@ -77,11 +88,17 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="username">Username</Label>
+                    <Label
+                        className="block text-gray-700 text-sm font-bold mb-1.5"
+                        htmlFor="username"
+                    >
+                        Tên đăng nhập
+                    </Label>
                     <div className="mt-1">
                         <Input
                             id="username"
                             type="text"
+                            className="w-full bg-gray-50 border border-gray-300 text-gray-800 placeholder:text-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-bk-blue focus:border-bk-blue transition-all"
                             autoComplete="username"
                             {...registerField('username')}
                         />
@@ -94,11 +111,17 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label
+                        className="block text-gray-700 text-sm font-bold mb-1.5"
+                        htmlFor="email"
+                    >
+                        Địa chỉ Email
+                    </Label>
                     <div className="mt-1">
                         <Input
                             id="email"
                             type="email"
+                            className="w-full bg-gray-50 border border-gray-300 text-gray-800 placeholder:text-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-bk-blue focus:border-bk-blue transition-all"
                             autoComplete="email"
                             {...registerField('email')}
                         />
@@ -111,11 +134,18 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="password">Password</Label>
+                    <Label
+                        className="block text-gray-700 text-sm font-bold mb-1.5"
+                        htmlFor="password"
+                    >
+                        Mật khẩu
+                    </Label>
+
                     <div className="mt-1">
                         <Input
                             id="password"
                             type="password"
+                            className="w-full bg-gray-50 border border-gray-300 text-gray-800 placeholder:text-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-bk-blue focus:border-bk-blue transition-all"
                             autoComplete="new-password"
                             {...registerField('password')}
                         />
@@ -128,12 +158,18 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                 </div>
 
                 <div>
-                    <Label htmlFor="passwordConfirmed">Confirm Password</Label>
+                    <Label
+                        className="block text-gray-700 text-sm font-bold mb-1.5"
+                        htmlFor="passwordConfirmed"
+                    >
+                        Xác nhận mật khẩu
+                    </Label>
                     <div className="mt-1">
                         <Input
                             id="passwordConfirmed"
                             type="password"
                             autoComplete="new-password"
+                            className="w-full bg-gray-50 border border-gray-300 text-gray-800 placeholder:text-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-bk-blue focus:border-bk-blue transition-all"
                             {...registerField('passwordConfirmed')}
                         />
                         {errors.passwordConfirmed && (
@@ -147,30 +183,33 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
                 <div>
                     <Button
                         type="submit"
-                        className="w-full"
+                        className="w-full flex items-center justify-center bg-bk-blue hover:bg-bk-blue/90 text-white font-bold h-[56px] rounded-lg transition duration-200 shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
                         disabled={register.isPending}
                     >
                         {register.isPending
-                            ? 'Creating Account...'
-                            : 'Register'}
+                            ? 'Đang tạo tài khoản...'
+                            : 'Đăng ký'}
                     </Button>
                 </div>
             </form>
 
             <div className="mt-6">
-                <div className="relative">
+                <div className="mt-8 relative flex items-center justify-center">
                     <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-300" />
+                        <div className="w-full border-t border-gray-200"></div>
                     </div>
-                    <div className="relative flex justify-center text-sm">
-                        <span className="bg-white px-2 text-gray-500">
-                            Already have an account?
-                        </span>
-                    </div>
+                    <span className="relative z-10 bg-white px-4 text-sm font-bold text-gray-400 uppercase tracking-widest">
+                        Bạn đã có tài khoản?
+                    </span>
                 </div>
 
-                <div className="mt-6 text-center">
-                    <Link to={paths.auth.login.getHref()}>Log in</Link>
+                <div className="mt-8 text-center text-sm text-gray-600 font-medium">
+                    <Link
+                        className="font-bold text-bk-blue hover:underline"
+                        to={paths.auth.login.getHref()}
+                    >
+                        Đăng nhập
+                    </Link>
                 </div>
             </div>
         </div>
