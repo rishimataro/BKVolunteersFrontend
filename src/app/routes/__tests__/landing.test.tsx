@@ -18,12 +18,12 @@ describe('LandingRoute', () => {
         render(
             <MemoryRouter>
                 <LandingRoute />
-            </MemoryRouter>
+            </MemoryRouter>,
         );
 
         // Check for logo
         expect(screen.getByAltText(/BK Volunteers Logo/i)).toBeDefined();
-        
+
         // Check for brand name
         expect(screen.getAllByText(/BK Volunteers/i).length).toBeGreaterThan(0);
 
@@ -39,7 +39,7 @@ describe('LandingRoute', () => {
         render(
             <MemoryRouter>
                 <LandingRoute />
-            </MemoryRouter>
+            </MemoryRouter>,
         );
 
         const loginButton = screen.getByRole('button', { name: /đăng nhập/i });
@@ -55,10 +55,12 @@ describe('LandingRoute', () => {
         render(
             <MemoryRouter>
                 <LandingRoute />
-            </MemoryRouter>
+            </MemoryRouter>,
         );
 
-        const startButton = screen.getByRole('button', { name: /bắt đầu ngay/i });
+        const startButton = screen.getByRole('button', {
+            name: /bắt đầu ngay/i,
+        });
         fireEvent.click(startButton);
 
         expect(navigate).toHaveBeenCalledWith(paths.auth.login.getHref());
@@ -71,10 +73,12 @@ describe('LandingRoute', () => {
         render(
             <MemoryRouter>
                 <LandingRoute />
-            </MemoryRouter>
+            </MemoryRouter>,
         );
 
-        const registerButton = screen.getByRole('button', { name: /đăng ký tình nguyện viên/i });
+        const registerButton = screen.getByRole('button', {
+            name: /đăng ký tình nguyện viên/i,
+        });
         fireEvent.click(registerButton);
 
         expect(navigate).toHaveBeenCalledWith(paths.auth.register.getHref());
@@ -87,10 +91,12 @@ describe('LandingRoute', () => {
         render(
             <MemoryRouter>
                 <LandingRoute />
-            </MemoryRouter>
+            </MemoryRouter>,
         );
 
-        const joinButton = screen.getByRole('button', { name: /tham gia ngay/i });
+        const joinButton = screen.getByRole('button', {
+            name: /tham gia ngay/i,
+        });
         fireEvent.click(joinButton);
 
         expect(navigate).toHaveBeenCalledWith(paths.auth.login.getHref());
@@ -100,7 +106,7 @@ describe('LandingRoute', () => {
         render(
             <MemoryRouter>
                 <LandingRoute />
-            </MemoryRouter>
+            </MemoryRouter>,
         );
 
         expect(screen.getByText(/Quản lý sự kiện/i)).toBeDefined();

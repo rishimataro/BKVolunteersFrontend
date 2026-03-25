@@ -9,11 +9,9 @@ const root = document.getElementById('root');
 if (!root) throw new Error('No root element found');
 
 enableMocking().then(() => {
-  createRoot(root).render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
-  );
+    createRoot(root).render(
+        <React.StrictMode>
+            <App />
+        </React.StrictMode>,
+    );
 });
-
-

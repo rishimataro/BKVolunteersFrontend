@@ -20,4 +20,3 @@ export const DashboardRoute = () => {
         </ContentLayout>
     );
 };
-
