@@ -2,7 +2,7 @@
 
 A production-ready React starter kit built with React 19, TypeScript, and Vite. Designed for scalability, maintainability, and a great developer experience.
 
-## 🚀 Features
+## Features
 
 - **React 19 & TypeScript**: Latest stable versions with React Compiler enabled.
 - **Vite**: Ultra-fast dev server and optimized builds.
@@ -23,7 +23,7 @@ A production-ready React starter kit built with React 19, TypeScript, and Vite. 
     - [Husky](https://typicode.github.io/husky/) & [Lint-staged](https://github.com/okonet/lint-staged) for pre-commit hooks.
     - Custom VS Code settings and extensions.
 
-## 📂 Directory Structure
+## Directory Structure
 
 ```text
 src/
@@ -47,7 +47,7 @@ src/
 └── types/               # Global/Shared TypeScript types
 ```
 
-## 🛠️ Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -108,7 +108,3 @@ pnpm generate
 - **Environment Validation**: Zod-validated environment variables at runtime.
 - **API Client**: Axios interceptors for automatic JWT handling and refresh logic.
 - **Protected Routes**: Easy-to-use `<ProtectedRoute />` component.
-
-## 📄 License
-
-MIT
