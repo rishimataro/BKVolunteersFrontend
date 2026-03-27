@@ -1,244 +1,284 @@
 import * as React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import type { AxiosError } from 'axios';
-import { Loader2, Mail, Lock, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Globe, HandHeart, Heart, Sparkles } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Link } from '@/components/ui/link';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
-import { HttpStatus } from '@/types/http';
-
-import { sendVerificationEmail } from '../api/auth';
-import { useLogin } from '../lib/auth-provider';
-import { loginInputSchema, type LoginInput } from '../types';
 import { MicrosoftIcon } from '@/components/ui/icon';
 
-type LoginFormProps = {
-    onSuccess: () => void;
+type LoginFormErrors = {
+    username?: string;
+    password?: string;
 };
 
-export const LoginForm = ({ onSuccess }: LoginFormProps) => {
+const decorativeIcons = [
+    {
+        Icon: Heart,
+        className:
+            'right-[40%] top-[28%] text-[#4fa7b5] shadow-[0_24px_48px_-30px_rgba(79,167,181,0.9)]',
+    },
+    {
+        Icon: Globe,
+        className:
+            'right-[150%] top-[44%] text-[#62a9b8] shadow-[0_18px_40px_-28px_rgba(98,169,184,0.85)]',
+    },
+    {
+        Icon: HandHeart,
+        className:
+            'right-[140%] top-[66%] text-[#55a8a9] shadow-[0_24px_54px_-32px_rgba(85,168,169,0.9)]',
+    },
+    {
+        Icon: Sparkles,
+        className:
+            'right-[30%] bottom-[30%] text-[#86d6d3] shadow-[0_24px_54px_-34px_rgba(134,214,211,0.8)]',
+    },
+];
+
+export const LoginForm = () => {
     const { addNotification } = useNotifications();
-    const login = useLogin({
-        onSuccess,
-    });
+    const [username, setUsername] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [showPassword, setShowPassword] = React.useState(false);
+    const [errors, setErrors] = React.useState<LoginFormErrors>({});
 
-    const [isEmailUnverified, setIsEmailUnverified] = React.useState(false);
-    const [unverifiedEmail, setUnverifiedEmail] = React.useState('');
+    const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<LoginInput>({
-        resolver: zodResolver(loginInputSchema),
-    });
+        const isUsernameValid = validateField('username', username);
+        const isPasswordValid = validateField('password', password);
 
-    const resendVerification = useMutation({
-        mutationFn: () => sendVerificationEmail(unverifiedEmail),
-        onSuccess: (data) => {
-            addNotification({
-                type: 'success',
-                title: 'Success',
-                message: data.message || 'Verification email sent',
-            });
-            setIsEmailUnverified(false);
-        },
-    });
-
-    const onSubmit = async (data: LoginInput) => {
-        try {
-            await login.mutateAsync(data);
-        } catch (error) {
-            const axiosError = error as AxiosError;
-            const apiData = axiosError.response?.data as {
-                message?: string;
-                error?: string;
-            };
-
-            const msg =
-                apiData?.message ||
-                'Đăng nhập thất bại. Vui lòng kiểm tra lại.';
-
-            addNotification({
-                type: 'error',
-                title: 'Đăng nhập thất bại',
-                message: msg,
-            });
-
-            if (
-                axiosError.response?.status === HttpStatus.UNAUTHORIZED &&
-                (apiData?.message?.includes('verified') ||
-                    apiData?.error === 'EmailNotVerified')
-            ) {
-                setIsEmailUnverified(true);
-                setUnverifiedEmail(data.email);
-            }
+        if (!isUsernameValid || !isPasswordValid) {
+            return;
         }
+
+        addNotification({
+            type: 'info',
+            title: 'Giao diện đăng nhập',
+            message:
+                'Trang đăng nhập hiện mới là giao diện mẫu. Backend sẽ được kết nối ở bước tiếp theo.',
+        });
+    };
+
+    const validateField = (
+        field: keyof LoginFormErrors,
+        value: string,
+    ): boolean => {
+        if (!value.trim()) {
+            setErrors((current) => ({
+                ...current,
+                [field]:
+                    field === 'username'
+                        ? 'Vui lòng nhập tên đăng nhập.'
+                        : 'Vui lòng nhập mật khẩu.',
+            }));
+            return false;
+        }
+
+        if (field === 'password' && value.length < 6) {
+            setErrors((current) => ({
+                ...current,
+                password: 'Mật khẩu phải có ít nhất 6 ký tự.',
+            }));
+            return false;
+        }
+
+        if (field === 'username' && value.length < 3) {
+            setErrors((current) => ({
+                ...current,
+                username: 'Tên đăng nhập phải có ít nhất 3 ký tự.',
+            }));
+            return false;
+        }
+
+        setErrors((current) => {
+            if (!current[field]) return current;
+
+            return {
+                ...current,
+                [field]: undefined,
+            };
+        });
+
+        return true;
+    };
+
+    const onMicrosoftClick = () => {
+        addNotification({
+            type: 'info',
+            title: 'Microsoft SSO',
+            message:
+                'Nút đăng nhập Microsoft đang ở chế độ mô phỏng giao diện và chưa kết nối dịch vụ.',
+        });
     };
 
     return (
-        <div className="w-full max-w-md animate-fade-in-up">
-            <div className="mb-10 text-center sm:text-left">
-                <img
-                    src="/logo-bkvolunteers.png"
-                    alt="Logo"
-                    className="h-14 mb-6 mx-auto sm:mx-0"
-                />
-                <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                    Đăng nhập
-                </h1>
-                <p className="text-gray-500 mt-2 text-sm">
-                    Quản lý hoạt động kỹ thuật số. Kết nối sinh viên và hỗ trợ
-                    quá trình hoạt động Đoàn - Hội.
-                </p>
-            </div>
+        // Start section: Login-form
+        <section className="relative mx-auto w-full max-w-[1376px] px-4 sm:px-6 lg:px-8 animate-fade-in-up">
+            {/* Start: Login-form*/}
+            <div className="group relative overflow-hidden rounded-2xl sm:rounded-[2rem] border border-white bg-white shadow-[0_30px_80px_-32px_rgba(28,74,97,0.55)] backdrop-blur-md transition-transform duration-500">
+                {/* Start: Card left*/}
+                <div className="grid min-h-[620px] md:min-h-[680px] lg:min-h-[720px] lg:grid-cols-[minmax(0,0.68fr)_minmax(320px,0.32fr)]">
+                    {/* Start: Form-container */}
+                    <div className="relative z-10 flex items-center px-4 py-8 sm:px-8 sm:py-10 lg:px-0 lg:pl-20">
+                        {/* Start: Form-content */}
+                        <div className="w-full max-w-[26rem] sm:max-w-[30rem]">
+                            <img
+                                src="/logo_nobg.svg"
+                                alt="BK Volunteers"
+                                className="w-auto h-20 mb-7"
+                            />
 
-            {isEmailUnverified && (
-                <div className="mb-6 flex items-start p-4 rounded-xl border bg-yellow-50 border-yellow-200 text-sm shadow-sm">
-                    <AlertCircle className="w-5 h-5 mr-3 shrink-0 mt-0.5 text-yellow-600" />
-                    <div className="flex-1">
-                        <h3 className="font-semibold text-yellow-800">
-                            Email not verified
-                        </h3>
-                        <p className="text-yellow-700 mt-1">
-                            Your email address is not verified. Please check
-                            your inbox or click below to resend.
-                        </p>
-                        <Button
-                            size="sm"
-                            variant="outline"
-                            className="mt-3 bg-white border-yellow-300 text-yellow-700 hover:bg-yellow-100"
-                            onClick={() => resendVerification.mutate()}
-                            disabled={resendVerification.isPending}
-                        >
-                            {resendVerification.isPending
-                                ? 'Sending...'
-                                : 'Resend Verification'}
-                        </Button>
-                    </div>
-                </div>
-            )}
+                            {/* Title login */}
+                            <div className="mb-8">
+                                <h1 className="text-4xl font-bold tracking-tight uppercase text-slate-700 sm:text-4xl lg:text-5xl">
+                                    Đăng nhập
+                                </h1>
+                            </div>
 
-            <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="space-y-5"
-                noValidate
-            >
-                <div>
-                    <Label
-                        className="block text-gray-700 text-sm font-bold mb-1.5"
-                        htmlFor="email"
-                    >
-                        Tên đăng nhập (Email)
-                    </Label>
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                            <Mail className="h-5 w-5 text-gray-400" />
+                            {/* Form: username and password */}
+                            <form
+                                onSubmit={onSubmit}
+                                className="space-y-7"
+                                noValidate
+                            >
+                                <div>
+                                    <Label
+                                        htmlFor="username"
+                                        className="block mb-2 text-base font-semibold sm:text-lg text-slate-600"
+                                    >
+                                        Tên đăng nhập:
+                                    </Label>
+                                    <Input
+                                        id="username"
+                                        value={username}
+                                        onChange={(e) => {
+                                            setUsername(e.target.value);
+                                            validateField(
+                                                'username',
+                                                e.target.value,
+                                            );
+                                        }}
+                                        placeholder="Tên đăng nhập"
+                                        error={errors.username}
+                                        className="h-12 sm:h-14 rounded-[1rem] border border-slate-300 bg-white px-5 text-base text-slate-700 shadow-[0_10px_30px_-26px_rgba(15,23,42,0.8)] transition-all duration-200 placeholder:text-slate-300 hover:border-[#71bfca] focus-visible:border-[#58aeb6] focus-visible:ring-4 focus-visible:ring-[#8fe5e2]/35"
+                                    />
+                                </div>
+
+                                <div>
+                                    <div className="flex items-center justify-between gap-4 mb-2">
+                                        <Label
+                                            htmlFor="password"
+                                            className="text-base font-semibold sm:text-lg text-slate-600"
+                                        >
+                                            Mật khẩu:
+                                        </Label>
+                                        <Link
+                                            to={paths.auth.forgotPassword.getHref()}
+                                            className="text-sm font-medium text-[#3a6da0] transition-colors duration-200 hover:text-[#235987] hover:underline"
+                                        >
+                                            Quên mật khẩu?
+                                        </Link>
+                                    </div>
+
+                                    <div className="relative">
+                                        <Input
+                                            id="password"
+                                            value={password}
+                                            onChange={(e) => {
+                                                setPassword(e.target.value);
+                                                validateField(
+                                                    'password',
+                                                    e.target.value,
+                                                );
+                                            }}
+                                            type={
+                                                showPassword
+                                                    ? 'text'
+                                                    : 'password'
+                                            }
+                                            placeholder="Mật khẩu"
+                                            error={errors.password}
+                                            className="h-12 sm:h-14 rounded-[1rem] border border-slate-300 bg-white px-5 pr-14 text-base text-slate-700 shadow-[0_10px_30px_-26px_rgba(15,23,42,0.8)] transition-all duration-200 placeholder:text-slate-300 hover:border-[#71bfca] focus-visible:border-[#58aeb6] focus-visible:ring-4 focus-visible:ring-[#8fe5e2]/35"
+                                        />
+                                        <button
+                                            type="button"
+                                            aria-label={
+                                                showPassword
+                                                    ? 'Ẩn mật khẩu'
+                                                    : 'Hiện mật khẩu'
+                                            }
+                                            aria-pressed={showPassword}
+                                            onClick={() =>
+                                                setShowPassword(
+                                                    (current) => !current,
+                                                )
+                                            }
+                                            className="absolute right-4 top-[1.05rem] inline-flex h-6 w-6 items-center justify-center text-slate-300 transition-all duration-200 hover:scale-110 hover:text-[#59abb7] active:scale-95"
+                                        >
+                                            {showPassword ? (
+                                                <EyeOff className="w-5 h-5" />
+                                            ) : (
+                                                <Eye className="w-5 h-5" />
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="inline-flex h-12 sm:h-14 w-full items-center justify-center rounded-full bg-[#58aab3] px-4 sm:px-6 text-[1.05rem] font-semibold text-white shadow-[5px_20px_20px_-24px_rgba(54,131,140,0.9)] transition-all duration-200 hover:bg-[#4a9ea9] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#8fe5e2]/50 active:translate-y-0 active:scale-[0.985]"
+                                >
+                                    Đăng nhập
+                                </button>
+                            </form>
+
+                            <div className="mt-6 text-base text-center text-slate-400">
+                                hoặc tiếp tục với
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={onMicrosoftClick}
+                                className="mt-3 inline-flex h-12 sm:h-14 w-full items-center justify-center gap-3 rounded-full border border-slate-300 bg-white/95 px-4 sm:px-6 text-base font-medium text-slate-400 transition-all duration-200 hover:border-[#9ad7d8] hover:text-slate-500 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-200 active:translate-y-0 active:scale-[0.985]"
+                            >
+                                <MicrosoftIcon />
+                                <span>Đăng nhập bằng Microsoft</span>
+                            </button>
                         </div>
-                        <Input
-                            id="email"
-                            type="email"
-                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-300 text-gray-800 placeholder:text-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-bk-blue focus:border-bk-blue transition-all"
-                            placeholder="admin@dut.udn.vn"
-                            {...register('email')}
-                            disabled={login.isPending}
-                        />
+                        {/* End: Form-content */}
                     </div>
-                    {errors.email && (
-                        <p className="mt-1 text-sm text-bk-red font-medium italic">
-                            {errors.email.message}
-                        </p>
-                    )}
-                </div>
+                    {/* End: Form-container */}
 
-                <div className="pb-2">
-                    <div className="flex items-center justify-between mb-1.5">
-                        <Label
-                            className="block text-gray-700 text-sm font-bold"
-                            htmlFor="password"
-                        >
-                            Mật khẩu
-                        </Label>
-                        <Link
-                            to={paths.auth.forgotPassword.getHref()}
-                            className="text-xs font-medium text-bk-blue hover:underline"
-                        >
-                            Quên mật khẩu?
-                        </Link>
-                    </div>
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                            <Lock className="h-5 w-5 text-gray-400" />
+                    {/* Start: Side bar right */}
+                    <div className="absolute inset-0 z-20 hidden pointer-events-none xl:block">
+                        <div className="absolute right-0 top-0 h-full w-[32%] bg-[#e8f4fb]/88">
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(255,255,255,0.95),rgba(232,244,251,0.58)_42%,rgba(185,223,236,0.8)_100%)]" />
+
+                            {decorativeIcons.map(({ Icon, className }) => (
+                                <div
+                                    key={className}
+                                    className={`absolute flex h-14 w-14 animate-float items-center justify-center rounded-full ${className}`}
+                                >
+                                    <Icon className="w-20 h-20" />
+                                </div>
+                            ))}
+
+                            {/* <div className="absolute top-0 left-0 z-20 w-20 h-full bg-gradient-to-r from-white to-transparent" /> */}
+
+                            <img
+                                src="/linhvat.svg"
+                                className="absolute bottom-0 -left-[50%] h-[95%] scale-150 max-h-[720px] w-auto z-30 drop-shadow-[0_30px_40px_rgba(0,0,0,0.15)]"
+                            />
                         </div>
-                        <Input
-                            id="password"
-                            type="password"
-                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-300 text-gray-800 placeholder:text-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-bk-blue focus:border-bk-blue transition-all"
-                            placeholder="••••••••"
-                            {...register('password')}
-                            disabled={login.isPending}
-                        />
                     </div>
-                    {errors.password && (
-                        <p className="mt-1 text-sm text-bk-red font-medium italic">
-                            {errors.password.message}
-                        </p>
-                    )}
+                    {/* End: Side bar right */}
                 </div>
-
-                <button
-                    type="submit"
-                    className="w-full flex items-center justify-center bg-bk-blue hover:bg-bk-blue/90 text-white font-bold h-[56px] rounded-lg transition duration-200 shadow-md disabled:opacity-70 disabled:cursor-not-allowed"
-                    disabled={login.isPending}
-                >
-                    {login.isPending && (
-                        <Loader2 className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" />
-                    )}
-                    <span>Đăng nhập</span>
-                </button>
-            </form>
-
-            <div className="mt-8 relative flex items-center justify-center">
-                <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-200"></div>
-                </div>
-                <span className="relative z-10 bg-white px-4 text-sm font-bold text-gray-400 uppercase tracking-widest">
-                    Hoặc
-                </span>
+                {/* End: Card Left */}
             </div>
-
-            <div className="mt-8 space-y-4">
-                <button
-                    type="button"
-                    className="w-full flex items-center justify-center space-x-3 bg-white hover:bg-gray-50 text-gray-800 font-bold py-3.5 px-4 border border-gray-300 rounded-lg shadow-sm transition duration-200 focus:outline-none focus:ring-2 focus:ring-gray-200"
-                    onClick={() =>
-                        addNotification({
-                            type: 'info',
-                            title: 'SSO',
-                            message: 'Tính năng này đang được phát triển.',
-                        })
-                    }
-                >
-                    <MicrosoftIcon />
-                    <span>Đăng nhập qua Microsoft</span>
-                </button>
-            </div>
-
-            <p className="mt-8 text-center text-sm text-gray-600 font-medium">
-                Chưa có tài khoản?{' '}
-                <Link
-                    to={paths.auth.register.getHref()}
-                    className="font-bold text-bk-blue hover:underline"
-                >
-                    Đăng ký ngay
-                </Link>
-            </p>
-        </div>
+            {/* End: Login-form */}
+        </section>
+        // End section: Login-form
     );
 };
