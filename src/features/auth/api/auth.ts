@@ -5,7 +5,6 @@ import type { AuthResponse, User, GeneralResponse } from '@/types/api';
 
 import type {
     LoginInput,
-    RegisterInput,
     ForgotPasswordInput,
     ResetPasswordInput,
 } from '../types';
@@ -34,12 +33,6 @@ export const loginWithEmailAndPassword = (
     data: LoginInput,
 ): Promise<AuthResponse> => {
     return api.post('/auth/login', data);
-};
-
-export const registerWithEmailAndPassword = (
-    data: RegisterInput,
-): Promise<AuthResponse> => {
-    return api.post('/auth/signup', data);
 };
 
 export const forgotPassword = (

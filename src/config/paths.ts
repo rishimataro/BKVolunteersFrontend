@@ -19,9 +19,13 @@ export const paths = {
             path: '/auth/forgot-password',
             getHref: () => '/auth/forgot-password',
         },
+        verifyCode: {
+            path: '/auth/verify-code',
+            getHref: () => '/auth/verify-code',
+        },
         resetPassword: {
             path: '/auth/reset-password',
-            getHref: (token: string) => `/auth/reset-password?token=${token}`,
+            getHref: () => '/auth/reset-password',
         },
         verifyEmail: {
             path: '/auth/verify-email',

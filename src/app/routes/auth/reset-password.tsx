@@ -1,19 +1,13 @@
-import { useSearchParams, Navigate } from 'react-router';
-import { AuthLayout } from '@/components/layouts';
-import { ResetPasswordForm } from '@/features/auth/components/reset-password-form';
+import { Navigate } from 'react-router';
+
 import { paths } from '@/config/paths';
+import { ResetPasswordForm } from '@/features/auth/components/reset-password-form';
+import { canAccessPasswordReset } from '@/features/auth/lib/password-recovery';
 
 export const ResetPasswordPage = () => {
-    const [searchParams] = useSearchParams();
-    const token = searchParams.get('token');
-
-    if (!token) {
-        return <Navigate to={paths.auth.login.getHref()} />;
+    if (!canAccessPasswordReset()) {
+        return <Navigate to={paths.auth.forgotPassword.getHref()} replace />;
     }
 
-    return (
-        <AuthLayout title="Reset your password">
-            <ResetPasswordForm token={token} />
-        </AuthLayout>
-    );
+    return <ResetPasswordForm />;
 };

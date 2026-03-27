@@ -26,13 +26,6 @@ export const AppRouter = () => {
             },
         },
         {
-            path: paths.auth.register.path,
-            lazy: async () => {
-                const { RegisterPage } = await import('./routes/auth/register');
-                return { Component: RegisterPage };
-            },
-        },
-        {
             path: paths.auth.forgotPassword.path,
             lazy: async () => {
                 const { ForgotPasswordPage } =
@@ -41,19 +34,19 @@ export const AppRouter = () => {
             },
         },
         {
+            path: paths.auth.verifyCode.path,
+            lazy: async () => {
+                const { VerifyCodePage } =
+                    await import('./routes/auth/verify-code');
+                return { Component: VerifyCodePage };
+            },
+        },
+        {
             path: paths.auth.resetPassword.path,
             lazy: async () => {
                 const { ResetPasswordPage } =
                     await import('./routes/auth/reset-password');
                 return { Component: ResetPasswordPage };
-            },
-        },
-        {
-            path: paths.auth.verifyEmail.path,
-            lazy: async () => {
-                const { VerifyEmailPage } =
-                    await import('./routes/auth/verify-email');
-                return { Component: VerifyEmailPage };
             },
         },
         {

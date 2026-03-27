@@ -1,6 +1,8 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
-@import '@fontsource-variable/geist';
+/* @import '@fontsource-variable/geist'; */
+/* @import '@fontsource/lexend'; */
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=Lexend:wght@100..900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,7 +37,7 @@
         --input: oklch(0.922 0 0);
         --ring: oklch(0.708 0 0);
 
-        --radius: 0.625rem;
+        --radius: 0.625rem; /* 10px */
 
         --chart-1: oklch(0.809 0.105 251.813);
 
@@ -106,9 +108,6 @@
         --sidebar-border: oklch(1 0 0 / 10%);
         --sidebar-ring: oklch(0.556 0 0);
     }
-    .theme {
-        --font-sans: 'Geist Variable', sans-serif;
-    }
     * {
         @apply border-border outline-ring/50;
     }
@@ -123,9 +122,18 @@
 @layer base {
     * {
         @apply border-border;
+        @apply font-sans;
     }
     body {
         @apply bg-background text-foreground;
+    }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-heading;
     }
 }
 

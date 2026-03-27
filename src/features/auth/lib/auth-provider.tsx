@@ -5,10 +5,9 @@ import { useAuthStore } from '@/store/auth-store';
 import {
     getUser,
     loginWithEmailAndPassword,
-    registerWithEmailAndPassword,
     logout as apiLogout,
 } from '../api/auth';
-import type { LoginInput, RegisterInput } from '../types';
+import type { LoginInput } from '../types';
 
 const authConfig = {
     userFn: async () => {
@@ -37,11 +36,6 @@ const authConfig = {
         useAuthStore.getState().setAuth(response.user, response.accessToken);
         return response.user;
     },
-    registerFn: async (data: RegisterInput) => {
-        const response = await registerWithEmailAndPassword(data);
-        useAuthStore.getState().setAuth(response.user, response.accessToken);
-        return response.user;
-    },
     logoutFn: async () => {
         try {
             await apiLogout();
@@ -51,5 +45,5 @@ const authConfig = {
     },
 };
 
-export const { useUser, useLogin, useLogout, useRegister, AuthLoader } =
+export const { useUser, useLogin, useLogout, AuthLoader } =
     configureAuth(authConfig);

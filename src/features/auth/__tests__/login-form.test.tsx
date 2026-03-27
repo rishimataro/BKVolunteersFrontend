@@ -1,96 +1,125 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter } from 'react-router';
 
 import { LoginForm } from '../components/login-form';
-import { useLogin } from '../lib/auth-provider';
 
-// Mock dependencies
-vi.mock('../lib/auth-provider', () => ({
-    useLogin: vi.fn(),
-}));
-
-vi.mock('../api/auth', () => ({
-    sendVerificationEmail: vi.fn(),
-}));
+const addNotification = vi.fn();
 
 vi.mock('@/components/ui/notifications', () => ({
     useNotifications: vi.fn(() => ({
-        addNotification: vi.fn(),
+        addNotification,
     })),
 }));
 
-const queryClient = new QueryClient({
-    defaultOptions: {
-        queries: {
-            retry: false,
-        },
-    },
-});
-
 describe('LoginForm', () => {
-    const onSuccess = vi.fn();
-    const mutateAsync = vi.fn();
-
     beforeEach(() => {
         vi.clearAllMocks();
-        (useLogin as vi.Mock).mockReturnValue({
-            mutateAsync,
-            isPending: false,
-        });
     });
 
     const renderForm = () => {
         return render(
-            <QueryClientProvider client={queryClient}>
-                <MemoryRouter>
-                    <LoginForm onSuccess={onSuccess} />
-                </MemoryRouter>
-            </QueryClientProvider>,
+            <MemoryRouter>
+                <LoginForm />
+            </MemoryRouter>,
         );
     };
 
-    it('renders correctly', () => {
+    it('renders the redesigned login form', () => {
         renderForm();
 
-        expect(screen.getByLabelText(/tên đăng nhập \(email\)/i)).toBeDefined();
-        expect(screen.getByLabelText(/mật khẩu/i)).toBeDefined();
+        expect(
+            screen.getByRole('heading', { name: /đăng nhập/i }),
+        ).toBeDefined();
+        expect(screen.getByLabelText(/tên đăng nhập/i)).toBeDefined();
+        expect(
+            screen.getByLabelText(/mật khẩu/i, { selector: 'input' }),
+        ).toBeDefined();
         expect(
             screen.getByRole('button', { name: /^đăng nhập$/i }),
         ).toBeDefined();
+        expect(
+            screen.getByRole('button', {
+                name: /đăng nhập bằng microsoft/i,
+            }),
+        ).toBeDefined();
+        expect(
+            screen.getByRole('link', { name: /quên mật khẩu/i }),
+        ).toBeDefined();
     });
 
-    it('shows validation errors for empty fields', async () => {
+    it('shows local validation errors when fields are empty', () => {
         renderForm();
 
         fireEvent.click(screen.getByRole('button', { name: /^đăng nhập$/i }));
 
-        await waitFor(() => {
-            expect(screen.getByText(/email is required/i)).toBeDefined();
-            expect(
-                screen.getByText(/password must be at least 6 characters/i),
-            ).toBeDefined();
-        });
+        expect(
+            screen.getByText(/vui lòng nhập tên đăng nhập\./i),
+        ).toBeDefined();
+        expect(screen.getByText(/vui lòng nhập mật khẩu\./i)).toBeDefined();
+        expect(addNotification).not.toHaveBeenCalled();
     });
 
-    it('calls login.mutateAsync with correct data', async () => {
+    it('shows a placeholder notification instead of calling backend login', () => {
         renderForm();
 
-        fireEvent.change(screen.getByLabelText(/tên đăng nhập \(email\)/i), {
-            target: { value: 'test@dut.udn.vn' },
+        fireEvent.change(screen.getByLabelText(/tên đăng nhập/i), {
+            target: { value: 'testuser' },
         });
-        fireEvent.change(screen.getByLabelText(/mật khẩu/i), {
-            target: { value: 'password123' },
-        });
+        fireEvent.change(
+            screen.getByLabelText(/mật khẩu/i, { selector: 'input' }),
+            {
+                target: { value: 'password123' },
+            },
+        );
 
         fireEvent.click(screen.getByRole('button', { name: /^đăng nhập$/i }));
 
-        await waitFor(() => {
-            expect(mutateAsync).toHaveBeenCalledWith({
-                email: 'test@dut.udn.vn',
-                password: 'password123',
-            });
+        expect(addNotification).toHaveBeenCalledWith(
+            expect.objectContaining({
+                type: 'info',
+                title: 'Giao diện đăng nhập',
+            }),
+        );
+    });
+
+    it('toggles the password field visibility', () => {
+        renderForm();
+
+        const passwordInput = screen.getByLabelText(/mật khẩu/i, {
+            selector: 'input',
         });
+        const toggleButton = screen.getByRole('button', {
+            name: /hiện mật khẩu/i,
+        });
+
+        expect(passwordInput.getAttribute('type')).toBe('password');
+
+        fireEvent.click(toggleButton);
+        expect(passwordInput.getAttribute('type')).toBe('text');
+
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: /ẩn mật khẩu/i,
+            }),
+        );
+        expect(passwordInput.getAttribute('type')).toBe('password');
+    });
+
+    it('shows placeholder feedback for Microsoft login', () => {
+        renderForm();
+
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: /đăng nhập bằng microsoft/i,
+            }),
+        );
+
+        expect(addNotification).toHaveBeenCalledWith(
+            expect.objectContaining({
+                type: 'info',
+                title: 'Microsoft SSO',
+            }),
+        );
     });
 });
