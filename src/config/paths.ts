@@ -3,6 +3,14 @@ export const paths = {
         path: '/',
         getHref: () => '/',
     },
+    campaigns: {
+        path: '/campaigns',
+        getHref: () => '/campaigns',
+        detail: {
+            path: '/campaigns/:slug',
+            getHref: (slug: string) => `/campaigns/${slug}`,
+        },
+    },
 
     auth: {
         register: {

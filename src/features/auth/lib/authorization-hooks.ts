@@ -1,12 +1,16 @@
 import React from 'react';
+import type { Role } from '@/types/api';
 import { useUser } from './auth-provider';
 
 export const ROLES = {
-    ADMIN: 'ADMIN',
-    USER: 'USER',
+    STUDENT: 'STUDENT',
+    ORG_ADMIN: 'ORG_ADMIN',
+    ORG_MEMBER: 'ORG_MEMBER',
+    SCHOOL_REVIEWER: 'SCHOOL_REVIEWER',
+    SCHOOL_ADMIN: 'SCHOOL_ADMIN',
 } as const;
 
-export type RoleTypes = keyof typeof ROLES;
+export type RoleTypes = Role;
 
 export const POLICIES = () => {
     return true;

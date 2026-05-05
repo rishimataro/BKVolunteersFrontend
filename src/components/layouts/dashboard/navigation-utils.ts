@@ -1,8 +1,8 @@
 import {
     LayoutDashboard,
     Heart,
-    Users,
     Settings,
+    ClipboardCheck,
     type LucideIcon,
 } from 'lucide-react';
 import * as React from 'react';
@@ -28,15 +28,17 @@ export const useNavigationItems = () => {
                     icon: LayoutDashboard,
                 },
                 {
-                    name: 'Chiến dịch',
+                    name: 'Vận hành chiến dịch',
                     to: paths.app.campaigns.getHref(),
                     icon: Heart,
                 },
-                checkAccess({ allowedRoles: [ROLES.ADMIN] })
+                checkAccess({
+                    allowedRoles: [ROLES.SCHOOL_ADMIN, ROLES.SCHOOL_REVIEWER],
+                })
                     ? {
-                          name: 'Thành viên',
+                          name: 'Hàng chờ duyệt',
                           to: paths.app.users.getHref(),
-                          icon: Users,
+                          icon: ClipboardCheck,
                       }
                     : null,
                 {

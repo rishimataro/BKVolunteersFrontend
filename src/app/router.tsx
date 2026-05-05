@@ -19,6 +19,21 @@ export const AppRouter = () => {
             },
         },
         {
+            path: paths.campaigns.path,
+            lazy: async () => {
+                const { PublicCampaignsRoute } = await import('./routes/campaigns');
+                return { Component: PublicCampaignsRoute };
+            },
+        },
+        {
+            path: paths.campaigns.detail.path,
+            lazy: async () => {
+                const { PublicCampaignDetailRoute } =
+                    await import('./routes/campaign-detail');
+                return { Component: PublicCampaignDetailRoute };
+            },
+        },
+        {
             path: paths.auth.login.path,
             lazy: async () => {
                 const { LoginPage } = await import('./routes/auth/login');

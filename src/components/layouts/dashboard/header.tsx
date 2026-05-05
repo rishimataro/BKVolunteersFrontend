@@ -28,7 +28,7 @@ const Progress = () => {
     if (state !== 'loading') return null;
 
     return (
-        <div className="fixed top-0 left-0 z-[100] h-1 w-full bg-muted">
+        <div className="fixed top-0 left-0 z-[100] h-1 w-full bg-slate-200">
             <div
                 className="h-full bg-bk-blue transition-all duration-300 ease-out"
                 style={{ width: `${progress}%` }}
@@ -69,7 +69,7 @@ export const Header = () => {
     const pageTitle = currentItem?.name || 'Tổng quan';
 
     return (
-        <header className="sticky top-0 z-40 flex h-20 items-center justify-between bg-background/80 px-4 backdrop-blur-md sm:px-8">
+        <header className="sticky top-0 z-40 flex h-20 items-center justify-between bg-white/90 px-4 backdrop-blur-md sm:px-8">
             <Progress />
             {/* Mobile Menu */}
             <div className="flex items-center gap-4 sm:hidden">
@@ -97,7 +97,7 @@ export const Header = () => {
                                             'flex items-center gap-4 rounded-xl px-4 py-3.5 text-base font-semibold transition-all',
                                             isActive
                                                 ? 'bg-bk-blue text-white'
-                                                : 'text-muted-foreground hover:bg-muted',
+                                                : 'text-slate-700 hover:bg-blue-50 hover:text-bk-blue',
                                         )
                                     }
                                 >
@@ -113,7 +113,7 @@ export const Header = () => {
 
             {/* Dynamic Page Title */}
             <div className="hidden md:flex flex-1 max-w-md">
-                <h2 className="text-xl font-bold text-foreground">
+                <h2 className="text-xl font-bold text-slate-900">
                     {pageTitle}
                 </h2>
             </div>
@@ -124,7 +124,7 @@ export const Header = () => {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="rounded-full text-muted-foreground"
+                        className="rounded-full text-slate-700 hover:text-bk-blue"
                     >
                         <Bell className="size-5" />
                     </Button>

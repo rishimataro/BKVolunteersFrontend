@@ -53,8 +53,9 @@ api.interceptors.request.use(authRequestInterceptor);
 api.interceptors.response.use(
     (response) => {
         const data = response.data;
-        if (data && data.success && data.data && data.data.accessToken) {
-            setAccessToken(data.data.accessToken);
+        const token = data?.data?.access_token ?? data?.data?.accessToken;
+        if (data && data.success && token) {
+            setAccessToken(token);
         }
         return data?.data || data;
     },
@@ -62,8 +63,10 @@ api.interceptors.response.use(
         const originalRequest = error.config as InternalAxiosRequestConfig & {
             _retry?: boolean;
         };
-        const data = error.response?.data as { message?: string } | undefined;
-        const message = data?.message || error.message;
+        const data = error.response?.data as
+            | { message?: string; error?: { message?: string } }
+            | undefined;
+        const message = data?.error?.message || data?.message || error.message;
 
         if (
             error.response?.status === HttpStatus.UNAUTHORIZED &&
@@ -89,10 +92,17 @@ api.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                const response = (await api.post('/auth/refresh')) as {
-                    accessToken: string;
+                const refreshToken = useAuthStore.getState().refreshToken;
+                const response = (await api.post('/auth/refresh', {
+                    refresh_token: refreshToken,
+                })) as {
+                    access_token?: string;
+                    accessToken?: string;
                 };
-                const { accessToken: newToken } = response;
+                const newToken = response.access_token ?? response.accessToken;
+                if (!newToken) {
+                    throw new Error('Refresh response does not include access token');
+                }
                 setAccessToken(newToken);
                 processQueue(null, newToken);
                 if (originalRequest.headers) {
@@ -111,7 +121,7 @@ api.interceptors.response.use(
         if (error.response?.status !== HttpStatus.UNAUTHORIZED) {
             useNotifications.getState().addNotification({
                 type: 'error',
-                title: 'Error',
+                title: 'Lỗi',
                 message,
             });
         }

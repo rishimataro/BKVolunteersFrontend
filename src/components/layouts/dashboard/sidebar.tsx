@@ -11,7 +11,7 @@ export const Sidebar = () => {
     const navigation = useNavigationItems();
 
     return (
-        <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col border-r bg-card/50 backdrop-blur-xl sm:flex">
+        <aside className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col border-r border-slate-200 bg-white sm:flex">
             <div className="flex h-20 items-center  px-6">
                 <Logo />
             </div>
@@ -26,7 +26,7 @@ export const Sidebar = () => {
                                 'group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all duration-200',
                                 isActive
                                     ? 'bg-bk-blue text-white shadow-md shadow-bk-blue/25'
-                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                                    : 'text-slate-700 hover:bg-blue-50 hover:text-bk-blue',
                             )
                         }
                     >
@@ -44,7 +44,7 @@ export const Sidebar = () => {
                         Hệ thống
                     </p>
                     <p className="mt-1 text-sm font-bold">BK Volunteers</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                    <p className="mt-0.5 text-[10px] text-slate-600">
                         Phiên bản 1.2.0
                     </p>
                 </div>

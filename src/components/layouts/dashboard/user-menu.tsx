@@ -15,6 +15,15 @@ import {
 import { paths } from '@/config/paths';
 import { useLogout, useUser } from '@/features/auth';
 
+const roleLabel: Record<string, string> = {
+    STUDENT: 'Sinh viên',
+    ORG_ADMIN: 'Quản trị đơn vị',
+    ORG_MEMBER: 'Thành viên đơn vị',
+    SCHOOL_REVIEWER: 'Người duyệt cấp trường',
+    SCHOOL_ADMIN: 'Quản trị cấp trường',
+    SYSTEM: 'Hệ thống',
+};
+
 export const UserMenu = () => {
     const navigate = useNavigate();
     const user = useUser();
@@ -39,8 +48,8 @@ export const UserMenu = () => {
                         <p className="text-sm font-bold leading-tight">
                             {user.data.firstName} {user.data.lastName}
                         </p>
-                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
-                            {user.data.role}
+                        <p className="text-[10px] font-medium uppercase tracking-wider text-slate-600">
+                            {roleLabel[user.data.role] ?? user.data.role}
                         </p>
                     </div>
                 </Button>
@@ -52,7 +61,7 @@ export const UserMenu = () => {
                     align="end"
                     sideOffset={8}
                     // z-[100] ở đây mới là quan trọng để không bị đè
-                    className="z-[100] w-72 p-0 overflow-hidden rounded-2xl shadow-2xl border border-border/40 bg-popover ring-1 ring-black/5 dark:ring-white/10"
+                    className="z-[100] w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 text-slate-900 shadow-2xl ring-1 ring-black/5"
                 >
                     {/* User Profile Summary Section */}
                     <div className="bg-muted/40 px-5 py-5 border-b border-border/50">
@@ -62,10 +71,10 @@ export const UserMenu = () => {
                                 {user.data.lastName?.[0]}
                             </div>
                             <div className="flex flex-col min-w-0">
-                                <p className="text-sm font-extrabold truncate leading-tight">
+                                <p className="truncate text-sm font-extrabold leading-tight text-slate-900">
                                     {user.data.firstName} {user.data.lastName}
                                 </p>
-                                <p className="text-xs text-muted-foreground truncate mt-0.5 font-medium">
+                                <p className="mt-0.5 truncate text-xs font-medium text-slate-600">
                                     {user.data.email}
                                 </p>
                             </div>
@@ -74,7 +83,7 @@ export const UserMenu = () => {
 
                     <div className="p-2">
                         <DropdownMenuGroup>
-                            <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground/60">
+                            <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-slate-500">
                                 Cá nhân
                             </DropdownMenuLabel>
                             <DropdownMenuItem
@@ -83,8 +92,8 @@ export const UserMenu = () => {
                                 }
                                 className="group/item rounded-xl px-3 py-2.5 cursor-pointer transition-colors focus:bg-bk-blue/5"
                             >
-                                <User className="mr-3 size-4.5 text-muted-foreground transition-colors group-focus/item:text-bk-blue" />
-                                <span className="font-semibold">
+                                <User className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
+                                <span className="font-semibold text-slate-800">
                                     Hồ sơ của tôi
                                 </span>
                             </DropdownMenuItem>
@@ -94,8 +103,8 @@ export const UserMenu = () => {
                                 }
                                 className="group/item rounded-xl px-3 py-2.5 cursor-pointer transition-colors focus:bg-bk-blue/5"
                             >
-                                <Settings className="mr-3 size-4.5 text-muted-foreground transition-colors group-focus/item:text-bk-blue" />
-                                <span className="font-semibold">
+                                <Settings className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
+                                <span className="font-semibold text-slate-800">
                                     Cài đặt hệ thống
                                 </span>
                             </DropdownMenuItem>
