@@ -1,4 +1,4 @@
-import { Menu, Sun, Moon, Bell } from 'lucide-react';
+import { Menu, Sun, Moon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import * as React from 'react';
 import { NavLink, useNavigation, useLocation } from 'react-router';
@@ -8,6 +8,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import { cn } from '@/lib/utils';
 import { Logo } from './navigation';
 import { useNavigationItems } from './navigation-utils';
+import { NotificationMenu } from './notification-menu';
 import { UserMenu } from './user-menu';
 
 const Progress = () => {
@@ -121,13 +122,7 @@ export const Header = () => {
             {/* Right Side Actions */}
             <div className="flex items-center gap-2 sm:gap-4">
                 <div className="hidden sm:flex items-center gap-2">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-full text-slate-700 hover:text-bk-blue"
-                    >
-                        <Bell className="size-5" />
-                    </Button>
+                    <NotificationMenu />
                     <ThemeToggle />
                 </div>
 

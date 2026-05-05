@@ -95,6 +95,14 @@ pnpm test:e2e
 pnpm test:ui
 ```
 
+## Test Accounts (Backend Seed)
+
+- Student 1: `102220001@sv1.dut.udn.vn` / `102220001`
+- Student 2: `105220001@sv1.dut.udn.vn` / `105220001`
+- Org admin: `lcd.cntt@dut.udn.vn` / `Password@123`
+- School admin: `school.admin@dut.udn.vn` / `Password@123`
+- School reviewer: `reviewer@dut.udn.vn` / `Password@123`
+
 ### Code Generation
 
 Generate new components or features:

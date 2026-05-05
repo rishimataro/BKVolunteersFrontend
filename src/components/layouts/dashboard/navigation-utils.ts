@@ -1,6 +1,7 @@
 import {
     LayoutDashboard,
     Heart,
+    Compass,
     Settings,
     ClipboardCheck,
     type LucideIcon,
@@ -8,7 +9,7 @@ import {
 import * as React from 'react';
 
 import { paths } from '@/config/paths';
-import { ROLES, useAuthorization } from '@/features/auth';
+import { ROLES, useAuthorization, useUser } from '@/features/auth';
 
 export type SideNavigationItem = {
     name: string;
@@ -18,6 +19,9 @@ export type SideNavigationItem = {
 
 export const useNavigationItems = () => {
     const { checkAccess } = useAuthorization();
+    const user = useUser();
+    const role = user.data?.role;
+    const isStudent = role === ROLES.STUDENT;
 
     return React.useMemo(
         () =>
@@ -28,9 +32,13 @@ export const useNavigationItems = () => {
                     icon: LayoutDashboard,
                 },
                 {
-                    name: 'Vận hành chiến dịch',
-                    to: paths.app.campaigns.getHref(),
-                    icon: Heart,
+                    name: isStudent
+                        ? 'Chiến dịch công khai'
+                        : 'Vận hành chiến dịch',
+                    to: isStudent
+                        ? paths.campaigns.getHref()
+                        : paths.app.campaigns.getHref(),
+                    icon: isStudent ? Compass : Heart,
                 },
                 checkAccess({
                     allowedRoles: [ROLES.SCHOOL_ADMIN, ROLES.SCHOOL_REVIEWER],
@@ -47,6 +55,6 @@ export const useNavigationItems = () => {
                     icon: Settings,
                 },
             ].filter((item): item is SideNavigationItem => item !== null),
-        [checkAccess],
+        [checkAccess, isStudent],
     );
 };

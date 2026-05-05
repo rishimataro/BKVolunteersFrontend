@@ -45,7 +45,7 @@ export const UserMenu = () => {
                         <User className="size-5" />
                     </div>
                     <div className="hidden text-left sm:block">
-                        <p className="text-sm font-bold leading-tight">
+                        <p className="text-sm font-bold leading-tight text-slate-900">
                             {user.data.firstName} {user.data.lastName}
                         </p>
                         <p className="text-[10px] font-medium uppercase tracking-wider text-slate-600">
@@ -90,7 +90,7 @@ export const UserMenu = () => {
                                 onClick={() =>
                                     navigate(paths.app.profile.getHref())
                                 }
-                                className="group/item rounded-xl px-3 py-2.5 cursor-pointer transition-colors focus:bg-bk-blue/5"
+                                className="group/item rounded-xl px-3 py-2.5 cursor-pointer text-slate-900 transition-colors focus:bg-bk-blue/5 focus:text-slate-900"
                             >
                                 <User className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
                                 <span className="font-semibold text-slate-800">
@@ -101,7 +101,7 @@ export const UserMenu = () => {
                                 onClick={() =>
                                     navigate(paths.app.settings.getHref())
                                 }
-                                className="group/item rounded-xl px-3 py-2.5 cursor-pointer transition-colors focus:bg-bk-blue/5"
+                                className="group/item rounded-xl px-3 py-2.5 cursor-pointer text-slate-900 transition-colors focus:bg-bk-blue/5 focus:text-slate-900"
                             >
                                 <Settings className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
                                 <span className="font-semibold text-slate-800">
@@ -114,7 +114,7 @@ export const UserMenu = () => {
 
                         <DropdownMenuItem
                             onClick={() => logout.mutate({})}
-                            className="rounded-xl px-3 py-2.5 cursor-pointer transition-colors text-destructive focus:bg-destructive focus:text-destructive-foreground"
+                            className="rounded-xl px-3 py-2.5 cursor-pointer transition-colors text-destructive focus:bg-red-50 focus:text-red-700"
                         >
                             <LogOut className="mr-3 size-4.5" />
                             <span className="font-bold">Đăng xuất</span>
