@@ -36,7 +36,7 @@ export const useNavigationItems = () => {
                         ? 'Chiến dịch công khai'
                         : 'Vận hành chiến dịch',
                     to: isStudent
-                        ? paths.campaigns.getHref()
+                        ? paths.app.campaigns.getHref()
                         : paths.app.campaigns.getHref(),
                     icon: isStudent ? Compass : Heart,
                 },

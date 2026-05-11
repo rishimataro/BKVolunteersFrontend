@@ -38,7 +38,6 @@ export const UserMenu = () => {
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    // Xóa z-[100] ở trigger vì nó không cần thiết, quan trọng là phần Content
                     className="flex items-center gap-3 rounded-full px-2 py-1.5 hover:bg-muted sm:px-3 focus-visible:ring-0"
                 >
                     <div className="flex size-9 items-center justify-center rounded-full bg-bk-blue text-white shadow-md">
@@ -55,15 +54,12 @@ export const UserMenu = () => {
                 </Button>
             </DropdownMenuTrigger>
 
-            {/* Portal giúp menu thoát khỏi overflow:hidden của cha (như Sidebar/Header) */}
             <DropdownMenuPortal>
                 <DropdownMenuContent
                     align="end"
                     sideOffset={8}
-                    // z-[100] ở đây mới là quan trọng để không bị đè
                     className="z-[100] w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 text-slate-900 shadow-2xl ring-1 ring-black/5"
                 >
-                    {/* User Profile Summary Section */}
                     <div className="bg-muted/40 px-5 py-5 border-b border-border/50">
                         <div className="flex items-center gap-4">
                             <div className="flex size-12 items-center justify-center rounded-2xl bg-bk-blue text-white font-extrabold text-base shadow-lg shadow-bk-blue/20">
@@ -90,7 +86,7 @@ export const UserMenu = () => {
                                 onClick={() =>
                                     navigate(paths.app.profile.getHref())
                                 }
-                                className="group/item rounded-xl px-3 py-2.5 cursor-pointer text-slate-900 transition-colors focus:bg-bk-blue/5 focus:text-slate-900"
+                                className="group/item cursor-pointer rounded-xl px-3 py-2.5 text-slate-900 transition-colors focus:bg-blue-50 focus:!text-slate-900"
                             >
                                 <User className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
                                 <span className="font-semibold text-slate-800">
@@ -101,7 +97,7 @@ export const UserMenu = () => {
                                 onClick={() =>
                                     navigate(paths.app.settings.getHref())
                                 }
-                                className="group/item rounded-xl px-3 py-2.5 cursor-pointer text-slate-900 transition-colors focus:bg-bk-blue/5 focus:text-slate-900"
+                                className="group/item cursor-pointer rounded-xl px-3 py-2.5 text-slate-900 transition-colors focus:bg-blue-50 focus:!text-slate-900"
                             >
                                 <Settings className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
                                 <span className="font-semibold text-slate-800">

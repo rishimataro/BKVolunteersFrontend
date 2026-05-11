@@ -1,5 +1,10 @@
 import * as React from 'react';
-import { CheckCheck, MessageSquareText, RefreshCw, XCircle } from 'lucide-react';
+import {
+    CheckCheck,
+    MessageSquareText,
+    RefreshCw,
+    XCircle,
+} from 'lucide-react';
 
 import { ContentLayout } from '@/components/layouts';
 import { Button } from '@/components/ui/button';
@@ -16,6 +21,7 @@ import {
 } from '@/features/campaign/api/sprint2';
 import { StatusBadge } from '@/features/campaign/components/status-badge';
 import type { CampaignStatus, ModuleType } from '@/types/api';
+import { toDisplayText, toDisplayTitle } from '@/utils/display-text';
 
 const moduleTypeLabel: Record<ModuleType, string> = {
     fundraising: 'Gây quỹ hiện kim',
@@ -50,13 +56,20 @@ export const UsersRoute = () => {
     const { addNotification } = useNotifications();
 
     const [queue, setQueue] = React.useState<ApprovalQueueItem[]>([]);
-    const [selectedCampaignId, setSelectedCampaignId] = React.useState<string | null>(null);
-    const [detail, setDetail] = React.useState<ManagedCampaignDetail | null>(null);
+    const [selectedCampaignId, setSelectedCampaignId] = React.useState<
+        string | null
+    >(null);
+    const [detail, setDetail] = React.useState<ManagedCampaignDetail | null>(
+        null,
+    );
     const [commentBody, setCommentBody] = React.useState('');
-    const [statusFilter, setStatusFilter] = React.useState<CampaignStatus | ''>('SUBMITTED');
+    const [statusFilter, setStatusFilter] = React.useState<CampaignStatus | ''>(
+        'SUBMITTED',
+    );
 
     const canReview =
-        user.data?.role === ROLES.SCHOOL_ADMIN || user.data?.role === ROLES.SCHOOL_REVIEWER;
+        user.data?.role === ROLES.SCHOOL_ADMIN ||
+        user.data?.role === ROLES.SCHOOL_REVIEWER;
 
     const loadQueue = React.useCallback(async () => {
         if (!canReview) return;
@@ -74,7 +87,8 @@ export const UsersRoute = () => {
             addNotification({
                 type: 'error',
                 title: 'Không tải được hàng chờ duyệt',
-                message: error instanceof Error ? error.message : 'Lỗi hệ thống',
+                message:
+                    error instanceof Error ? error.message : 'Lỗi hệ thống',
             });
         }
     }, [addNotification, canReview, selectedCampaignId, statusFilter]);
@@ -88,7 +102,8 @@ export const UsersRoute = () => {
                 addNotification({
                     type: 'error',
                     title: 'Không tải được chi tiết chiến dịch',
-                    message: error instanceof Error ? error.message : 'Lỗi hệ thống',
+                    message:
+                        error instanceof Error ? error.message : 'Lỗi hệ thống',
                 });
             }
         },
@@ -124,7 +139,8 @@ export const UsersRoute = () => {
             addNotification({
                 type: 'error',
                 title: 'Gửi nhận xét thất bại',
-                message: error instanceof Error ? error.message : 'Lỗi hệ thống',
+                message:
+                    error instanceof Error ? error.message : 'Lỗi hệ thống',
             });
         }
     };
@@ -133,7 +149,8 @@ export const UsersRoute = () => {
         action: 'request-revision' | 'pre-approve' | 'approve' | 'reject',
     ) => {
         if (!detail) return;
-        const reason = window.prompt('Nhập lý do xử lý (có thể để trống):') ?? undefined;
+        const reason =
+            window.prompt('Nhập lý do xử lý (có thể để trống):') ?? undefined;
         try {
             await approvalTransition(detail.id, action, reason);
             addNotification({
@@ -146,7 +163,8 @@ export const UsersRoute = () => {
             addNotification({
                 type: 'error',
                 title: 'Cập nhật trạng thái thất bại',
-                message: error instanceof Error ? error.message : 'Lỗi hệ thống',
+                message:
+                    error instanceof Error ? error.message : 'Lỗi hệ thống',
             });
         }
     };
@@ -171,14 +189,18 @@ export const UsersRoute = () => {
                         <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">
                             Chiến dịch chờ duyệt
                         </p>
-                        <p className="mt-2 text-2xl font-bold text-slate-900">{queue.length}</p>
+                        <p className="mt-2 text-2xl font-bold text-slate-900">
+                            {queue.length}
+                        </p>
                     </div>
                     <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-4">
                         <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">
                             Bộ lọc hiện tại
                         </p>
                         <p className="mt-2 text-sm font-semibold text-slate-900">
-                            {statusFilter ? campaignStatusLabel[statusFilter] : 'Tất cả'}
+                            {statusFilter
+                                ? campaignStatusLabel[statusFilter]
+                                : 'Tất cả'}
                         </p>
                     </div>
                     <div className="rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-4">
@@ -198,16 +220,26 @@ export const UsersRoute = () => {
                                 className="h-9 flex-1 rounded-md border border-slate-300 bg-white px-2 text-sm font-medium text-slate-900"
                                 value={statusFilter}
                                 onChange={(event) =>
-                                    setStatusFilter(event.target.value as CampaignStatus | '')
+                                    setStatusFilter(
+                                        event.target.value as
+                                            | CampaignStatus
+                                            | '',
+                                    )
                                 }
                             >
                                 <option value="SUBMITTED">Đã gửi duyệt</option>
                                 <option value="PRE_APPROVED">Tiền duyệt</option>
                                 <option value="APPROVED">Đã duyệt</option>
-                                <option value="REVISION_REQUIRED">Yêu cầu chỉnh sửa</option>
+                                <option value="REVISION_REQUIRED">
+                                    Yêu cầu chỉnh sửa
+                                </option>
                                 <option value="REJECTED">Từ chối</option>
                             </select>
-                            <Button type="button" variant="outline" onClick={() => void loadQueue()}>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => void loadQueue()}
+                            >
                                 <RefreshCw className="mr-1 size-4" />
                                 Làm mới
                             </Button>
@@ -218,7 +250,9 @@ export const UsersRoute = () => {
                                 <button
                                     key={campaign.id}
                                     type="button"
-                                    onClick={() => setSelectedCampaignId(campaign.id)}
+                                    onClick={() =>
+                                        setSelectedCampaignId(campaign.id)
+                                    }
                                     className={`w-full rounded-lg border p-3 text-left transition ${
                                         selectedCampaignId === campaign.id
                                             ? 'border-blue-300 bg-blue-50'
@@ -226,10 +260,12 @@ export const UsersRoute = () => {
                                     }`}
                                 >
                                     <p className="line-clamp-2 text-sm font-semibold text-slate-900">
-                                        {campaign.title}
+                                        {toDisplayTitle(campaign.title)}
                                     </p>
                                     <p className="mt-1 text-xs text-slate-600">
-                                        {campaign.organization.name}
+                                        {toDisplayText(
+                                            campaign.organization.name,
+                                        )}
                                     </p>
                                     <div className="mt-2">
                                         <StatusBadge status={campaign.status} />
@@ -237,7 +273,9 @@ export const UsersRoute = () => {
                                 </button>
                             ))}
                             {queue.length === 0 ? (
-                                <p className="text-sm text-slate-600">Không có chiến dịch trong hàng chờ.</p>
+                                <p className="text-sm text-slate-600">
+                                    Không có chiến dịch trong hàng chờ.
+                                </p>
                             ) : null}
                         </div>
                     </section>
@@ -248,9 +286,11 @@ export const UsersRoute = () => {
                                 <div className="flex flex-wrap items-start justify-between gap-3">
                                     <div>
                                         <h3 className="text-lg font-semibold text-slate-900">
-                                            {detail.title}
+                                            {toDisplayTitle(detail.title)}
                                         </h3>
-                                        <p className="mt-1 text-sm text-slate-600">{detail.summary}</p>
+                                        <p className="mt-1 text-sm text-slate-600">
+                                            {toDisplayText(detail.summary)}
+                                        </p>
                                     </div>
                                     <StatusBadge status={detail.status} />
                                 </div>
@@ -259,7 +299,11 @@ export const UsersRoute = () => {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        onClick={() => void onTransition('request-revision')}
+                                        onClick={() =>
+                                            void onTransition(
+                                                'request-revision',
+                                            )
+                                        }
                                     >
                                         <MessageSquareText className="mr-1 size-4" />
                                         Yêu cầu chỉnh sửa
@@ -267,14 +311,18 @@ export const UsersRoute = () => {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        onClick={() => void onTransition('pre-approve')}
+                                        onClick={() =>
+                                            void onTransition('pre-approve')
+                                        }
                                     >
                                         Tiền duyệt
                                     </Button>
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        onClick={() => void onTransition('approve')}
+                                        onClick={() =>
+                                            void onTransition('approve')
+                                        }
                                     >
                                         <CheckCheck className="mr-1 size-4" />
                                         Duyệt
@@ -282,24 +330,33 @@ export const UsersRoute = () => {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        onClick={() => void onTransition('reject')}
+                                        onClick={() =>
+                                            void onTransition('reject')
+                                        }
                                     >
                                         <XCircle className="mr-1 size-4" />
                                         Từ chối
                                     </Button>
                                 </div>
 
-                                <form onSubmit={onAddComment} className="space-y-2">
+                                <form
+                                    onSubmit={onAddComment}
+                                    className="space-y-2"
+                                >
                                     <Input
                                         value={commentBody}
                                         placeholder="Nhập nhận xét nội bộ cho chiến dịch"
-                                        onChange={(event) => setCommentBody(event.target.value)}
+                                        onChange={(event) =>
+                                            setCommentBody(event.target.value)
+                                        }
                                     />
                                     <Button type="submit">Gửi nhận xét</Button>
                                 </form>
 
                                 <div className="space-y-2 border-t border-slate-200 pt-4">
-                                    <h4 className="text-sm font-semibold text-slate-900">Danh sách hạng mục</h4>
+                                    <h4 className="text-sm font-semibold text-slate-900">
+                                        Danh sách hạng mục
+                                    </h4>
                                     {detail.modules.map((module) => (
                                         <div
                                             key={module.id}
@@ -307,9 +364,13 @@ export const UsersRoute = () => {
                                         >
                                             <div className="flex items-center justify-between gap-2">
                                                 <p className="text-sm font-semibold text-slate-900">
-                                                    {module.title}
+                                                    {toDisplayTitle(
+                                                        module.title,
+                                                    )}
                                                 </p>
-                                                <StatusBadge status={module.status} />
+                                                <StatusBadge
+                                                    status={module.status}
+                                                />
                                             </div>
                                             <p className="mt-1 text-xs text-slate-600">
                                                 {moduleTypeLabel[module.type]}
@@ -319,7 +380,9 @@ export const UsersRoute = () => {
                                 </div>
                             </div>
                         ) : (
-                            <p className="text-sm text-slate-600">Chọn chiến dịch để xem và duyệt.</p>
+                            <p className="text-sm text-slate-600">
+                                Chọn chiến dịch để xem và duyệt.
+                            </p>
                         )}
                     </section>
                 </div>

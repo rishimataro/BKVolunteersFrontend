@@ -22,12 +22,29 @@ import {
     LoadingState,
 } from '@/features/campaign/components/state-blocks';
 import type { ModuleType, PublicCampaignDetail } from '@/types/api';
+import { toDisplayText, toDisplayTitle } from '@/utils/display-text';
 
 const moduleLabel: Record<ModuleType, string> = {
     fundraising: 'Gây quỹ',
     item_donation: 'Hiện vật',
     event: 'Tình nguyện',
 };
+
+export const PublicCampaignDetailRoute = () => (
+    <CampaignDetailView
+        backHref={paths.campaigns.getHref()}
+        backLabel="Danh sách chiến dịch"
+        headTitle="Chi tiết chiến dịch"
+    />
+);
+
+export const AppCampaignDetailRoute = () => (
+    <CampaignDetailView
+        backHref={paths.app.campaigns.getHref()}
+        backLabel="Chiến dịch công khai"
+        headTitle="Chi tiết chiến dịch"
+    />
+);
 
 const formatDate = (value: string) =>
     new Intl.DateTimeFormat('vi-VN', {
@@ -39,7 +56,17 @@ const formatDate = (value: string) =>
 const formatProgressNumber = (value: number) =>
     new Intl.NumberFormat('vi-VN').format(value);
 
-export const PublicCampaignDetailRoute = () => {
+type CampaignDetailViewProps = {
+    backHref: string;
+    backLabel: string;
+    headTitle: string;
+};
+
+const CampaignDetailView = ({
+    backHref,
+    backLabel,
+    headTitle,
+}: CampaignDetailViewProps) => {
     const { slug } = useParams();
     const user = useUser();
     const { addNotification } = useNotifications();
@@ -230,16 +257,20 @@ export const PublicCampaignDetailRoute = () => {
 
     return (
         <>
-            <Head title={campaign?.title ?? 'Chi tiết chiến dịch'} />
+            <Head
+                title={
+                    campaign?.title ? toDisplayTitle(campaign.title) : headTitle
+                }
+            />
             <main className="min-h-screen bg-slate-50">
                 <section className="border-b border-slate-200 bg-white">
                     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                         <Link
-                            to={paths.campaigns.getHref()}
+                            to={backHref}
                             className="inline-flex items-center gap-2 text-sm font-semibold text-bk-blue hover:text-blue-900"
                         >
                             <ArrowLeft className="size-4" />
-                            Danh sách chiến dịch
+                            {backLabel}
                         </Link>
                     </div>
                 </section>
@@ -258,7 +289,7 @@ export const PublicCampaignDetailRoute = () => {
                                     {campaign.cover_image_url ? (
                                         <img
                                             src={campaign.cover_image_url}
-                                            alt={campaign.title}
+                                            alt={toDisplayTitle(campaign.title)}
                                             className="h-full w-full object-cover"
                                         />
                                     ) : (
@@ -271,18 +302,22 @@ export const PublicCampaignDetailRoute = () => {
                                     <div className="flex flex-wrap items-start justify-between gap-3">
                                         <div>
                                             <p className="text-sm font-semibold text-bk-blue">
-                                                {campaign.organization.name}
+                                                {toDisplayTitle(
+                                                    campaign.organization.name,
+                                                )}
                                             </p>
-                                            <h1 className="mt-2 text-3xl font-bold text-slate-950">
-                                                {campaign.title}
+                                            <h1 className="mt-2 break-words text-3xl font-bold text-slate-950">
+                                                {toDisplayTitle(campaign.title)}
                                             </h1>
                                         </div>
                                         <StatusBadge status={campaign.status} />
                                     </div>
 
                                     <p className="text-base leading-7 text-slate-600">
-                                        {campaign.description ??
-                                            campaign.summary}
+                                        {toDisplayText(
+                                            campaign.description ??
+                                                campaign.summary,
+                                        )}
                                     </p>
 
                                     <div>
@@ -311,8 +346,9 @@ export const PublicCampaignDetailRoute = () => {
                                         </span>
                                         <span>
                                             Đối tượng:{' '}
-                                            {campaign.beneficiary ??
-                                                'Cộng đồng'}
+                                            {toDisplayText(
+                                                campaign.beneficiary,
+                                            ) || 'Cộng đồng'}
                                         </span>
                                     </div>
                                 </div>
@@ -324,7 +360,9 @@ export const PublicCampaignDetailRoute = () => {
                                         Đơn vị tổ chức
                                     </h2>
                                     <p className="mt-2 text-sm font-medium text-slate-700">
-                                        {campaign.organization.name}
+                                        {toDisplayTitle(
+                                            campaign.organization.name,
+                                        )}
                                     </p>
                                     <p className="mt-1 text-sm text-slate-600">
                                         {campaign.organization.code}
@@ -343,7 +381,9 @@ export const PublicCampaignDetailRoute = () => {
                                                     {moduleLabel[module.type]}
                                                 </p>
                                                 <h3 className="mt-2 text-base font-semibold text-slate-900">
-                                                    {module.title}
+                                                    {toDisplayTitle(
+                                                        module.title,
+                                                    )}
                                                 </h3>
                                             </div>
                                             <StatusBadge
@@ -352,7 +392,9 @@ export const PublicCampaignDetailRoute = () => {
                                         </div>
                                         {module.description ? (
                                             <p className="mt-3 text-sm leading-6 text-slate-600">
-                                                {module.description}
+                                                {toDisplayText(
+                                                    module.description,
+                                                )}
                                             </p>
                                         ) : null}
                                         {module.progress ? (
@@ -392,7 +434,7 @@ export const PublicCampaignDetailRoute = () => {
                                             className="mt-4 w-full"
                                             disabled={!module.cta.enabled}
                                         >
-                                            {module.cta.label}
+                                            {toDisplayText(module.cta.label)}
                                         </Button>
 
                                         {module.cta.enabled &&
@@ -481,7 +523,10 @@ export const PublicCampaignDetailRoute = () => {
                                                             key={target.id}
                                                             value={target.id}
                                                         >
-                                                            {target.name} (
+                                                            {toDisplayText(
+                                                                target.name,
+                                                            )}{' '}
+                                                            (
                                                             {
                                                                 target.received_quantity
                                                             }

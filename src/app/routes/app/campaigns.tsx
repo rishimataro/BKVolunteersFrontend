@@ -14,7 +14,12 @@ import { ContentLayout } from '@/components/layouts';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useNotifications } from '@/components/ui/notifications';
+import { paths } from '@/config/paths';
 import { ROLES, useUser } from '@/features/auth';
+import {
+    getPublicCampaigns,
+    type PublicCampaignFilters,
+} from '@/features/campaign/api/public-campaigns';
 import {
     createCampaignModule,
     createManagedCampaign,
@@ -49,8 +54,15 @@ import {
     type ItemPledgeItem,
     type ItemTargetItem,
 } from '@/features/campaign/api/sprint3';
+import { CampaignCard } from '@/features/campaign/components/campaign-card';
+import {
+    EmptyState,
+    ErrorState,
+    LoadingState,
+} from '@/features/campaign/components/state-blocks';
 import { StatusBadge } from '@/features/campaign/components/status-badge';
-import type { ModuleType } from '@/types/api';
+import type { Meta, ModuleType, PublicCampaignCard } from '@/types/api';
+import { toDisplayText, toDisplayTitle } from '@/utils/display-text';
 
 const moduleTypeLabel: Record<ModuleType, string> = {
     fundraising: 'Gây quỹ hiện kim',
@@ -73,6 +85,181 @@ const formatCurrency = (amount: number) =>
         currency: 'VND',
         maximumFractionDigits: 0,
     }).format(amount);
+
+const publicModuleOptions: Array<{ value: ModuleType | ''; label: string }> = [
+    { value: '', label: 'Tất cả hạng mục' },
+    { value: 'fundraising', label: 'Gây quỹ' },
+    { value: 'item_donation', label: 'Hiện vật' },
+    { value: 'event', label: 'Tình nguyện' },
+];
+
+const publicStatusOptions = [
+    { value: '', label: 'Tất cả trạng thái' },
+    { value: 'ONGOING', label: 'Đang diễn ra' },
+    { value: 'PUBLISHED', label: 'Đã công khai' },
+] as const;
+
+const StudentCampaignDiscovery = () => {
+    const [filters, setFilters] = React.useState<PublicCampaignFilters>({
+        page: 1,
+        limit: 9,
+    });
+    const [campaignItems, setCampaignItems] = React.useState<
+        PublicCampaignCard[]
+    >([]);
+    const [meta, setMeta] = React.useState<Meta | null>(null);
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [error, setError] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        let mounted = true;
+        setIsLoading(true);
+        setError(null);
+
+        getPublicCampaigns(filters)
+            .then((result) => {
+                if (!mounted) return;
+                setCampaignItems(result.items);
+                setMeta(result.meta);
+            })
+            .catch(() => {
+                if (!mounted) return;
+                setError('Không thể tải danh sách chiến dịch.');
+            })
+            .finally(() => {
+                if (mounted) setIsLoading(false);
+            });
+
+        return () => {
+            mounted = false;
+        };
+    }, [filters]);
+
+    const totalPages = meta?.total_pages ?? meta?.totalPages ?? 1;
+
+    return (
+        <ContentLayout title="Chiến Dịch Công Khai">
+            <div className="space-y-6">
+                <div className="rounded-xl border border-slate-200 bg-white p-4">
+                    <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_180px_180px]">
+                        <Input
+                            value={filters.q ?? ''}
+                            onChange={(event) =>
+                                setFilters((current) => ({
+                                    ...current,
+                                    q: event.target.value,
+                                    page: 1,
+                                }))
+                            }
+                            placeholder="Tìm theo tên chiến dịch hoặc đơn vị"
+                        />
+                        <select
+                            value={filters.module_type ?? ''}
+                            onChange={(event) =>
+                                setFilters((current) => ({
+                                    ...current,
+                                    module_type: event.target.value as
+                                        | ModuleType
+                                        | '',
+                                    page: 1,
+                                }))
+                            }
+                            className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-700"
+                        >
+                            {publicModuleOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                        <select
+                            value={filters.status ?? ''}
+                            onChange={(event) =>
+                                setFilters((current) => ({
+                                    ...current,
+                                    status: event.target.value as
+                                        | 'PUBLISHED'
+                                        | 'ONGOING'
+                                        | '',
+                                    page: 1,
+                                }))
+                            }
+                            className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-700"
+                        >
+                            {publicStatusOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                {isLoading ? <LoadingState /> : null}
+                {error ? <ErrorState message={error} /> : null}
+                {!isLoading && !error && campaignItems.length === 0 ? (
+                    <EmptyState
+                        title="Chưa có chiến dịch phù hợp"
+                        description="Thử thay đổi bộ lọc hoặc quay lại sau."
+                    />
+                ) : null}
+
+                {!isLoading && !error && campaignItems.length > 0 ? (
+                    <>
+                        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                            {campaignItems.map((campaign) => (
+                                <CampaignCard
+                                    key={campaign.id}
+                                    campaign={campaign}
+                                    detailHref={paths.app.campaigns.detail.getHref(
+                                        campaign.slug,
+                                    )}
+                                />
+                            ))}
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm text-slate-600">
+                                Trang {meta?.page ?? 1}/{totalPages || 1} - tổng{' '}
+                                {meta?.total ?? campaignItems.length} chiến dịch
+                            </p>
+                            <div className="flex gap-2">
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    disabled={(filters.page ?? 1) <= 1}
+                                    onClick={() =>
+                                        setFilters((current) => ({
+                                            ...current,
+                                            page: Math.max(
+                                                1,
+                                                (current.page ?? 1) - 1,
+                                            ),
+                                        }))
+                                    }
+                                >
+                                    Trước
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    disabled={(filters.page ?? 1) >= totalPages}
+                                    onClick={() =>
+                                        setFilters((current) => ({
+                                            ...current,
+                                            page: (current.page ?? 1) + 1,
+                                        }))
+                                    }
+                                >
+                                    Sau
+                                </Button>
+                            </div>
+                        </div>
+                    </>
+                ) : null}
+            </div>
+        </ContentLayout>
+    );
+};
 
 export const CampaignsRoute = () => {
     const user = useUser();
@@ -155,6 +342,7 @@ export const CampaignsRoute = () => {
     });
 
     const role = user.data?.role;
+    const isStudent = role === ROLES.STUDENT;
     const canManageCampaign =
         role === ROLES.ORG_ADMIN || role === ROLES.ORG_MEMBER;
     const canMutateCampaign = role === ROLES.ORG_ADMIN;
@@ -818,6 +1006,10 @@ export const CampaignsRoute = () => {
 
     if (!user.data) return null;
 
+    if (isStudent) {
+        return <StudentCampaignDiscovery />;
+    }
+
     if (!canManageCampaign) {
         return (
             <ContentLayout title="Vận Hành Chiến Dịch">
@@ -900,7 +1092,7 @@ export const CampaignsRoute = () => {
                                     }`}
                                 >
                                     <p className="line-clamp-2 text-sm font-semibold text-slate-900">
-                                        {campaign.title}
+                                        {toDisplayTitle(campaign.title)}
                                     </p>
                                     <div className="mt-2">
                                         <StatusBadge status={campaign.status} />
@@ -988,10 +1180,10 @@ export const CampaignsRoute = () => {
                                 <div className="flex flex-wrap items-start justify-between gap-3">
                                     <div>
                                         <h3 className="text-lg font-semibold text-slate-900">
-                                            {detail.title}
+                                            {toDisplayTitle(detail.title)}
                                         </h3>
                                         <p className="mt-1 text-sm text-slate-600">
-                                            {detail.summary}
+                                            {toDisplayText(detail.summary)}
                                         </p>
                                     </div>
                                     <StatusBadge status={detail.status} />
@@ -1260,7 +1452,9 @@ export const CampaignsRoute = () => {
                                         >
                                             <div className="flex flex-wrap items-center justify-between gap-2">
                                                 <p className="text-sm font-semibold text-slate-900">
-                                                    {module.title}
+                                                    {toDisplayTitle(
+                                                        module.title,
+                                                    )}
                                                 </p>
                                                 <StatusBadge
                                                     status={module.status}
@@ -1306,7 +1500,9 @@ export const CampaignsRoute = () => {
                                                         key={module.id}
                                                         value={module.id}
                                                     >
-                                                        {module.title}
+                                                        {toDisplayTitle(
+                                                            module.title,
+                                                        )}
                                                     </option>
                                                 ))}
                                         </select>
@@ -1541,7 +1737,9 @@ export const CampaignsRoute = () => {
                                                         key={module.id}
                                                         value={module.id}
                                                     >
-                                                        {module.title}
+                                                        {toDisplayTitle(
+                                                            module.title,
+                                                        )}
                                                     </option>
                                                 ))}
                                         </select>
@@ -1861,7 +2059,9 @@ export const CampaignsRoute = () => {
                                                         key={module.id}
                                                         value={module.id}
                                                     >
-                                                        {module.title}
+                                                        {toDisplayTitle(
+                                                            module.title,
+                                                        )}
                                                     </option>
                                                 ))}
                                         </select>
@@ -1887,7 +2087,7 @@ export const CampaignsRoute = () => {
                                                 />
                                                 <Input
                                                     type="number"
-                                                    placeholder="Quota"
+                                                    placeholder="Số lượng tối đa"
                                                     value={
                                                         eventConfig.quota || ''
                                                     }

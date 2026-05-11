@@ -15,6 +15,7 @@ import {
     type NotificationItem,
 } from '@/features/campaign/api/sprint3';
 import { useUser } from '@/features/auth';
+import { toDisplayText } from '@/utils/display-text';
 
 export const NotificationMenu = () => {
     const user = useUser();
@@ -134,10 +135,10 @@ export const NotificationMenu = () => {
                                 }`}
                             >
                                 <p className="text-sm font-semibold text-slate-900">
-                                    {item.title}
+                                    {toDisplayText(item.title)}
                                 </p>
                                 <p className="mt-1 text-xs text-slate-700">
-                                    {item.body}
+                                    {toDisplayText(item.body)}
                                 </p>
                                 <p className="mt-2 text-[11px] text-slate-500">
                                     {new Date(item.created_at).toLocaleString(

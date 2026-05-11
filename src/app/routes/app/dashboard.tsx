@@ -11,6 +11,7 @@ import {
     type StudentDashboardSummary,
     type StudentDonationItem,
 } from '@/features/campaign/api/sprint3';
+import { toDisplayText, toDisplayTitle } from '@/utils/display-text';
 
 const roleLabel: Record<string, string> = {
     STUDENT: 'Sinh viên',
@@ -20,6 +21,35 @@ const roleLabel: Record<string, string> = {
     SCHOOL_ADMIN: 'Quản trị cấp trường',
     SYSTEM: 'Hệ thống',
 };
+
+const activityTypeLabel: Record<string, string> = {
+    money_donation: 'Đóng góp tiền',
+    item_pledge: 'Quyên góp hiện vật',
+    event_registration: 'Tham gia sự kiện',
+    certificate: 'Chứng nhận',
+};
+
+const statusLabel: Record<string, string> = {
+    PENDING: 'Chờ xử lý',
+    MATCHED: 'Đã khớp giao dịch',
+    VERIFIED: 'Đã xác minh',
+    REJECTED: 'Bị từ chối',
+    REFUNDED: 'Đã hoàn tiền',
+    PLEDGED: 'Đã đăng ký',
+    CONFIRMED: 'Đã xác nhận',
+    RECEIVED: 'Đã tiếp nhận',
+    APPROVED: 'Đã duyệt',
+    CHECKED_IN: 'Đã check-in',
+    COMPLETED: 'Đã hoàn thành',
+    READY: 'Sẵn sàng',
+    SIGNED: 'Đã ký',
+    REVOKED: 'Đã thu hồi',
+};
+
+const toUiStatus = (value: string) =>
+    statusLabel[value] ?? toDisplayText(value);
+const toUiActivityType = (value: string) =>
+    activityTypeLabel[value] ?? toDisplayText(value);
 
 export const DashboardRoute = () => {
     const user = useUser();
@@ -128,11 +158,15 @@ export const DashboardRoute = () => {
                                             className="rounded-lg border border-slate-200 bg-slate-50 p-3"
                                         >
                                             <p className="text-sm font-semibold text-slate-900">
-                                                {item.campaign_title}
+                                                {toDisplayTitle(
+                                                    item.campaign_title,
+                                                )}
                                             </p>
                                             <p className="mt-1 text-xs text-slate-600">
-                                                {item.activity_type} -{' '}
-                                                {item.status}
+                                                {toUiActivityType(
+                                                    item.activity_type,
+                                                )}{' '}
+                                                - {toUiStatus(item.status)}
                                             </p>
                                             <p className="mt-1 text-xs text-slate-500">
                                                 {new Date(
@@ -167,7 +201,9 @@ export const DashboardRoute = () => {
                                         >
                                             <div className="flex items-center justify-between gap-2">
                                                 <p className="text-sm font-semibold text-slate-900">
-                                                    {item.campaign_title}
+                                                    {toDisplayTitle(
+                                                        item.campaign_title,
+                                                    )}
                                                 </p>
                                                 <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold uppercase text-blue-800">
                                                     {item.donation_type ===
@@ -177,7 +213,7 @@ export const DashboardRoute = () => {
                                                 </span>
                                             </div>
                                             <p className="mt-1 text-xs text-slate-600">
-                                                {item.status}
+                                                {toUiStatus(item.status)}
                                             </p>
                                             <p className="mt-1 text-xs text-slate-500">
                                                 {new Date(

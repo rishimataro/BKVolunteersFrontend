@@ -21,7 +21,8 @@ export const AppRouter = () => {
         {
             path: paths.campaigns.path,
             lazy: async () => {
-                const { PublicCampaignsRoute } = await import('./routes/campaigns');
+                const { PublicCampaignsRoute } =
+                    await import('./routes/campaigns');
                 return { Component: PublicCampaignsRoute };
             },
         },
@@ -101,6 +102,15 @@ export const AppRouter = () => {
                         import('@/app/routes/app/campaigns.tsx').then((m) => ({
                             Component: m.CampaignsRoute,
                         })),
+                },
+                {
+                    path: paths.app.campaigns.detail.path,
+                    lazy: () =>
+                        import('@/app/routes/app/campaign-detail.tsx').then(
+                            (m) => ({
+                                Component: m.AppCampaignDetailRoute,
+                            }),
+                        ),
                 },
                 {
                     path: paths.app.settings.path,

@@ -54,6 +54,10 @@ export const paths = {
         campaigns: {
             path: 'campaigns',
             getHref: () => '/app/campaigns',
+            detail: {
+                path: 'campaigns/:slug',
+                getHref: (slug: string) => `/app/campaigns/${slug}`,
+            },
         },
         users: {
             path: 'users',
