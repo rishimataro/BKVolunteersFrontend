@@ -33,7 +33,9 @@ const authConfig = {
         const response = await loginWithEmailAndPassword(data);
         if (!response.account || !response.access_token) {
             useAuthStore.getState().clearAuth();
-            throw new Error('Login response is missing account or access token');
+            throw new Error(
+                'Login response is missing account or access token',
+            );
         }
 
         useAuthStore

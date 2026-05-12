@@ -18,7 +18,7 @@ import {
     getApprovalQueue,
     type ApprovalQueueItem,
     type ManagedCampaignDetail,
-} from '@/features/campaign/api/sprint2';
+} from '@/features/campaign/api/approval';
 import { StatusBadge } from '@/features/campaign/components/status-badge';
 import type { CampaignStatus, ModuleType } from '@/types/api';
 import { toDisplayText, toDisplayTitle } from '@/utils/display-text';

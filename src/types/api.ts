@@ -136,6 +136,13 @@ export type User = Entity<{
     lastName: string;
     role: Role;
     organizationId?: string | null;
+    organization?: {
+        id: string;
+        name: string;
+        code?: string;
+        type: string;
+        faculty?: { name: string } | null;
+    } | null;
     facultyId?: string | null;
     studentCode?: string | null;
 }>;

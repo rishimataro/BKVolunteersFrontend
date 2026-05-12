@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Axios from 'axios';
 import { Eye, EyeOff, Globe, HandHeart, Heart, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
@@ -6,12 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Link } from '@/components/ui/link';
 import { useNotifications } from '@/components/ui/notifications';
+import { env } from '@/config/env';
 import { paths } from '@/config/paths';
 import { MicrosoftIcon } from '@/components/ui/icon';
 import { useLogin } from '../lib/auth-provider';
 
 type LoginFormErrors = {
-    email?: string;
+    identifier?: string;
     password?: string;
 };
 
@@ -42,7 +44,7 @@ export const LoginForm = () => {
     const { addNotification } = useNotifications();
     const login = useLogin();
     const navigate = useNavigate();
-    const [email, setEmail] = React.useState('');
+    const [identifier, setIdentifier] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [showPassword, setShowPassword] = React.useState(false);
     const [errors, setErrors] = React.useState<LoginFormErrors>({});
@@ -50,24 +52,33 @@ export const LoginForm = () => {
     const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const isEmailValid = validateField('email', email);
+        const isIdentifierValid = validateField('identifier', identifier);
         const isPasswordValid = validateField('password', password);
 
-        if (!isEmailValid || !isPasswordValid) {
+        if (!isIdentifierValid || !isPasswordValid) {
             return;
         }
 
         try {
-            await login.mutateAsync({ email, password });
+            await login.mutateAsync({ identifier, password });
             navigate(paths.app.dashboard.getHref(), { replace: true });
         } catch (error) {
+            let message = 'Không thể đăng nhập với thông tin đã nhập.';
+            if (Axios.isAxiosError(error)) {
+                const backendMsg =
+                    error.response?.data &&
+                    typeof error.response.data === 'object' &&
+                    'message' in error.response.data
+                        ? (error.response.data as { message: string }).message
+                        : null;
+                message = backendMsg || message;
+            } else if (error instanceof Error) {
+                message = error.message;
+            }
             addNotification({
                 type: 'error',
                 title: 'Đăng nhập thất bại',
-                message:
-                    error instanceof Error
-                        ? error.message
-                        : 'Không thể đăng nhập với thông tin đã nhập.',
+                message,
             });
         }
     };
@@ -80,8 +91,8 @@ export const LoginForm = () => {
             setErrors((current) => ({
                 ...current,
                 [field]:
-                    field === 'email'
-                        ? 'Vui lòng nhập email.'
+                    field === 'identifier'
+                        ? 'Vui lòng nhập email hoặc MSSV.'
                         : 'Vui lòng nhập mật khẩu.',
             }));
             return false;
@@ -95,12 +106,17 @@ export const LoginForm = () => {
             return false;
         }
 
-        if (field === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-            setErrors((current) => ({
-                ...current,
-                email: 'Email không hợp lệ.',
-            }));
-            return false;
+        if (field === 'identifier') {
+            const mssvRegex = /^1\d{8}$/;
+            const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+            const isMssv = mssvRegex.test(value);
+            if (!isEmail && !isMssv) {
+                setErrors((current) => ({
+                    ...current,
+                    identifier: 'Email hoặc MSSV không hợp lệ.',
+                }));
+                return false;
+            }
         }
 
         setErrors((current) => {
@@ -116,12 +132,8 @@ export const LoginForm = () => {
     };
 
     const onMicrosoftClick = () => {
-        addNotification({
-            type: 'info',
-            title: 'Đăng nhập Microsoft',
-            message:
-                'Nút đăng nhập Microsoft đang ở chế độ mô phỏng giao diện và chưa kết nối dịch vụ.',
-        });
+        const apiUrl = env.API_URL.replace(/\/$/, '');
+        window.location.href = `${apiUrl}/api/v1/auth/microsoft/login`;
     };
 
     return (
@@ -156,23 +168,23 @@ export const LoginForm = () => {
                             >
                                 <div>
                                     <Label
-                                        htmlFor="email"
+                                        htmlFor="identifier"
                                         className="block mb-2 text-base font-semibold sm:text-lg text-slate-600"
                                     >
-                                        Email:
+                                        MSSV / Email:
                                     </Label>
                                     <Input
-                                        id="email"
-                                        value={email}
+                                        id="identifier"
+                                        value={identifier}
                                         onChange={(e) => {
-                                            setEmail(e.target.value);
+                                            setIdentifier(e.target.value);
                                             validateField(
-                                                'email',
+                                                'identifier',
                                                 e.target.value,
                                             );
                                         }}
-                                        placeholder="Email"
-                                        error={errors.email}
+                                        placeholder="Mã số sinh viên hoặc email"
+                                        error={errors.identifier}
                                         className="h-12 sm:h-14 rounded-[1rem] border border-slate-300 bg-white px-5 text-base text-slate-700 shadow-[0_10px_30px_-26px_rgba(15,23,42,0.8)] transition-all duration-200 placeholder:text-slate-300 hover:border-[#71bfca] focus-visible:border-[#58aeb6] focus-visible:ring-4 focus-visible:ring-[#8fe5e2]/35"
                                     />
                                 </div>
@@ -242,7 +254,9 @@ export const LoginForm = () => {
                                     disabled={login.isPending}
                                     className="inline-flex h-12 sm:h-14 w-full items-center justify-center rounded-full bg-[#58aab3] px-4 sm:px-6 text-[1.05rem] font-semibold text-white shadow-[5px_20px_20px_-24px_rgba(54,131,140,0.9)] transition-all duration-200 hover:bg-[#4a9ea9] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#8fe5e2]/50 active:translate-y-0 active:scale-[0.985]"
                                 >
-                                    {login.isPending ? 'Đang đăng nhập...' : 'Đăng nhập'}
+                                    {login.isPending
+                                        ? 'Đang đăng nhập...'
+                                        : 'Đăng nhập'}
                                 </button>
                             </form>
 

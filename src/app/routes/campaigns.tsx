@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import {
     getPublicCampaigns,
     type PublicCampaignFilters,
-} from '@/features/campaign/api/public-campaigns';
+} from '@/features/campaign/api/public';
 import { CampaignCard } from '@/features/campaign/components/campaign-card';
 import {
     EmptyState,
@@ -78,7 +78,8 @@ export const PublicCampaignsRoute = () => {
                             Chiến dịch thiện nguyện
                         </h1>
                         <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
-                            Tìm kiếm và theo dõi các chiến dịch đang mở trong hệ thống.
+                            Tìm kiếm và theo dõi các chiến dịch đang mở trong hệ
+                            thống.
                         </p>
                     </div>
                 </section>
@@ -101,7 +102,9 @@ export const PublicCampaignsRoute = () => {
                             onChange={(event) =>
                                 setFilters((current) => ({
                                     ...current,
-                                    module_type: event.target.value as ModuleType | '',
+                                    module_type: event.target.value as
+                                        | ModuleType
+                                        | '',
                                     page: 1,
                                 }))
                             }
@@ -157,7 +160,8 @@ export const PublicCampaignsRoute = () => {
                             <div className="mt-8 flex items-center justify-between">
                                 <p className="text-sm text-slate-600">
                                     Trang {meta?.page ?? 1}/{totalPages || 1} -
-                                    tổng {meta?.total ?? campaigns.length} chiến dịch
+                                    tổng {meta?.total ?? campaigns.length} chiến
+                                    dịch
                                 </p>
                                 <div className="flex gap-2">
                                     <Button
@@ -179,7 +183,9 @@ export const PublicCampaignsRoute = () => {
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        disabled={(filters.page ?? 1) >= totalPages}
+                                        disabled={
+                                            (filters.page ?? 1) >= totalPages
+                                        }
                                         onClick={() =>
                                             setFilters((current) => ({
                                                 ...current,

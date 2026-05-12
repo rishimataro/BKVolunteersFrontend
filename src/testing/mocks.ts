@@ -16,7 +16,8 @@ const mockCampaign = {
     id: '1',
     slug: 'xuan-tinh-nguyen-2026',
     title: 'Xuan tinh nguyen 2026',
-    summary: 'Chuong trinh ho tro sinh vien va cong dong co hoan canh kho khan.',
+    summary:
+        'Chuong trinh ho tro sinh vien va cong dong co hoan canh kho khan.',
     description:
         'Chuong trinh ket hop gay quy, quyen gop hien vat va tuyen tinh nguyen vien.',
     cover_image_url: null,
@@ -34,7 +35,12 @@ const mockCampaign = {
     progress: {
         percent: 25,
         modules: [
-            { type: 'fundraising', current: 2500000, target: 10000000, percent: 25 },
+            {
+                type: 'fundraising',
+                current: 2500000,
+                target: 10000000,
+                percent: 25,
+            },
             { type: 'item_donation', current: 10, target: 50, percent: 20 },
             { type: 'event', current: 12, target: 40, percent: 30 },
         ],

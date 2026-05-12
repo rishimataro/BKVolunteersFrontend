@@ -10,7 +10,7 @@ import {
     type StudentActivityItem,
     type StudentDashboardSummary,
     type StudentDonationItem,
-} from '@/features/campaign/api/sprint3';
+} from '@/features/campaign/api/student';
 import { toDisplayText, toDisplayTitle } from '@/utils/display-text';
 
 const roleLabel: Record<string, string> = {

@@ -13,7 +13,7 @@ import {
     markAllNotificationsRead,
     markNotificationRead,
     type NotificationItem,
-} from '@/features/campaign/api/sprint3';
+} from '@/features/campaign/api/notifications';
 import { useUser } from '@/features/auth';
 import { toDisplayText } from '@/utils/display-text';
 

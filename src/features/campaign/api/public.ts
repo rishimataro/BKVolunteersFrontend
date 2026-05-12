@@ -1,6 +1,4 @@
-import Axios from 'axios';
-
-import { env } from '@/config/env';
+import { api } from '@/lib/api-clients';
 import type {
     ApiSuccessResponse,
     Meta,
@@ -8,10 +6,6 @@ import type {
     PublicCampaignCard,
     PublicCampaignDetail,
 } from '@/types/api';
-
-const publicApi = Axios.create({
-    baseURL: `${env.API_URL.replace(/\/$/, '')}/api/v1`,
-});
 
 export type PublicCampaignFilters = {
     q?: string;
@@ -29,19 +23,22 @@ export type PublicCampaignListResult = {
 export const getPublicCampaigns = async (
     filters: PublicCampaignFilters = {},
 ): Promise<PublicCampaignListResult> => {
-    const response = await publicApi.get<
-        ApiSuccessResponse<PublicCampaignCard[]>
-    >('/public/campaigns', {
-        params: filters,
-    });
-
+    const response = await api.get<ApiSuccessResponse<PublicCampaignCard[]>>(
+        '/public/campaigns',
+        {
+            params: filters,
+        },
+    );
+    const data = response as unknown as ApiSuccessResponse<
+        PublicCampaignCard[]
+    >;
     return {
-        items: response.data.data,
+        items: data.data,
         meta:
-            response.data.meta ??
+            data.meta ??
             ({
                 page: filters.page ?? 1,
-                total: response.data.data.length,
+                total: data.data.length,
                 total_pages: 1,
             } satisfies Meta),
     };
@@ -50,9 +47,10 @@ export const getPublicCampaigns = async (
 export const getPublicCampaignDetail = async (
     slug: string,
 ): Promise<PublicCampaignDetail> => {
-    const response = await publicApi.get<ApiSuccessResponse<PublicCampaignDetail>>(
+    const response = await api.get<ApiSuccessResponse<PublicCampaignDetail>>(
         `/public/campaigns/${slug}`,
     );
-
-    return response.data.data;
+    const data =
+        response as unknown as ApiSuccessResponse<PublicCampaignDetail>;
+    return data.data;
 };

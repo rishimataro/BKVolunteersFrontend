@@ -4,6 +4,12 @@ import {
     Compass,
     Settings,
     ClipboardCheck,
+    FileText,
+    BarChart3,
+    Building2,
+    ScrollText,
+    Cpu,
+    Banknote,
     type LucideIcon,
 } from 'lucide-react';
 import * as React from 'react';
@@ -47,6 +53,69 @@ export const useNavigationItems = () => {
                           name: 'Hàng chờ duyệt',
                           to: paths.app.users.getHref(),
                           icon: ClipboardCheck,
+                      }
+                    : null,
+                checkAccess({ allowedRoles: [ROLES.STUDENT] })
+                    ? {
+                          name: 'Đóng góp của tôi',
+                          to: paths.app.myDonations.getHref(),
+                          icon: Banknote,
+                      }
+                    : null,
+                checkAccess({ allowedRoles: [ROLES.STUDENT] })
+                    ? {
+                          name: 'Chứng nhận',
+                          to: paths.app.certificates.getHref(),
+                          icon: FileText,
+                      }
+                    : null,
+                checkAccess({ allowedRoles: [ROLES.SCHOOL_ADMIN] })
+                    ? {
+                          name: 'Mẫu chứng nhận',
+                          to: paths.app.certificateTemplates.getHref(),
+                          icon: ScrollText,
+                      }
+                    : null,
+                checkAccess({ allowedRoles: [ROLES.SCHOOL_ADMIN] })
+                    ? {
+                          name: 'Nhật ký hoạt động',
+                          to: paths.app.auditLogs.getHref(),
+                          icon: ClipboardCheck,
+                      }
+                    : null,
+                checkAccess({ allowedRoles: [ROLES.SCHOOL_ADMIN] })
+                    ? {
+                          name: 'Tác vụ nền',
+                          to: paths.app.backgroundJobs.getHref(),
+                          icon: Cpu,
+                      }
+                    : null,
+                checkAccess({
+                    allowedRoles: [
+                        ROLES.SCHOOL_ADMIN,
+                        ROLES.SCHOOL_REVIEWER,
+                        ROLES.ORG_ADMIN,
+                        ROLES.ORG_MEMBER,
+                    ],
+                })
+                    ? {
+                          name: 'Báo cáo',
+                          to: paths.app.reports.getHref(),
+                          icon: BarChart3,
+                      }
+                    : null,
+                checkAccess({ allowedRoles: [ROLES.SCHOOL_ADMIN] })
+                    ? {
+                          name: 'Quản lý tổ chức',
+                          to: paths.app.adminOrganizations.getHref(),
+                          icon: Building2,
+                      }
+                    : null,
+                checkAccess({ allowedRoles: [ROLES.ORG_ADMIN] })
+                    ? {
+                          name: 'Thiết lập đơn vị',
+                          to: paths.app.orgSettings.getHref(),
+                          icon: Settings,
                       }
                     : null,
                 {

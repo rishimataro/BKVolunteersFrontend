@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Link, useParams } from 'react-router';
-import { ArrowLeft, CalendarDays, Layers3 } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router';
+import { ArrowLeft, CalendarDays, FileText } from 'lucide-react';
 
 import { Head } from '@/components/seo';
 import { Button } from '@/components/ui/button';
@@ -8,27 +8,22 @@ import { Input } from '@/components/ui/input';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
 import { useUser } from '@/features/auth';
-import { getPublicCampaignDetail } from '@/features/campaign/api/public-campaigns';
+import { getPublicCampaignDetail } from '@/features/campaign/api/public';
+import { createEventRegistration } from '@/features/campaign/api/events';
 import {
-    createEventRegistration,
     createItemPledge,
     getItemTargets,
     type ItemTargetItem,
-} from '@/features/campaign/api/sprint3';
+} from '@/features/campaign/api/item-donations';
+import { ModuleBlock } from '@/components/ui/module-block';
 import { StatusBadge } from '@/features/campaign/components/status-badge';
 import {
     EmptyState,
     ErrorState,
     LoadingState,
 } from '@/features/campaign/components/state-blocks';
-import type { ModuleType, PublicCampaignDetail } from '@/types/api';
+import type { PublicCampaignDetail } from '@/types/api';
 import { toDisplayText, toDisplayTitle } from '@/utils/display-text';
-
-const moduleLabel: Record<ModuleType, string> = {
-    fundraising: 'Gây quỹ',
-    item_donation: 'Hiện vật',
-    event: 'Tình nguyện',
-};
 
 export const PublicCampaignDetailRoute = () => (
     <CampaignDetailView
@@ -53,9 +48,6 @@ const formatDate = (value: string) =>
         year: 'numeric',
     }).format(new Date(value));
 
-const formatProgressNumber = (value: number) =>
-    new Intl.NumberFormat('vi-VN').format(value);
-
 type CampaignDetailViewProps = {
     backHref: string;
     backLabel: string;
@@ -68,6 +60,7 @@ const CampaignDetailView = ({
     headTitle,
 }: CampaignDetailViewProps) => {
     const { slug } = useParams();
+    const navigate = useNavigate();
     const user = useUser();
     const { addNotification } = useNotifications();
     const [campaign, setCampaign] = React.useState<PublicCampaignDetail | null>(
@@ -310,7 +303,32 @@ const CampaignDetailView = ({
                                                 {toDisplayTitle(campaign.title)}
                                             </h1>
                                         </div>
-                                        <StatusBadge status={campaign.status} />
+                                        <div className="flex items-center gap-2">
+                                            {backHref.startsWith('/app') &&
+                                            (user.data?.accountType ===
+                                                'OPERATOR' ||
+                                                user.data?.role ===
+                                                    'SCHOOL_ADMIN') ? (
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                        navigate(
+                                                            paths.app.certificates.campaigns.getHref(
+                                                                campaign.id,
+                                                            ),
+                                                        )
+                                                    }
+                                                >
+                                                    <FileText className="mr-1 size-4" />
+                                                    Chứng nhận
+                                                </Button>
+                                            ) : null}
+                                            <StatusBadge
+                                                status={campaign.status}
+                                            />
+                                        </div>
                                     </div>
 
                                     <p className="text-base leading-7 text-slate-600">
@@ -370,65 +388,33 @@ const CampaignDetailView = ({
                                 </div>
 
                                 {campaign.modules.map((module) => (
-                                    <div
+                                    <ModuleBlock
                                         key={module.id}
-                                        className="rounded-lg border border-slate-200 bg-white p-5"
-                                    >
-                                        <div className="flex items-start justify-between gap-3">
-                                            <div>
-                                                <p className="inline-flex items-center gap-2 text-sm font-semibold text-bk-blue">
-                                                    <Layers3 className="size-4" />
-                                                    {moduleLabel[module.type]}
-                                                </p>
-                                                <h3 className="mt-2 text-base font-semibold text-slate-900">
-                                                    {toDisplayTitle(
-                                                        module.title,
-                                                    )}
-                                                </h3>
-                                            </div>
+                                        module={{
+                                            id: module.id,
+                                            type: module.type,
+                                            title: toDisplayTitle(module.title),
+                                            description: module.description
+                                                ? toDisplayText(
+                                                      module.description,
+                                                  )
+                                                : null,
+                                            progress: module.progress
+                                                ? {
+                                                      current:
+                                                          module.progress
+                                                              .current,
+                                                      target: module.progress
+                                                          .target,
+                                                  }
+                                                : null,
+                                        }}
+                                        badge={
                                             <StatusBadge
                                                 status={module.status}
                                             />
-                                        </div>
-                                        {module.description ? (
-                                            <p className="mt-3 text-sm leading-6 text-slate-600">
-                                                {toDisplayText(
-                                                    module.description,
-                                                )}
-                                            </p>
-                                        ) : null}
-                                        {module.progress ? (
-                                            <div className="mt-4">
-                                                <div className="mb-1 flex justify-between text-xs font-medium text-slate-600">
-                                                    <span>
-                                                        {formatProgressNumber(
-                                                            module.progress
-                                                                .current,
-                                                        )}
-                                                        /
-                                                        {formatProgressNumber(
-                                                            module.progress
-                                                                .target,
-                                                        )}
-                                                    </span>
-                                                    <span>
-                                                        {
-                                                            module.progress
-                                                                .percent
-                                                        }
-                                                        %
-                                                    </span>
-                                                </div>
-                                                <div className="h-2 rounded-full bg-slate-100">
-                                                    <div
-                                                        className="h-2 rounded-full bg-bk-blue"
-                                                        style={{
-                                                            width: `${module.progress.percent}%`,
-                                                        }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        ) : null}
+                                        }
+                                    >
                                         <Button
                                             type="button"
                                             className="mt-4 w-full"
@@ -819,7 +805,7 @@ const CampaignDetailView = ({
                                                 tham gia hạng mục này.
                                             </p>
                                         ) : null}
-                                    </div>
+                                    </ModuleBlock>
                                 ))}
                             </aside>
                         </div>

@@ -8,77 +8,82 @@ import type {
     Role,
     User,
 } from '@/types/api';
+import { useAuthStore } from '@/store/auth-store';
 
-import type {
-    LoginInput,
-    ForgotPasswordInput,
-    ResetPasswordInput,
-} from '../types';
+import type { LoginInput, ForgotPasswordInput } from '../types';
 import { HttpStatus } from '@/types/http';
 
-type ContractAccount = {
-    id?: string | number | null;
-    account_type?: AccountType | null;
-    accountType?: AccountType | null;
-    role?: Role | null;
-    email?: string | null;
-    full_name?: string | null;
-    fullName?: string | null;
-    organization_id?: string | number | null;
-    organizationId?: string | number | null;
-    faculty_id?: string | number | null;
-    facultyId?: string | number | null;
-    student_code?: string | null;
-    studentCode?: string | null;
-    created_at?: string | number | null;
-    createdAt?: string | number | null;
+type MeResponse = {
+    account_type: AccountType;
+    role: Role;
+    organization: {
+        id: number;
+        name: string;
+        type: string;
+    } | null;
+    faculty: {
+        id: number;
+        code: string;
+        name: string;
+    } | null;
+    student?: {
+        id: number;
+        student_code: string;
+        full_name: string;
+        email: string;
+        class_code: string | null;
+    };
+    operator?: {
+        id: number;
+        full_name: string;
+        email: string;
+    };
+    created_at?: number;
 };
 
 const splitName = (fullName: string) => {
-    const [firstName = fullName, ...rest] = fullName.trim().split(/\s+/);
-    return {
-        firstName,
-        lastName: rest.join(' '),
-    };
+    const parts = fullName.trim().split(/\s+/);
+    const lastName = parts.slice(0, -1).join(' ');
+    const firstName = parts[parts.length - 1] ?? fullName;
+    return { firstName, lastName };
 };
 
-export const normalizeAccount = (
-    account: ContractAccount | null,
-): User | null => {
-    if (!account?.id || !account.role) return null;
+const normalizeMeResponse = (me: MeResponse): User | null => {
+    const profile = me.student ?? me.operator;
+    if (!me.role || !profile) return null;
 
-    const fullName = account.full_name ?? account.fullName ?? '';
-    const { firstName, lastName } = splitName(fullName || account.email || '');
+    const fullName = profile.full_name || '';
+    const { firstName, lastName } = splitName(fullName || profile.email || '');
 
     return {
-        id: String(account.id),
-        accountType: account.account_type ?? account.accountType ?? 'STUDENT',
-        email: account.email ?? '',
+        id: String(profile.id),
+        accountType: me.account_type,
+        email: profile.email ?? '',
         fullName,
         firstName,
         lastName,
-        role: account.role,
+        role: me.role,
         organizationId:
-            account.organization_id != null
-                ? String(account.organization_id)
-                : account.organizationId != null
-                  ? String(account.organizationId)
-                  : null,
-        facultyId:
-            account.faculty_id != null
-                ? String(account.faculty_id)
-                : account.facultyId != null
-                  ? String(account.facultyId)
-                  : null,
-        studentCode: account.student_code ?? account.studentCode ?? null,
-        createdAt: Number(account.created_at ?? account.createdAt ?? Date.now()),
+            me.organization != null ? String(me.organization.id) : null,
+        organization:
+            me.organization != null
+                ? {
+                      id: String(me.organization.id),
+                      name: me.organization.name,
+                      type: me.organization.type,
+                      faculty: me.faculty ? { name: me.faculty.name } : null,
+                  }
+                : null,
+        facultyId: me.faculty != null ? String(me.faculty.id) : null,
+        studentCode: me.student?.student_code ?? null,
+        createdAt: me.created_at ?? Date.now(),
     };
 };
 
 export const getUser = async (): Promise<User | null> => {
     try {
-        const account = (await api.get('/auth/me')) as unknown as ContractAccount;
-        return normalizeAccount(account);
+        const me = (await api.get('/auth/me')) as unknown as MeResponse;
+        return normalizeMeResponse(me);
     } catch (error) {
         if (
             Axios.isAxiosError(error) &&
@@ -97,38 +102,57 @@ export const logout = (refreshToken?: string | null): Promise<void> => {
     });
 };
 
-export const loginWithEmailAndPassword = (
+export const loginWithEmailAndPassword = async (
     data: LoginInput,
 ): Promise<AuthResponse> => {
-    return api.post('/auth/login', data).then((rawResponse) => {
-        const response = rawResponse as unknown as {
-            access_token?: string | null;
-            accessToken?: string | null;
-            refresh_token?: string | null;
-            refreshToken?: string | null;
-            account?: ContractAccount | null;
-            user?: ContractAccount | null;
-        };
+    const raw = (await api.post('/auth/login', data)) as unknown as {
+        accessToken?: string;
+    };
 
-        return {
-            access_token: response.access_token ?? response.accessToken ?? null,
-            refresh_token: response.refresh_token ?? response.refreshToken ?? null,
-            account: normalizeAccount(response.account ?? response.user ?? null),
-        };
-    });
+    const accessToken = raw.accessToken ?? null;
+    if (!accessToken) {
+        throw new Error('Login response does not include access token');
+    }
+
+    useAuthStore.getState().setAuth(null, accessToken);
+
+    const account = await getUser();
+
+    if (!account) {
+        useAuthStore.getState().clearAuth();
+        throw new Error('Could not fetch user profile after login');
+    }
+
+    useAuthStore.getState().setAuth(account, accessToken);
+
+    return {
+        access_token: accessToken,
+        refresh_token: null,
+        account,
+    };
 };
 
-export const forgotPassword = (
+export const forgotPassword = async (
     data: ForgotPasswordInput,
-): Promise<GeneralResponse> => {
-    return api.post('/password/forgot-password', data);
+): Promise<void> => {
+    await api.post('/password/forgot-password', data);
 };
 
-export const resetPassword = (
-    token: string,
-    data: ResetPasswordInput,
-): Promise<GeneralResponse> => {
-    return api.post(`/password/reset-password/${token}`, data);
+export const verifyCode = async (data: {
+    email: string;
+    code: string;
+}): Promise<{ resetToken: string }> => {
+    return api.post('/password/verify-code', data) as Promise<{
+        resetToken: string;
+    }>;
+};
+
+export const resetPassword = async (data: {
+    resetToken: string;
+    newPassword: string;
+    newPasswordConfirm: string;
+}): Promise<void> => {
+    await api.post('/password/reset-password', data);
 };
 
 export const sendVerificationEmail = (

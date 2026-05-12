@@ -1,8 +1,4 @@
 const replacementPairs: Array<[RegExp, string]> = [
-    [
-        /\bcampaign for sprint2 end to end smoke test\b/gi,
-        'chiến dịch cho sprint 2 kiểm thử smoke end-to-end',
-    ],
     [/\bmoney_donation\b/gi, 'đóng góp tiền'],
     [/\bitem_pledge\b/gi, 'quyên góp hiện vật'],
     [/\bevent_registration\b/gi, 'đăng ký sự kiện'],

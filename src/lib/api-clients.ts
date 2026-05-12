@@ -22,13 +22,7 @@ const processQueue = (error: unknown, token: string | null = null) => {
             prom.resolve(token);
         }
     });
-
     failedQueue = [];
-};
-
-export const setAccessToken = (token: string | null) => {
-    const { user, setAuth } = useAuthStore.getState();
-    setAuth(user, token);
 };
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
@@ -39,9 +33,7 @@ function authRequestInterceptor(config: InternalAxiosRequestConfig) {
             config.headers.Authorization = `Bearer ${token}`;
         }
     }
-
     config.withCredentials = true;
-
     return config;
 }
 
@@ -53,11 +45,7 @@ api.interceptors.request.use(authRequestInterceptor);
 api.interceptors.response.use(
     (response) => {
         const data = response.data;
-        const token = data?.data?.access_token ?? data?.data?.accessToken;
-        if (data && data.success && token) {
-            setAccessToken(token);
-        }
-        return data?.data || data;
+        return data?.data ?? data;
     },
     async (error: AxiosError) => {
         const originalRequest = error.config as InternalAxiosRequestConfig & {
@@ -68,10 +56,14 @@ api.interceptors.response.use(
             | undefined;
         const message = data?.error?.message || data?.message || error.message;
 
+        const isAuthRefreshRoute =
+            originalRequest.url === '/auth/refresh' ||
+            originalRequest.url === '/auth/login';
+
         if (
             error.response?.status === HttpStatus.UNAUTHORIZED &&
             !originalRequest._retry &&
-            originalRequest.url !== '/auth/refresh'
+            !isAuthRefreshRoute
         ) {
             if (isRefreshing) {
                 return new Promise<string | null>((resolve, reject) => {
@@ -101,9 +93,13 @@ api.interceptors.response.use(
                 };
                 const newToken = response.access_token ?? response.accessToken;
                 if (!newToken) {
-                    throw new Error('Refresh response does not include access token');
+                    throw new Error(
+                        'Refresh response does not include access token',
+                    );
                 }
-                setAccessToken(newToken);
+                useAuthStore
+                    .getState()
+                    .setAuth(useAuthStore.getState().user, newToken);
                 processQueue(null, newToken);
                 if (originalRequest.headers) {
                     originalRequest.headers.Authorization = `Bearer ${newToken}`;
