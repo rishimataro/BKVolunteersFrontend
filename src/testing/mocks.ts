@@ -8,7 +8,7 @@ const mockAccount = {
     account_type: 'OPERATOR',
     email: 'admin@dut.udn.vn',
     full_name: 'School Admin',
-    role: 'SCHOOL_ADMIN',
+    role: 'DOANTRUONG',
     createdAt: Date.now(),
 };
 
@@ -80,7 +80,7 @@ const handlers = [
                 account_type: 'STUDENT',
                 email: '102220001@sv1.dut.udn.vn',
                 full_name: 'Nguyen Van An',
-                role: 'STUDENT',
+                role: 'SINHVIEN',
                 createdAt: Date.now(),
             },
             accessToken: 'mock-new-token',
@@ -194,19 +194,6 @@ const handlers = [
     http.post(`${apiUrl}/api/v1/password/reset-password/:token`, () => {
         return HttpResponse.json({
             message: 'Mật khẩu đã được đặt lại thành công.',
-        });
-    }),
-
-    // --- Email Verification ---
-    http.post(`${apiUrl}/api/v1/verify-email/send-verification-email`, () => {
-        return HttpResponse.json({
-            message: 'Email xác minh đã được gửi.',
-        });
-    }),
-
-    http.get(`${apiUrl}/api/v1/verify-email/:token`, () => {
-        return HttpResponse.json({
-            message: 'Email đã được xác minh thành công.',
         });
     }),
 ];

@@ -41,7 +41,7 @@ describe('ProtectedRoute', () => {
 
     it('renders children if user is authenticated', () => {
         (useUser as Mock).mockReturnValue({
-            data: { id: '1', role: ROLES.STUDENT },
+            data: { id: '1', role: ROLES.SINHVIEN },
         });
 
         render(
@@ -60,11 +60,11 @@ describe('ProtectedRoute', () => {
 describe('Authorization', () => {
     it('renders children if role is allowed', () => {
         (useUser as Mock).mockReturnValue({
-            data: { id: '1', role: ROLES.SCHOOL_ADMIN },
+            data: { id: '1', role: ROLES.DOANTRUONG },
         });
 
         render(
-            <Authorization allowedRoles={[ROLES.SCHOOL_ADMIN]}>
+            <Authorization allowedRoles={[ROLES.DOANTRUONG]}>
                 <div data-testid="authorized">Admin Only Content</div>
             </Authorization>,
         );
@@ -74,12 +74,12 @@ describe('Authorization', () => {
 
     it('renders forbiddenFallback if role is not allowed', () => {
         (useUser as Mock).mockReturnValue({
-            data: { id: '1', role: ROLES.STUDENT },
+            data: { id: '1', role: ROLES.SINHVIEN },
         });
 
         render(
             <Authorization
-                allowedRoles={[ROLES.SCHOOL_ADMIN]}
+                allowedRoles={[ROLES.DOANTRUONG]}
                 forbiddenFallback={<div data-testid="forbidden">Forbidden</div>}
             >
                 <div data-testid="authorized">Admin Only Content</div>

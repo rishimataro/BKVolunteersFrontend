@@ -3,13 +3,18 @@ import type { CampaignStatus, ModuleType } from '@/types/api';
 import type { ManagedCampaignDetail, ManagedCampaignItem } from '../types';
 export type { ManagedCampaignDetail, ManagedCampaignItem };
 
-export const getManagedCampaigns = (params?: {
+export const getManagedCampaigns = async (params?: {
     q?: string;
     status?: CampaignStatus | '';
     module_type?: ModuleType | '';
     page?: number;
     limit?: number;
-}) => api.get('/campaigns', { params }) as Promise<ManagedCampaignItem[]>;
+}) => {
+    const res = (await api.get('/campaigns', { params })) as {
+        items: ManagedCampaignItem[];
+    };
+    return res.items;
+};
 
 export const getManagedCampaignDetail = (id: string) =>
     api.get(`/campaigns/${id}`) as Promise<ManagedCampaignDetail>;

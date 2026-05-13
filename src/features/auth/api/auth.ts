@@ -1,13 +1,7 @@
 import Axios from 'axios';
 
 import { api } from '@/lib/api-clients';
-import type {
-    AccountType,
-    AuthResponse,
-    GeneralResponse,
-    Role,
-    User,
-} from '@/types/api';
+import type { AccountType, AuthResponse, Role, User } from '@/types/api';
 import { useAuthStore } from '@/store/auth-store';
 
 import type { LoginInput, ForgotPasswordInput } from '../types';
@@ -153,14 +147,4 @@ export const resetPassword = async (data: {
     newPasswordConfirm: string;
 }): Promise<void> => {
     await api.post('/password/reset-password', data);
-};
-
-export const sendVerificationEmail = (
-    email: string,
-): Promise<GeneralResponse> => {
-    return api.post('/verify-email/send-verification-email', { email });
-};
-
-export const verifyEmail = (token: string): Promise<GeneralResponse> => {
-    return api.get(`/verify-email/${token}`);
 };

@@ -258,7 +258,7 @@ export const CertificateTemplatesRoute = () => {
                                                 day: '2-digit',
                                                 month: '2-digit',
                                                 year: 'numeric',
-                                            }).format(new Date(tpl.createdAt))}
+                                            }).format(new Date(tpl.created_at))}
                                         </td>
                                         <td className="px-5 py-4">
                                             <div className="flex justify-end gap-1">

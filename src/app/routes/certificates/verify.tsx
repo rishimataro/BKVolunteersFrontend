@@ -101,7 +101,7 @@ export const CertificateVerifyRoute = () => {
                                         </h2>
                                         <p className="text-sm text-emerald-500">
                                             Mã:{' '}
-                                            {result.certificate.certificateNo}
+                                            {result.certificate.certificate_no}
                                         </p>
                                     </div>
                                 </div>
@@ -111,7 +111,8 @@ export const CertificateVerifyRoute = () => {
                                             Sinh viên
                                         </span>
                                         <span className="font-medium text-slate-800">
-                                            {result.certificate.studentName}
+                                            {result.certificate.student_name ??
+                                                ''}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
@@ -119,7 +120,8 @@ export const CertificateVerifyRoute = () => {
                                             Chiến dịch
                                         </span>
                                         <span className="font-medium text-slate-800">
-                                            {result.certificate.campaignTitle}
+                                            {result.certificate
+                                                .campaign_title ?? ''}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
@@ -127,10 +129,8 @@ export const CertificateVerifyRoute = () => {
                                             Đơn vị tổ chức
                                         </span>
                                         <span className="font-medium text-slate-800">
-                                            {
-                                                result.certificate
-                                                    .organizationName
-                                            }
+                                            {result.certificate.organization ??
+                                                ''}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
@@ -138,15 +138,21 @@ export const CertificateVerifyRoute = () => {
                                             Ngày cấp
                                         </span>
                                         <span className="font-medium text-slate-800">
-                                            {new Intl.DateTimeFormat('vi-VN', {
-                                                day: '2-digit',
-                                                month: '2-digit',
-                                                year: 'numeric',
-                                            }).format(
-                                                new Date(
-                                                    result.certificate.issuedAt,
-                                                ),
-                                            )}
+                                            {result.certificate.issued_at
+                                                ? new Intl.DateTimeFormat(
+                                                      'vi-VN',
+                                                      {
+                                                          day: '2-digit',
+                                                          month: '2-digit',
+                                                          year: 'numeric',
+                                                      },
+                                                  ).format(
+                                                      new Date(
+                                                          result.certificate
+                                                              .issued_at,
+                                                      ),
+                                                  )
+                                                : ''}
                                         </span>
                                     </div>
                                     <div className="flex justify-between">

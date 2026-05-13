@@ -26,8 +26,11 @@ export type OrganizationDetail = OrganizationCard & {
     }>;
 };
 
-export const listOrganizations = () => {
-    return api.get('/organizations') as Promise<OrganizationCard[]>;
+export const listOrganizations = async (): Promise<OrganizationCard[]> => {
+    const data = (await api.get('/organizations')) as {
+        items: OrganizationCard[];
+    };
+    return data.items ?? [];
 };
 
 export const getOrganizationBySlug = (slug: string) => {

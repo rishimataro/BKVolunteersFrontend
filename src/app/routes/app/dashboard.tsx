@@ -14,11 +14,10 @@ import {
 import { toDisplayText, toDisplayTitle } from '@/utils/display-text';
 
 const roleLabel: Record<string, string> = {
-    STUDENT: 'Sinh viên',
-    ORG_ADMIN: 'Quản trị đơn vị',
-    ORG_MEMBER: 'Thành viên đơn vị',
-    SCHOOL_REVIEWER: 'Người duyệt cấp trường',
-    SCHOOL_ADMIN: 'Quản trị cấp trường',
+    SINHVIEN: 'Sinh viên',
+    CLB: 'Quản trị đơn vị',
+    LCD: 'Người duyệt cấp trường',
+    DOANTRUONG: 'Quản trị cấp trường',
     SYSTEM: 'Hệ thống',
 };
 
@@ -61,7 +60,7 @@ export const DashboardRoute = () => {
     );
     const [donations, setDonations] = React.useState<StudentDonationItem[]>([]);
     const [loading, setLoading] = React.useState(false);
-    const isStudent = user.data?.role === 'STUDENT';
+    const isStudent = user.data?.role === 'SINHVIEN';
 
     React.useEffect(() => {
         if (!isStudent) return;

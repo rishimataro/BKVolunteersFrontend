@@ -3,13 +3,13 @@ import { api } from '@/lib/api-clients';
 export type CertificateVerificationResult = {
     valid: boolean;
     certificate: {
-        id: string;
-        certificateNo: string;
-        studentName: string;
-        campaignTitle: string;
-        organizationName: string;
-        issuedAt: string;
+        id: number;
+        certificate_no: string;
         status: string;
+        student_name?: string;
+        campaign_title?: string;
+        organization?: string;
+        issued_at: string | null;
     } | null;
 };
 

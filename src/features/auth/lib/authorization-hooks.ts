@@ -3,11 +3,10 @@ import type { Role } from '@/types/api';
 import { useUser } from './auth-provider';
 
 export const ROLES = {
-    STUDENT: 'STUDENT',
-    ORG_ADMIN: 'ORG_ADMIN',
-    ORG_MEMBER: 'ORG_MEMBER',
-    SCHOOL_REVIEWER: 'SCHOOL_REVIEWER',
-    SCHOOL_ADMIN: 'SCHOOL_ADMIN',
+    SINHVIEN: 'SINHVIEN',
+    CLB: 'CLB',
+    LCD: 'LCD',
+    DOANTRUONG: 'DOANTRUONG',
 } as const;
 
 export type RoleTypes = Role;

@@ -55,11 +55,7 @@ export const OrgSettingsRoute = () => {
                                 Vai trò của bạn
                             </span>
                             <p className="font-medium text-slate-700">
-                                {u.role === 'ORG_ADMIN'
-                                    ? 'Quản trị đơn vị'
-                                    : u.role === 'ORG_MEMBER'
-                                      ? 'Thành viên đơn vị'
-                                      : u.role}
+                                {u.role === 'CLB' ? 'Quản trị đơn vị' : u.role}
                             </p>
                         </div>
                     </div>

@@ -5,7 +5,7 @@ export type CertificateTemplate = {
     name: string;
     type: string;
     status: string;
-    createdAt: string;
+    created_at: string;
 };
 
 export type CreateTemplateInput = {

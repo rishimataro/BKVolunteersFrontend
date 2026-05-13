@@ -9,11 +9,10 @@ import { ROLES, useUser } from '@/features/auth';
 import { api } from '@/lib/api-clients';
 
 const roleLabels: Record<string, string> = {
-    [ROLES.STUDENT]: 'Sinh viên',
-    [ROLES.ORG_ADMIN]: 'Quản lý CLB',
-    [ROLES.ORG_MEMBER]: 'Thành viên CLB',
-    [ROLES.SCHOOL_REVIEWER]: 'Phản biện',
-    [ROLES.SCHOOL_ADMIN]: 'Quản trị trường',
+    [ROLES.SINHVIEN]: 'Sinh viên',
+    [ROLES.CLB]: 'Quản lý CLB',
+    [ROLES.LCD]: 'Phản biện',
+    [ROLES.DOANTRUONG]: 'Quản trị trường',
 };
 
 export const SettingsRoute = () => {

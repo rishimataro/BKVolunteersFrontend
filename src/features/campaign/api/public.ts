@@ -1,6 +1,5 @@
 import { api } from '@/lib/api-clients';
 import type {
-    ApiSuccessResponse,
     Meta,
     ModuleType,
     PublicCampaignCard,
@@ -15,6 +14,16 @@ export type PublicCampaignFilters = {
     limit?: number;
 };
 
+type PaginatedResponse<T> = {
+    items: T[];
+    pagination: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+    };
+};
+
 export type PublicCampaignListResult = {
     items: PublicCampaignCard[];
     meta: Meta;
@@ -23,34 +32,26 @@ export type PublicCampaignListResult = {
 export const getPublicCampaigns = async (
     filters: PublicCampaignFilters = {},
 ): Promise<PublicCampaignListResult> => {
-    const response = await api.get<ApiSuccessResponse<PublicCampaignCard[]>>(
+    const data = await api.get<PaginatedResponse<PublicCampaignCard>>(
         '/public/campaigns',
-        {
-            params: filters,
-        },
+        { params: filters },
     );
-    const data = response as unknown as ApiSuccessResponse<
-        PublicCampaignCard[]
-    >;
     return {
-        items: data.data,
-        meta:
-            data.meta ??
-            ({
-                page: filters.page ?? 1,
-                total: data.data.length,
-                total_pages: 1,
-            } satisfies Meta),
+        items: data.items,
+        meta: {
+            page: data.pagination.page,
+            total: data.pagination.total,
+            totalPages: data.pagination.totalPages,
+            total_pages: data.pagination.totalPages,
+        },
     };
 };
 
 export const getPublicCampaignDetail = async (
     slug: string,
 ): Promise<PublicCampaignDetail> => {
-    const response = await api.get<ApiSuccessResponse<PublicCampaignDetail>>(
+    const data = await api.get<PublicCampaignDetail>(
         `/public/campaigns/${slug}`,
     );
-    const data =
-        response as unknown as ApiSuccessResponse<PublicCampaignDetail>;
-    return data.data;
+    return data;
 };

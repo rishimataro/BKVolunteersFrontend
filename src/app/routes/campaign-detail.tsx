@@ -94,7 +94,7 @@ const CampaignDetailView = ({
     const [submittingModuleId, setSubmittingModuleId] = React.useState<
         string | null
     >(null);
-    const isStudent = user.data?.role === 'STUDENT';
+    const isStudent = user.data?.role === 'SINHVIEN';
 
     React.useEffect(() => {
         if (!slug) {
@@ -308,7 +308,7 @@ const CampaignDetailView = ({
                                             (user.data?.accountType ===
                                                 'OPERATOR' ||
                                                 user.data?.role ===
-                                                    'SCHOOL_ADMIN') ? (
+                                                    'DOANTRUONG') ? (
                                                 <Button
                                                     type="button"
                                                     variant="outline"

@@ -16,12 +16,7 @@ export type Meta = {
 
 export type AccountType = 'STUDENT' | 'OPERATOR';
 
-export type Role =
-    | 'STUDENT'
-    | 'ORG_ADMIN'
-    | 'ORG_MEMBER'
-    | 'SCHOOL_REVIEWER'
-    | 'SCHOOL_ADMIN';
+export type Role = 'SINHVIEN' | 'CLB' | 'LCD' | 'DOANTRUONG';
 
 export type CampaignStatus =
     | 'DRAFT'

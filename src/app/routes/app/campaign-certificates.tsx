@@ -107,7 +107,7 @@ export const CampaignCertificatesRoute = () => {
 
     const isOperator =
         user.data?.accountType === 'OPERATOR' ||
-        user.data?.role === 'SCHOOL_ADMIN';
+        user.data?.role === 'DOANTRUONG';
 
     const loadCertificates = async () => {
         if (!campaignId) return;

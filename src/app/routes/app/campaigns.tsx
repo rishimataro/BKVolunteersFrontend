@@ -75,11 +75,10 @@ const moduleTypeLabel: Record<ModuleType, string> = {
 };
 
 const roleLabel: Record<string, string> = {
-    STUDENT: 'Sinh viên',
-    ORG_ADMIN: 'Quản trị đơn vị',
-    ORG_MEMBER: 'Thành viên đơn vị',
-    SCHOOL_REVIEWER: 'Người duyệt cấp trường',
-    SCHOOL_ADMIN: 'Quản trị cấp trường',
+    SINHVIEN: 'Sinh viên',
+    CLB: 'Quản trị đơn vị',
+    LCD: 'Người duyệt cấp trường',
+    DOANTRUONG: 'Quản trị cấp trường',
     SYSTEM: 'Hệ thống',
 };
 
@@ -339,10 +338,9 @@ export const CampaignsRoute = () => {
     });
 
     const role = user.data?.role;
-    const isStudent = role === ROLES.STUDENT;
-    const canManageCampaign =
-        role === ROLES.ORG_ADMIN || role === ROLES.ORG_MEMBER;
-    const canMutateCampaign = role === ROLES.ORG_ADMIN;
+    const isStudent = role === ROLES.SINHVIEN;
+    const canManageCampaign = role === ROLES.CLB;
+    const canMutateCampaign = role === ROLES.CLB;
 
     const loadCampaigns = React.useCallback(async () => {
         if (!canManageCampaign) return;
