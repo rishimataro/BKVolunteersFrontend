@@ -160,6 +160,15 @@ export const AppRouter = () => {
                         })),
                 },
                 {
+                    path: paths.app.changePassword.path,
+                    lazy: () =>
+                        import('@/app/routes/app/change-password.tsx').then(
+                            (m) => ({
+                                Component: m.ChangePasswordRoute,
+                            }),
+                        ),
+                },
+                {
                     path: paths.app.certificates.path,
                     lazy: () =>
                         import('@/app/routes/app/certificates.tsx').then(

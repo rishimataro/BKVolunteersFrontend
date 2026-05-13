@@ -51,10 +51,6 @@ export const paths = {
             path: '/auth/reset-password',
             getHref: () => '/auth/reset-password',
         },
-        verifyEmail: {
-            path: '/auth/verify-email',
-            getHref: (token: string) => `/auth/verify-email?token=${token}`,
-        },
         microsoftCallback: {
             path: '/auth/microsoft/callback',
             getHref: () => '/auth/microsoft/callback',
@@ -94,6 +90,10 @@ export const paths = {
         settings: {
             path: 'settings',
             getHref: () => '/app/settings',
+        },
+        changePassword: {
+            path: 'change-password',
+            getHref: () => '/app/change-password',
         },
         myDonations: {
             path: 'my-donations',

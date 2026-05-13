@@ -1,4 +1,4 @@
-import { LogOut, User, Settings } from 'lucide-react';
+import { LogOut, User, Settings, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
@@ -101,6 +101,17 @@ export const UserMenu = () => {
                                 <Settings className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
                                 <span className="font-semibold text-slate-800">
                                     Cài đặt hệ thống
+                                </span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() =>
+                                    navigate(paths.app.changePassword.getHref())
+                                }
+                                className="group/item cursor-pointer rounded-xl px-3 py-2.5 text-slate-900 transition-colors focus:bg-blue-50 focus:!text-slate-900"
+                            >
+                                <Lock className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
+                                <span className="font-semibold text-slate-800">
+                                    Đổi mật khẩu
                                 </span>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
