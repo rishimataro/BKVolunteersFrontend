@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, type Mock } from 'vitest';
 import { MemoryRouter, useNavigate } from 'react-router';
 import { LandingRoute } from '../landing';
 import { paths } from '@/config/paths';
@@ -34,7 +34,7 @@ describe('LandingRoute', () => {
 
     it('navigates to login when clicking Đăng nhập in header', () => {
         const navigate = vi.fn();
-        (useNavigate as vi.Mock).mockReturnValue(navigate);
+        (useNavigate as Mock).mockReturnValue(navigate);
 
         render(
             <MemoryRouter>
@@ -50,7 +50,7 @@ describe('LandingRoute', () => {
 
     it('navigates to login when clicking Bắt đầu ngay in hero', () => {
         const navigate = vi.fn();
-        (useNavigate as vi.Mock).mockReturnValue(navigate);
+        (useNavigate as Mock).mockReturnValue(navigate);
 
         render(
             <MemoryRouter>
@@ -66,9 +66,9 @@ describe('LandingRoute', () => {
         expect(navigate).toHaveBeenCalledWith(paths.auth.login.getHref());
     });
 
-    it('navigates to register when clicking Đăng ký tình nguyện viên in hero', () => {
+    it('navigates to public campaigns when clicking Khám phá chiến dịch in hero', () => {
         const navigate = vi.fn();
-        (useNavigate as vi.Mock).mockReturnValue(navigate);
+        (useNavigate as Mock).mockReturnValue(navigate);
 
         render(
             <MemoryRouter>
@@ -76,17 +76,17 @@ describe('LandingRoute', () => {
             </MemoryRouter>,
         );
 
-        const registerButton = screen.getByRole('button', {
-            name: /đăng ký tình nguyện viên/i,
+        const exploreButton = screen.getByRole('button', {
+            name: /khám phá chiến dịch/i,
         });
-        fireEvent.click(registerButton);
+        fireEvent.click(exploreButton);
 
-        expect(navigate).toHaveBeenCalledWith(paths.auth.register.getHref());
+        expect(navigate).toHaveBeenCalledWith(paths.campaigns.getHref());
     });
 
     it('navigates to login when clicking Tham gia ngay in CTA section', () => {
         const navigate = vi.fn();
-        (useNavigate as vi.Mock).mockReturnValue(navigate);
+        (useNavigate as Mock).mockReturnValue(navigate);
 
         render(
             <MemoryRouter>

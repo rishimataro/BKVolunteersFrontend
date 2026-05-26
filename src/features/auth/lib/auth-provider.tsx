@@ -31,14 +31,29 @@ const authConfig = {
     },
     loginFn: async (data: LoginInput) => {
         const response = await loginWithEmailAndPassword(data);
-        // Response already unwrapped to .data by axios interceptor
-        // response is { accessToken: string, user: User }
-        useAuthStore.getState().setAuth(response.user, response.accessToken);
-        return response.user;
+        if (!response.account || !response.access_token) {
+            useAuthStore.getState().clearAuth();
+            throw new Error(
+                'Login response is missing account or access token',
+            );
+        }
+
+        useAuthStore
+            .getState()
+            .setAuth(
+                response.account,
+                response.access_token,
+                response.refresh_token ?? null,
+            );
+        return response.account;
+    },
+    registerFn: async () => {
+        throw new Error('Register is outside the current contract scope');
     },
     logoutFn: async () => {
         try {
-            await apiLogout();
+            const refreshToken = useAuthStore.getState().refreshToken;
+            await apiLogout(refreshToken);
         } finally {
             useAuthStore.getState().clearAuth();
         }

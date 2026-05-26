@@ -1,4 +1,4 @@
-import { LogOut, User, Settings } from 'lucide-react';
+import { LogOut, User, Settings, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,14 @@ import {
 import { paths } from '@/config/paths';
 import { useLogout, useUser } from '@/features/auth';
 
+const roleLabel: Record<string, string> = {
+    SINHVIEN: 'Sinh viên',
+    CLB: 'Quản trị đơn vị',
+    LCD: 'Người duyệt cấp trường',
+    DOANTRUONG: 'Quản trị cấp trường',
+    SYSTEM: 'Hệ thống',
+};
+
 export const UserMenu = () => {
     const navigate = useNavigate();
     const user = useUser();
@@ -29,32 +37,28 @@ export const UserMenu = () => {
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    // Xóa z-[100] ở trigger vì nó không cần thiết, quan trọng là phần Content
                     className="flex items-center gap-3 rounded-full px-2 py-1.5 hover:bg-muted sm:px-3 focus-visible:ring-0"
                 >
                     <div className="flex size-9 items-center justify-center rounded-full bg-bk-blue text-white shadow-md">
                         <User className="size-5" />
                     </div>
                     <div className="hidden text-left sm:block">
-                        <p className="text-sm font-bold leading-tight">
+                        <p className="text-sm font-bold leading-tight text-slate-900">
                             {user.data.firstName} {user.data.lastName}
                         </p>
-                        <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
-                            {user.data.role}
+                        <p className="text-[10px] font-medium uppercase tracking-wider text-slate-600">
+                            {roleLabel[user.data.role] ?? user.data.role}
                         </p>
                     </div>
                 </Button>
             </DropdownMenuTrigger>
 
-            {/* Portal giúp menu thoát khỏi overflow:hidden của cha (như Sidebar/Header) */}
             <DropdownMenuPortal>
                 <DropdownMenuContent
                     align="end"
                     sideOffset={8}
-                    // z-[100] ở đây mới là quan trọng để không bị đè
-                    className="z-[100] w-72 p-0 overflow-hidden rounded-2xl shadow-2xl border border-border/40 bg-popover ring-1 ring-black/5 dark:ring-white/10"
+                    className="z-[100] w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 text-slate-900 shadow-2xl ring-1 ring-black/5"
                 >
-                    {/* User Profile Summary Section */}
                     <div className="bg-muted/40 px-5 py-5 border-b border-border/50">
                         <div className="flex items-center gap-4">
                             <div className="flex size-12 items-center justify-center rounded-2xl bg-bk-blue text-white font-extrabold text-base shadow-lg shadow-bk-blue/20">
@@ -62,10 +66,10 @@ export const UserMenu = () => {
                                 {user.data.lastName?.[0]}
                             </div>
                             <div className="flex flex-col min-w-0">
-                                <p className="text-sm font-extrabold truncate leading-tight">
+                                <p className="truncate text-sm font-extrabold leading-tight text-slate-900">
                                     {user.data.firstName} {user.data.lastName}
                                 </p>
-                                <p className="text-xs text-muted-foreground truncate mt-0.5 font-medium">
+                                <p className="mt-0.5 truncate text-xs font-medium text-slate-600">
                                     {user.data.email}
                                 </p>
                             </div>
@@ -74,17 +78,17 @@ export const UserMenu = () => {
 
                     <div className="p-2">
                         <DropdownMenuGroup>
-                            <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground/60">
+                            <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-slate-500">
                                 Cá nhân
                             </DropdownMenuLabel>
                             <DropdownMenuItem
                                 onClick={() =>
                                     navigate(paths.app.profile.getHref())
                                 }
-                                className="group/item rounded-xl px-3 py-2.5 cursor-pointer transition-colors focus:bg-bk-blue/5"
+                                className="group/item cursor-pointer rounded-xl px-3 py-2.5 text-slate-900 transition-colors focus:bg-blue-50 focus:!text-slate-900"
                             >
-                                <User className="mr-3 size-4.5 text-muted-foreground transition-colors group-focus/item:text-bk-blue" />
-                                <span className="font-semibold">
+                                <User className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
+                                <span className="font-semibold text-slate-800">
                                     Hồ sơ của tôi
                                 </span>
                             </DropdownMenuItem>
@@ -92,11 +96,22 @@ export const UserMenu = () => {
                                 onClick={() =>
                                     navigate(paths.app.settings.getHref())
                                 }
-                                className="group/item rounded-xl px-3 py-2.5 cursor-pointer transition-colors focus:bg-bk-blue/5"
+                                className="group/item cursor-pointer rounded-xl px-3 py-2.5 text-slate-900 transition-colors focus:bg-blue-50 focus:!text-slate-900"
                             >
-                                <Settings className="mr-3 size-4.5 text-muted-foreground transition-colors group-focus/item:text-bk-blue" />
-                                <span className="font-semibold">
+                                <Settings className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
+                                <span className="font-semibold text-slate-800">
                                     Cài đặt hệ thống
+                                </span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() =>
+                                    navigate(paths.app.changePassword.getHref())
+                                }
+                                className="group/item cursor-pointer rounded-xl px-3 py-2.5 text-slate-900 transition-colors focus:bg-blue-50 focus:!text-slate-900"
+                            >
+                                <Lock className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
+                                <span className="font-semibold text-slate-800">
+                                    Đổi mật khẩu
                                 </span>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
@@ -105,7 +120,7 @@ export const UserMenu = () => {
 
                         <DropdownMenuItem
                             onClick={() => logout.mutate({})}
-                            className="rounded-xl px-3 py-2.5 cursor-pointer transition-colors text-destructive focus:bg-destructive focus:text-destructive-foreground"
+                            className="rounded-xl px-3 py-2.5 cursor-pointer transition-colors text-destructive focus:bg-red-50 focus:text-red-700"
                         >
                             <LogOut className="mr-3 size-4.5" />
                             <span className="font-bold">Đăng xuất</span>

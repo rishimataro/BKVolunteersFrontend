@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
+import { resetPassword } from '@/features/auth/api/auth';
 
 import {
     PasswordRecoveryShell,
@@ -26,12 +27,13 @@ export const ResetPasswordForm = () => {
     const [confirmPassword, setConfirmPassword] = React.useState('');
     const [showNewPassword, setShowNewPassword] = React.useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false);
     const [errors, setErrors] = React.useState<{
         newPassword?: string;
         confirmPassword?: string;
     }>({});
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         const nextErrors: {
@@ -55,17 +57,45 @@ export const ResetPasswordForm = () => {
             return;
         }
 
-        clearPasswordRecoveryState();
-        addNotification({
-            type: 'success',
-            title: 'Đổi mật khẩu thành công',
-            message: 'Mật khẩu mới đã được lưu trên luồng giao diện mẫu.',
-        });
-        navigate(paths.auth.login.getHref());
+        if (!recoveryState?.resetToken) {
+            addNotification({
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Phiên khôi phục không hợp lệ. Vui lòng bắt đầu lại.',
+            });
+            navigate(paths.auth.forgotPassword.getHref());
+            return;
+        }
+
+        setIsLoading(true);
+
+        try {
+            await resetPassword({
+                resetToken: recoveryState.resetToken,
+                newPassword: newPassword.trim(),
+                newPasswordConfirm: confirmPassword.trim(),
+            });
+
+            clearPasswordRecoveryState();
+            addNotification({
+                type: 'success',
+                title: 'Đổi mật khẩu thành công',
+                message:
+                    'Mật khẩu đã được đặt lại thành công. Vui lòng đăng nhập với mật khẩu mới.',
+            });
+            navigate(paths.auth.login.getHref());
+        } catch {
+            addNotification({
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Có lỗi xảy ra. Vui lòng thử lại sau.',
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
-        // Start section: Reset-password-form
         <PasswordRecoveryShell
             activeStep={3}
             pageTitle="Đặt lại mật khẩu"
@@ -76,9 +106,7 @@ export const ResetPasswordForm = () => {
             assetSrc="/set-password.svg"
             assetAlt="Minh họa tạo mật khẩu mới"
         >
-            {/* Start: Form reset-password */}
             <form onSubmit={handleSubmit} className="space-y-7" noValidate>
-                {/* New password field */}
                 <div>
                     <Label
                         htmlFor="newPassword"
@@ -128,7 +156,6 @@ export const ResetPasswordForm = () => {
                     )}
                 </div>
 
-                {/* Confirm password field */}
                 <div>
                     <Label
                         htmlFor="confirmPassword"
@@ -162,7 +189,7 @@ export const ResetPasswordForm = () => {
                                     ? 'Ẩn xác nhận mật khẩu'
                                     : 'Hiện xác nhận mật khẩu'
                             }
-                            className="absolute right-4 top-[1.05rem] inline-flex h-6 w-6 items-center justify-center text-slate-300 transition-all duration-200 hover:scale-110 hover:text-[#4DA1A9] active:scale-95"
+                            className="absolute right-4 top-[1.05rem] inline-flex h-6 w-6 items-center justify-content-center text-slate-300 transition-all duration-200 hover:scale-110 hover:text-[#4DA1A9] active:scale-95"
                         >
                             {showConfirmPassword ? (
                                 <EyeOff className="h-5 w-5" />
@@ -178,20 +205,15 @@ export const ResetPasswordForm = () => {
                     )}
                 </div>
 
-                {/* Helper message */}
-                <div className="rounded-[1.35rem] border border-[#79D7BE]/35 bg-[#79D7BE]/10 px-5 py-4 text-sm leading-6 text-slate-500">
-                    Sau khi hoàn tất, phiên khôi phục hiện tại sẽ được đóng và
-                    bạn sẽ được đưa về màn hình đăng nhập.
-                </div>
-
-                {/* Button update password */}
-                <button type="submit" className={authPrimaryButtonClass}>
-                    Cập nhật mật khẩu
+                <button
+                    type="submit"
+                    className={authPrimaryButtonClass}
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Đang cập nhật...' : 'Cập nhật mật khẩu'}
                 </button>
             </form>
-            {/* End: Form reset-password */}
 
-            {/* Footer link */}
             <div className="mt-7 text-center text-sm text-slate-500 sm:text-left">
                 Muốn bắt đầu lại?{' '}
                 <Link
@@ -202,6 +224,5 @@ export const ResetPasswordForm = () => {
                 </Link>
             </div>
         </PasswordRecoveryShell>
-        // End section: Reset-password-form
     );
 };

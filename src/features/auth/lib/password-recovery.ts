@@ -1,10 +1,9 @@
 const PASSWORD_RECOVERY_STORAGE_KEY = 'bk-password-recovery';
-export const RECOVERY_DEMO_CODE = '123456';
 
 type PasswordRecoveryState = {
     email: string;
-    code: string;
     verified: boolean;
+    resetToken: string | null;
     expiresAt: number;
 };
 
@@ -42,7 +41,7 @@ export const getPasswordRecoveryState = (): PasswordRecoveryState | null => {
     try {
         const parsed = JSON.parse(rawValue) as PasswordRecoveryState;
 
-        if (!parsed.email || !parsed.code || !parsed.expiresAt) {
+        if (!parsed.email || !parsed.expiresAt) {
             clearPasswordRecoveryState();
             return null;
         }
@@ -68,8 +67,8 @@ export const startPasswordRecovery = (email: string) => {
 
     const state: PasswordRecoveryState = {
         email,
-        code: RECOVERY_DEMO_CODE,
         verified: false,
+        resetToken: null,
         expiresAt: Date.now() + 10 * 60 * 1000,
     };
 
@@ -77,17 +76,7 @@ export const startPasswordRecovery = (email: string) => {
     return state;
 };
 
-export const resendPasswordRecoveryCode = () => {
-    const currentState = getPasswordRecoveryState();
-
-    if (!currentState) {
-        return null;
-    }
-
-    return startPasswordRecovery(currentState.email);
-};
-
-export const markPasswordRecoveryVerified = () => {
+export const markPasswordRecoveryVerified = (resetToken: string) => {
     const storage = readStorage();
     const currentState = getPasswordRecoveryState();
 
@@ -98,6 +87,7 @@ export const markPasswordRecoveryVerified = () => {
     const nextState: PasswordRecoveryState = {
         ...currentState,
         verified: true,
+        resetToken,
     };
 
     storage.setItem(PASSWORD_RECOVERY_STORAGE_KEY, JSON.stringify(nextState));

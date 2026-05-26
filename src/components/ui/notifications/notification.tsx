@@ -35,7 +35,7 @@ export const Notification = ({
                             <p className="text-sm font-medium text-gray-900">
                                 {title}
                             </p>
-                            <p className="mt-1 text-sm text-gray-500">
+                            <p className="mt-1 text-sm text-slate-600">
                                 {message}
                             </p>
                         </div>
@@ -46,7 +46,7 @@ export const Notification = ({
                                     onDismiss(id);
                                 }}
                             >
-                                <span className="sr-only">Close</span>
+                                <span className="sr-only">Đóng</span>
                                 <CircleX
                                     className="size-5"
                                     aria-hidden="true"

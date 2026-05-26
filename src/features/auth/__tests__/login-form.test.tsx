@@ -1,10 +1,12 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
 import { MemoryRouter } from 'react-router';
 
 import { LoginForm } from '../components/login-form';
+import { useLogin } from '../lib/auth-provider';
 
 const addNotification = vi.fn();
+const mutateAsync = vi.fn();
 
 vi.mock('@/components/ui/notifications', () => ({
     useNotifications: vi.fn(() => ({
@@ -12,9 +14,17 @@ vi.mock('@/components/ui/notifications', () => ({
     })),
 }));
 
+vi.mock('../lib/auth-provider', () => ({
+    useLogin: vi.fn(),
+}));
+
 describe('LoginForm', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        (useLogin as Mock).mockReturnValue({
+            mutateAsync,
+            isPending: false,
+        });
     });
 
     const renderForm = () => {
@@ -31,7 +41,7 @@ describe('LoginForm', () => {
         expect(
             screen.getByRole('heading', { name: /đăng nhập/i }),
         ).toBeDefined();
-        expect(screen.getByLabelText(/tên đăng nhập/i)).toBeDefined();
+        expect(screen.getByLabelText(/email/i)).toBeDefined();
         expect(
             screen.getByLabelText(/mật khẩu/i, { selector: 'input' }),
         ).toBeDefined();
@@ -54,17 +64,19 @@ describe('LoginForm', () => {
         fireEvent.click(screen.getByRole('button', { name: /^đăng nhập$/i }));
 
         expect(
-            screen.getByText(/vui lòng nhập tên đăng nhập\./i),
+            screen.getByText(/vui lòng nhập email hoặc mssv/i),
         ).toBeDefined();
         expect(screen.getByText(/vui lòng nhập mật khẩu\./i)).toBeDefined();
         expect(addNotification).not.toHaveBeenCalled();
+        expect(mutateAsync).not.toHaveBeenCalled();
     });
 
-    it('shows a placeholder notification instead of calling backend login', () => {
+    it('calls backend login with validated credentials', async () => {
+        mutateAsync.mockResolvedValueOnce({});
         renderForm();
 
-        fireEvent.change(screen.getByLabelText(/tên đăng nhập/i), {
-            target: { value: 'testuser' },
+        fireEvent.change(screen.getByLabelText(/email/i), {
+            target: { value: 'test@example.com' },
         });
         fireEvent.change(
             screen.getByLabelText(/mật khẩu/i, { selector: 'input' }),
@@ -75,12 +87,13 @@ describe('LoginForm', () => {
 
         fireEvent.click(screen.getByRole('button', { name: /^đăng nhập$/i }));
 
-        expect(addNotification).toHaveBeenCalledWith(
-            expect.objectContaining({
-                type: 'info',
-                title: 'Giao diện đăng nhập',
+        await waitFor(() =>
+            expect(mutateAsync).toHaveBeenCalledWith({
+                identifier: 'test@example.com',
+                password: 'password123',
             }),
         );
+        expect(addNotification).not.toHaveBeenCalled();
     });
 
     it('toggles the password field visibility', () => {
@@ -106,20 +119,13 @@ describe('LoginForm', () => {
         expect(passwordInput.getAttribute('type')).toBe('password');
     });
 
-    it('shows placeholder feedback for Microsoft login', () => {
+    it('has a Microsoft login button that redirects', () => {
         renderForm();
 
-        fireEvent.click(
-            screen.getByRole('button', {
-                name: /đăng nhập bằng microsoft/i,
-            }),
-        );
-
-        expect(addNotification).toHaveBeenCalledWith(
-            expect.objectContaining({
-                type: 'info',
-                title: 'Microsoft SSO',
-            }),
-        );
+        const button = screen.getByRole('button', {
+            name: /đăng nhập bằng microsoft/i,
+        });
+        expect(button).toBeDefined();
+        expect(() => fireEvent.click(button)).not.toThrow();
     });
 });

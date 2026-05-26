@@ -13,7 +13,7 @@ export const LandingRoute = () => {
 
     return (
         <>
-            <Head title="Welcome | BK Volunteers" />
+            <Head title="BK Volunteers | Nền tảng thiện nguyện" />
             <div className="flex flex-col min-h-screen bg-white">
                 {/* Header/Navbar */}
                 <header className="px-4 lg:px-6 h-16 flex items-center border-b sticky top-0 bg-white/80 backdrop-blur-sm z-50">
@@ -60,7 +60,7 @@ export const LandingRoute = () => {
                                         <br className="hidden sm:inline" />
                                         lan tỏa yêu thương
                                     </h1>
-                                    <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+                                    <p className="mx-auto max-w-[700px] text-slate-600 md:text-xl">
                                         Nền tảng quản lý hoạt động tình nguyện
                                         hiệu quả dành cho sinh viên Bách Khoa.
                                         Tham gia ngay để cùng nhau tạo nên những
@@ -82,11 +82,11 @@ export const LandingRoute = () => {
                                         className="h-12 px-8 rounded-full border-blue-600 text-blue-600 hover:bg-blue-50 shadow-md transition-all hover:scale-105"
                                         onClick={() =>
                                             navigate(
-                                                paths.auth.register.getHref(),
+                                                paths.campaigns.getHref(),
                                             )
                                         }
                                     >
-                                        Đăng ký tình nguyện viên
+                                        Khám phá chiến dịch
                                     </Button>
                                 </div>
                             </div>
@@ -104,7 +104,7 @@ export const LandingRoute = () => {
                                     <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
                                         Tính năng nổi bật
                                     </h2>
-                                    <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                                    <p className="max-w-[900px] text-slate-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                                         Mọi thứ bạn cần để quản lý và tham gia
                                         các hoạt động tình nguyện một cách
                                         chuyên nghiệp.
@@ -119,7 +119,7 @@ export const LandingRoute = () => {
                                     <h3 className="text-xl font-bold">
                                         Quản lý sự kiện
                                     </h3>
-                                    <p className="text-center text-gray-500">
+                                    <p className="text-center text-slate-600">
                                         Dễ dàng tạo, quản lý và theo dõi các
                                         chiến dịch tình nguyện tập trung.
                                     </p>
@@ -131,7 +131,7 @@ export const LandingRoute = () => {
                                     <h3 className="text-xl font-bold">
                                         Kết nối thành viên
                                     </h3>
-                                    <p className="text-center text-gray-500">
+                                    <p className="text-center text-slate-600">
                                         Giao lưu và phối hợp cùng cộng đồng tình
                                         nguyện viên nhiệt huyết.
                                     </p>
@@ -143,7 +143,7 @@ export const LandingRoute = () => {
                                     <h3 className="text-xl font-bold">
                                         Ghi nhận đóng góp
                                     </h3>
-                                    <p className="text-center text-gray-500">
+                                    <p className="text-center text-slate-600">
                                         Chứng nhận hoạt động và tích lũy điểm
                                         rèn luyện minh bạch.
                                     </p>
@@ -155,7 +155,7 @@ export const LandingRoute = () => {
                                     <h3 className="text-xl font-bold">
                                         Lan tỏa giá trị
                                     </h3>
-                                    <p className="text-center text-gray-500">
+                                    <p className="text-center text-slate-600">
                                         Chia sẻ những câu chuyện ý nghĩa và cảm
                                         hứng đến mọi người.
                                     </p>
@@ -172,7 +172,7 @@ export const LandingRoute = () => {
                                     <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
                                         Sẵn sàng để tạo nên sự khác biệt?
                                     </h2>
-                                    <p className="mx-auto max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                                    <p className="mx-auto max-w-[600px] text-slate-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                                         Tham gia cùng hàng nghìn sinh viên khác
                                         ngay hôm nay.
                                     </p>
@@ -185,7 +185,7 @@ export const LandingRoute = () => {
                                     >
                                         Tham gia ngay
                                     </Button>
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-xs text-slate-600">
                                         Hoàn toàn miễn phí cho sinh viên và các
                                         tổ chức phi lợi nhuận.
                                     </p>
@@ -197,7 +197,7 @@ export const LandingRoute = () => {
 
                 {/* Footer */}
                 <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-slate-600">
                         © 2026 BK Volunteers. Bảo lưu mọi quyền.
                     </p>
                     <nav className="sm:ml-auto flex gap-4 sm:gap-6">

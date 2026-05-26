@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
+import { verifyCode, forgotPassword } from '@/features/auth/api/auth';
 
 import {
     PasswordRecoveryShell,
@@ -14,10 +15,8 @@ import {
     authSecondaryButtonClass,
 } from './password-recovery-shell';
 import {
-    RECOVERY_DEMO_CODE,
     getPasswordRecoveryState,
     markPasswordRecoveryVerified,
-    resendPasswordRecoveryCode,
 } from '../lib/password-recovery';
 
 export const VerifyCodeForm = () => {
@@ -26,8 +25,10 @@ export const VerifyCodeForm = () => {
     const recoveryState = React.useMemo(() => getPasswordRecoveryState(), []);
     const [code, setCode] = React.useState('');
     const [error, setError] = React.useState('');
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [isResending, setIsResending] = React.useState(false);
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         if (!code.trim()) {
@@ -35,38 +36,57 @@ export const VerifyCodeForm = () => {
             return;
         }
 
-        if (code.trim() !== recoveryState?.code) {
-            setError('Mã xác thực chưa đúng. Vui lòng kiểm tra lại.');
-            return;
-        }
-
-        markPasswordRecoveryVerified();
-        addNotification({
-            type: 'success',
-            title: 'Xác thực thành công',
-            message: 'Bạn có thể đặt mật khẩu mới ở bước tiếp theo.',
-        });
-        navigate(paths.auth.resetPassword.getHref());
-    };
-
-    const handleResendCode = () => {
-        const nextState = resendPasswordRecoveryCode();
-
-        if (!nextState) {
+        if (!recoveryState?.email) {
             navigate(paths.auth.forgotPassword.getHref(), { replace: true });
             return;
         }
 
-        addNotification({
-            type: 'info',
-            title: 'Đã gửi lại mã',
-            message: `Mã demo mới là ${RECOVERY_DEMO_CODE}. Vui lòng kiểm tra lại hộp thư của ${nextState.email}.`,
-            duration: 8000,
-        });
+        setIsLoading(true);
+        setError('');
+
+        try {
+            const result = await verifyCode({
+                email: recoveryState.email,
+                code: code.trim(),
+            });
+            markPasswordRecoveryVerified(result.resetToken);
+            addNotification({
+                type: 'success',
+                title: 'Xác thực thành công',
+                message: 'Bạn có thể đặt mật khẩu mới ở bước tiếp theo.',
+            });
+            navigate(paths.auth.resetPassword.getHref());
+        } catch {
+            setError('Mã xác thực không chính xác. Vui lòng thử lại.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResendCode = async () => {
+        if (!recoveryState?.email) {
+            navigate(paths.auth.forgotPassword.getHref(), { replace: true });
+            return;
+        }
+
+        setIsResending(true);
+
+        try {
+            await forgotPassword({ email: recoveryState.email });
+            addNotification({
+                type: 'success',
+                title: 'Đã gửi lại mã',
+                message: `Mã xác thực mới đã được gửi tới ${recoveryState.email}.`,
+                duration: 8000,
+            });
+        } catch {
+            setError('Gửi lại mã thất bại.');
+        } finally {
+            setIsResending(false);
+        }
     };
 
     return (
-        // Start section: Verify-code-form
         <PasswordRecoveryShell
             activeStep={2}
             pageTitle="Xác thực mã khôi phục"
@@ -77,9 +97,7 @@ export const VerifyCodeForm = () => {
             assetSrc="/verify.svg"
             assetAlt="Minh họa xác thực mã khôi phục"
         >
-            {/* Start: Form verify-code */}
             <form onSubmit={handleSubmit} className="space-y-7" noValidate>
-                {/* Verification code field */}
                 <div>
                     <Label
                         htmlFor="recovery-code"
@@ -108,33 +126,24 @@ export const VerifyCodeForm = () => {
                     )}
                 </div>
 
-                {/* Helper message */}
-                <div className="rounded-[1.35rem] border border-[#79D7BE]/35 bg-[#79D7BE]/10 px-5 py-4 text-sm leading-6 text-slate-500">
-                    Đây là luồng giao diện mẫu. Mã xác thực hiện dùng cho demo
-                    là{' '}
-                    <span className="font-semibold text-[#2E5077]">
-                        {RECOVERY_DEMO_CODE}
-                    </span>
-                    .
-                </div>
-
-                {/* Button verify */}
-                <button type="submit" className={authPrimaryButtonClass}>
-                    Xác nhận mã
+                <button
+                    type="submit"
+                    className={authPrimaryButtonClass}
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Đang xác thực...' : 'Xác nhận mã'}
                 </button>
 
-                {/* Button resend */}
                 <button
                     type="button"
                     onClick={handleResendCode}
                     className={authSecondaryButtonClass}
+                    disabled={isResending}
                 >
-                    Gửi lại mã
+                    {isResending ? 'Đang gửi...' : 'Gửi lại mã'}
                 </button>
             </form>
-            {/* End: Form verify-code */}
 
-            {/* Footer link */}
             <div className="mt-7 text-center text-sm text-slate-500 sm:text-left">
                 Sai email?{' '}
                 <Link
@@ -145,6 +154,5 @@ export const VerifyCodeForm = () => {
                 </Link>
             </div>
         </PasswordRecoveryShell>
-        // End section: Verify-code-form
     );
 };

@@ -1,25 +1,52 @@
 import { test, expect } from '@playwright/test';
 
-test.beforeEach(async ({ context }) => {
+test('should login successfully with email', async ({ page, context }) => {
     await context.clearCookies();
+    await page.goto('/auth/login');
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
+
+    await expect(page.getByRole('heading', { name: /đăng nhập/i })).toBeVisible(
+        { timeout: 15000 },
+    );
+
+    await page.locator('#identifier').fill('admin@example.com');
+    await page.locator('#password').fill('password123');
+    await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
+
+    await expect(page).toHaveURL(/\/app/);
+    await expect(
+        page.getByRole('heading', {
+            level: 1,
+            name: /tổng quan|bảng điều khiển/i,
+        }),
+    ).toBeVisible();
 });
 
-test('should login successfully', async ({ page }) => {
+test('should show validation error on empty fields', async ({ page }) => {
     await page.goto('/auth/login');
 
-    // Wait for the form to appear
-    const loginForm = page.getByTestId('login-form');
-    await expect(loginForm).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('heading', { name: /đăng nhập/i })).toBeVisible(
+        { timeout: 15000 },
+    );
 
-    await page.locator('input[name="email"]').fill('admin@example.com');
-    await page.locator('input[name="password"]').fill('password123');
-    await page.getByRole('button', { name: /log in/i }).click();
+    await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
 
-    // Redirection check
-    await expect(page).toHaveURL(/\/app/);
+    await expect(page.getByText(/vui lòng nhập/i).first()).toBeVisible();
+});
 
-    // Target the specific "Dashboard" heading to satisfy strict mode
+test('should show error on invalid credentials', async ({ page }) => {
+    await page.goto('/auth/login');
+
+    await expect(page.getByRole('heading', { name: /đăng nhập/i })).toBeVisible(
+        { timeout: 15000 },
+    );
+
+    await page.locator('#identifier').fill('wrong@email.com');
+    await page.locator('#password').fill('wrongpass');
+    await page.getByRole('button', { name: 'Đăng nhập', exact: true }).click();
+
     await expect(
-        page.getByRole('heading', { level: 1, name: 'Dashboard' }),
+        page.getByText(/không hợp lệ|thất bại/i).first(),
     ).toBeVisible();
 });
