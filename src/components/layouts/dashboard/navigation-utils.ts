@@ -11,6 +11,9 @@ import {
     Banknote,
     User,
     History,
+    ClipboardCheck,
+    Landmark,
+    Award,
     type LucideIcon,
 } from 'lucide-react';
 import * as React from 'react';
@@ -75,6 +78,15 @@ export const useNavigationItems = () => {
                           icon: ScrollText,
                       }
                     : null,
+                checkAccess({
+                    allowedRoles: [ROLES.DOANTRUONG, ROLES.LCD],
+                })
+                    ? {
+                          name: 'Hàng chờ duyệt',
+                          to: paths.app.approvals.getHref(),
+                          icon: ClipboardCheck,
+                      }
+                    : null,
                 checkAccess({ allowedRoles: [ROLES.DOANTRUONG] })
                     ? {
                           name: 'Nhật ký hoạt động',
@@ -103,6 +115,22 @@ export const useNavigationItems = () => {
                           name: 'Quản lý tổ chức',
                           to: paths.app.adminOrganizations.getHref(),
                           icon: Building2,
+                      }
+                    : null,
+                checkAccess({ allowedRoles: [ROLES.DOANTRUONG, ROLES.LCD] })
+                    ? {
+                          name: 'Vận hành SePay',
+                          to: paths.app.sepayOps.getHref(),
+                          icon: Landmark,
+                      }
+                    : null,
+                checkAccess({
+                    allowedRoles: [ROLES.DOANTRUONG, ROLES.LCD],
+                })
+                    ? {
+                          name: 'Danh hiệu',
+                          to: paths.app.titles.getHref(),
+                          icon: Award,
                       }
                     : null,
                 checkAccess({ allowedRoles: [ROLES.CLB] })

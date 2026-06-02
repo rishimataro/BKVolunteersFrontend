@@ -1,7 +1,11 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, type Mock } from 'vitest';
 import { MemoryRouter, Routes, Route } from 'react-router';
-import { ProtectedRoute, Authorization } from '../lib/authorization';
+import {
+    ProtectedRoleRoute,
+    ProtectedRoute,
+    Authorization,
+} from '../lib/authorization';
 import { ROLES } from '../lib/authorization-hooks';
 import { useUser } from '../lib/auth-provider';
 
@@ -88,5 +92,38 @@ describe('Authorization', () => {
 
         expect(screen.queryByTestId('authorized')).toBeNull();
         expect(screen.getByTestId('forbidden')).toBeDefined();
+    });
+});
+
+describe('ProtectedRoleRoute', () => {
+    it('renders forbidden fallback for authenticated users without role access', () => {
+        (useUser as Mock).mockReturnValue({
+            data: { id: '1', role: ROLES.SINHVIEN },
+        });
+
+        render(
+            <MemoryRouter initialEntries={['/app/audit-logs']}>
+                <Routes>
+                    <Route
+                        path="/app/audit-logs"
+                        element={
+                            <ProtectedRoleRoute
+                                allowedRoles={[ROLES.DOANTRUONG]}
+                                forbiddenFallback={
+                                    <div data-testid="role-forbidden">
+                                        Forbidden by role
+                                    </div>
+                                }
+                            >
+                                <div data-testid="role-protected">Role Only</div>
+                            </ProtectedRoleRoute>
+                        }
+                    />
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        expect(screen.queryByTestId('role-protected')).toBeNull();
+        expect(screen.getByTestId('role-forbidden')).toBeDefined();
     });
 });

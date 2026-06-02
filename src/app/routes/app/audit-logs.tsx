@@ -3,6 +3,7 @@ import { ClipboardList, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { ContentLayout } from '@/components/layouts';
 import { Button } from '@/components/ui/button';
+import { DateTimeField } from '@/components/ui/datetime-field';
 import { Input } from '@/components/ui/input';
 import { ROLES, useUser } from '@/features/auth';
 import {
@@ -15,6 +16,7 @@ import {
     ErrorState,
     LoadingState,
 } from '@/features/campaign/components/state-blocks';
+import { toIsoFromDateTimeLocal } from '@/utils/datetime-local';
 
 const actionLabel: Record<string, string> = {
     CAMPAIGN_CREATED: 'Tạo chiến dịch',
@@ -68,8 +70,8 @@ export const AuditLogsRoute = () => {
             const query: AuditLogQuery = { page: p, limit };
             if (filterAction.trim()) query.action = filterAction.trim();
             if (filterEntity.trim()) query.entity_type = filterEntity.trim();
-            if (filterFrom) query.from = new Date(filterFrom).toISOString();
-            if (filterTo) query.to = new Date(filterTo).toISOString();
+            if (filterFrom) query.from = toIsoFromDateTimeLocal(filterFrom);
+            if (filterTo) query.to = toIsoFromDateTimeLocal(filterTo);
             const result = await getAuditLogs(query);
             setLogs(result.items);
             setPage(result.pagination.page);
@@ -146,24 +148,24 @@ export const AuditLogsRoute = () => {
                         <label className="mb-1 block text-xs font-semibold text-slate-500 uppercase">
                             Từ ngày
                         </label>
-                        <Input
-                            data-testid="audit-filter-from"
-                            type="datetime-local"
+                        <DateTimeField
                             value={filterFrom}
-                            onChange={(e) => setFilterFrom(e.target.value)}
-                            className="h-9 w-52"
+                            onChange={setFilterFrom}
+                            className="grid w-72 grid-cols-2 gap-2"
+                            dateTestId="audit-filter-from-date"
+                            timeTestId="audit-filter-from-time"
                         />
                     </div>
                     <div>
                         <label className="mb-1 block text-xs font-semibold text-slate-500 uppercase">
                             Đến ngày
                         </label>
-                        <Input
-                            data-testid="audit-filter-to"
-                            type="datetime-local"
+                        <DateTimeField
                             value={filterTo}
-                            onChange={(e) => setFilterTo(e.target.value)}
-                            className="h-9 w-52"
+                            onChange={setFilterTo}
+                            className="grid w-72 grid-cols-2 gap-2"
+                            dateTestId="audit-filter-to-date"
+                            timeTestId="audit-filter-to-time"
                         />
                     </div>
                     <Button

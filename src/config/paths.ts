@@ -28,6 +28,17 @@ export const paths = {
         },
     },
 
+    legal: {
+        terms: {
+            path: '/legal/terms',
+            getHref: () => '/legal/terms',
+        },
+        privacy: {
+            path: '/legal/privacy',
+            getHref: () => '/legal/privacy',
+        },
+    },
+
     auth: {
         register: {
             path: '/auth/register',
@@ -86,6 +97,10 @@ export const paths = {
         users: {
             path: 'users',
             getHref: () => '/app/users',
+        },
+        approvals: {
+            path: 'approvals',
+            getHref: () => '/app/approvals',
         },
         profile: {
             path: 'profile',
@@ -147,6 +162,14 @@ export const paths = {
         reports: {
             path: 'reports',
             getHref: () => '/app/reports',
+        },
+        sepayOps: {
+            path: 'sepay-ops',
+            getHref: () => '/app/sepay-ops',
+        },
+        titles: {
+            path: 'titles',
+            getHref: () => '/app/titles',
         },
     },
 } as const;

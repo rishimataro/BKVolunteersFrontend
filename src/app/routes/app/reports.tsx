@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 
 import { ContentLayout } from '@/components/layouts';
+import { DateTimeField } from '@/components/ui/datetime-field';
 import { ROLES, useUser } from '@/features/auth';
 import {
     getManagedCampaigns,
@@ -24,6 +25,7 @@ import {
     type SchoolOverview,
     type SchoolOverviewQuery,
 } from '@/features/reports/api/reports';
+import { toIsoFromDateTimeLocal, toDateTimeLocalValue } from '@/utils/datetime-local';
 
 const moduleTypeLabel: Record<string, string> = {
     fundraising: 'Gây quỹ',
@@ -102,6 +104,8 @@ export const ReportsRoute = () => {
     const [reportError, setReportError] = useState<string | null>(null);
     const [overviewFilters, setOverviewFilters] = useState<SchoolOverviewQuery>(
         {
+            from: '',
+            to: '',
             module_type: '',
             status: '',
         },
@@ -125,7 +129,11 @@ export const ReportsRoute = () => {
                     limit: 100,
                 });
                 const overviewPromise = canViewSchoolOverview
-                    ? getSchoolOverview(overviewFilters)
+                    ? getSchoolOverview({
+                          ...overviewFilters,
+                          from: toIsoFromDateTimeLocal(overviewFilters.from),
+                          to: toIsoFromDateTimeLocal(overviewFilters.to),
+                      })
                     : Promise.resolve(null);
                 const [overviewData, campaignItems] = await Promise.all([
                     overviewPromise,
@@ -255,40 +263,30 @@ export const ReportsRoute = () => {
                             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
                                 <label className="text-sm text-slate-600">
                                     <span className="mb-1 block">Từ ngày</span>
-                                    <input
-                                        data-testid="school-overview-filter-from"
-                                        type="datetime-local"
-                                        value={overviewFilters.from ?? ''}
+                                    <DateTimeField
+                                        value={toDateTimeLocalValue(overviewFilters.from)}
                                         onChange={(event) =>
                                             setOverviewFilters((current) => ({
                                                 ...current,
-                                                from: event.target.value
-                                                    ? new Date(
-                                                          event.target.value,
-                                                      ).toISOString()
-                                                    : undefined,
+                                                from: event || '',
                                             }))
                                         }
-                                        className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900"
+                                        dateTestId="school-overview-filter-from-date"
+                                        timeTestId="school-overview-filter-from-time"
                                     />
                                 </label>
                                 <label className="text-sm text-slate-600">
                                     <span className="mb-1 block">Đến ngày</span>
-                                    <input
-                                        data-testid="school-overview-filter-to"
-                                        type="datetime-local"
-                                        value={overviewFilters.to ?? ''}
+                                    <DateTimeField
+                                        value={toDateTimeLocalValue(overviewFilters.to)}
                                         onChange={(event) =>
                                             setOverviewFilters((current) => ({
                                                 ...current,
-                                                to: event.target.value
-                                                    ? new Date(
-                                                          event.target.value,
-                                                      ).toISOString()
-                                                    : undefined,
+                                                to: event || '',
                                             }))
                                         }
-                                        className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900"
+                                        dateTestId="school-overview-filter-to-date"
+                                        timeTestId="school-overview-filter-to-time"
                                     />
                                 </label>
                                 <label className="text-sm text-slate-600">

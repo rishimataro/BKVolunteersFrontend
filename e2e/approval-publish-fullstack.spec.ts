@@ -93,7 +93,7 @@ test.describe('approval publish fullstack', () => {
                     response.request().method() === 'POST' &&
                     response.ok(),
             ),
-            page.getByRole('button', { name: 'Gửi duyệt' }).click(),
+            page.getByRole('button', { name: 'Gửi duyệt', exact: true }).click(),
         ]);
 
         await expect(
@@ -101,7 +101,7 @@ test.describe('approval publish fullstack', () => {
         ).toBeVisible();
 
         await login(page, 'reviewer');
-        await page.goto('/app/users');
+        await page.goto('/app/approvals');
         await expect(
             page.getByRole('button', {
                 name: new RegExp(campaignTitle),
@@ -119,7 +119,12 @@ test.describe('approval publish fullstack', () => {
             }),
         ).toBeVisible();
 
-        await acceptPrompt(page, 'Fullstack pre-approve');
+        await page
+            .getByRole('button', { name: 'Tiền duyệt', exact: true })
+            .click();
+        await page
+            .getByPlaceholder('Có thể để trống nếu không cần')
+            .fill('Fullstack pre-approve');
         await Promise.all([
             page.waitForResponse(
                 (response) =>
@@ -127,16 +132,17 @@ test.describe('approval publish fullstack', () => {
                     response.request().method() === 'POST' &&
                     response.ok(),
             ),
-            page
-                .getByRole('button', { name: 'Tiền duyệt', exact: true })
-                .click(),
+            page.getByRole('button', { name: 'Xác nhận', exact: true }).click(),
         ]);
 
         await expect(
             page.locator('span[title="Tiền duyệt"]').first(),
         ).toBeVisible();
 
-        await acceptPrompt(page, 'Fullstack approve');
+        await page.getByRole('button', { name: 'Duyệt', exact: true }).click();
+        await page
+            .getByPlaceholder('Có thể để trống nếu không cần')
+            .fill('Fullstack approve');
         await Promise.all([
             page.waitForResponse(
                 (response) =>
@@ -144,7 +150,7 @@ test.describe('approval publish fullstack', () => {
                     response.request().method() === 'POST' &&
                     response.ok(),
             ),
-            page.getByRole('button', { name: 'Duyệt', exact: true }).click(),
+            page.getByRole('button', { name: 'Xác nhận', exact: true }).click(),
         ]);
 
         await expect(
@@ -187,12 +193,6 @@ test.describe('approval publish fullstack', () => {
         ).toBeVisible();
     });
 });
-
-const acceptPrompt = async (page: Page, message: string) => {
-    page.once('dialog', async (dialog) => {
-        await dialog.accept(message);
-    });
-};
 
 const login = async (page: Page, role: UserRole) => {
     const credentials =

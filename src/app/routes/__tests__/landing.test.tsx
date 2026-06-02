@@ -114,4 +114,23 @@ describe('LandingRoute', () => {
         expect(screen.getByText(/Ghi nhận đóng góp/i)).toBeDefined();
         expect(screen.getByText(/Lan tỏa giá trị/i)).toBeDefined();
     });
+
+    it('renders footer legal links to real routes', () => {
+        render(
+            <MemoryRouter>
+                <LandingRoute />
+            </MemoryRouter>,
+        );
+
+        expect(
+            screen
+                .getByRole('link', { name: /điều khoản dịch vụ/i })
+                .getAttribute('href'),
+        ).toBe(paths.legal.terms.getHref());
+        expect(
+            screen
+                .getByRole('link', { name: /chính sách bảo mật/i })
+                .getAttribute('href'),
+        ).toBe(paths.legal.privacy.getHref());
+    });
 });

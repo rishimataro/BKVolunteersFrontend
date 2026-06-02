@@ -9,6 +9,7 @@ const DEFAULT_SPEC = 'e2e/approval-publish-fullstack.spec.ts'
 const frontendDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const workspaceDir = path.resolve(frontendDir, '..')
 const backendDir = path.join(workspaceDir, 'BKVolunteersBackend')
+const mockSepayScript = path.join(frontendDir, 'scripts', 'mock-sepay-v2.mjs')
 
 const isWindows = process.platform === 'win32'
 
@@ -64,6 +65,18 @@ const getDatabaseUrl = async () => {
     return envFile.DATABASE_URL
 }
 
+const toFullstackTestDatabaseUrl = (databaseUrl) => {
+    if (!databaseUrl) {
+        return databaseUrl
+    }
+
+    if (databaseUrl.includes('BKVolunteers_test')) {
+        return databaseUrl
+    }
+
+    return databaseUrl.replace(/\/([^/?]+)(\?.*)?$/u, '/BKVolunteers_test$2')
+}
+
 const waitHttpReady = async (url, timeoutMs = 90_000) => {
     const deadline = Date.now() + timeoutMs
 
@@ -95,6 +108,16 @@ const quoteWindowsArg = (value) => {
 
 const getSpawnTarget = (command, args) => {
     if (!isWindows) {
+        return {
+            command,
+            args,
+        }
+    }
+
+    if (
+        command.toLowerCase() === 'node' ||
+        /(?:^|\\)node(?:\.exe)?$/iu.test(command)
+    ) {
         return {
             command,
             args,
@@ -171,7 +194,7 @@ const stopProcess = async (child) => {
 
 const main = async () => {
     const { specs } = parseArgs(process.argv.slice(2))
-    const databaseUrl = await getDatabaseUrl()
+    const databaseUrl = toFullstackTestDatabaseUrl(await getDatabaseUrl())
 
     if (!databaseUrl || !databaseUrl.includes('BKVolunteers_test')) {
         throw new Error('Fullstack runner may only reset BKVolunteers_test')
@@ -180,6 +203,18 @@ const main = async () => {
     const sharedEnv = {
         ...process.env,
         DATABASE_URL: databaseUrl,
+        CORS_ORIGIN: 'http://127.0.0.1:3000',
+        FRONTEND_URL: 'http://127.0.0.1:3000',
+        SERVER_URL: 'http://127.0.0.1:4000',
+        SEPAY_WEBHOOK_SECRET: 'test-sepay-secret',
+        SEPAY_API_ENABLED: 'true',
+        SEPAY_API_BASE_URL: 'http://127.0.0.1:4010/v2',
+        SEPAY_API_TOKEN: 'test-sepay-api-token',
+        SEPAY_API_MODE: 'sandbox',
+        SEPAY_VA_ENABLED: 'true',
+        SEPAY_ORDER_VA_ENABLED: 'true',
+        MOCK_SEPAY_PORT: '4010',
+        MOCK_SEPAY_TOKEN: 'test-sepay-api-token',
     }
 
     await runCommand(
@@ -192,6 +227,10 @@ const main = async () => {
         env: sharedEnv,
     })
 
+    const sepayProcess = startProcess('node', [mockSepayScript], {
+        cwd: normalizedFrontendDir,
+        env: sharedEnv,
+    })
     const backendProcess = startProcess(npmCommand, ['run', 'dev'], {
         cwd: normalizedBackendDir,
         env: sharedEnv,
@@ -207,6 +246,7 @@ const main = async () => {
     })
 
     try {
+        await waitHttpReady('http://127.0.0.1:4010/__health')
         await waitHttpReady('http://127.0.0.1:4000/api-docs')
         await waitHttpReady('http://127.0.0.1:3000')
 
@@ -226,6 +266,7 @@ const main = async () => {
     } finally {
         await stopProcess(frontendProcess)
         await stopProcess(backendProcess)
+        await stopProcess(sepayProcess)
     }
 }
 

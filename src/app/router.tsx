@@ -8,7 +8,20 @@ import {
 import { DashboardLayout } from '@/components/layouts';
 import { env } from '@/config/env';
 import { paths } from '@/config/paths';
-import { ProtectedRoute } from '@/features/auth';
+import { ProtectedRoleRoute, ProtectedRoute, ROLES } from '@/features/auth';
+
+const withRoleGuard = (
+    allowedRoles: Array<(typeof ROLES)[keyof typeof ROLES]>,
+    Component: React.ComponentType,
+) => {
+    const GuardedRoute = () => (
+        <ProtectedRoleRoute allowedRoles={allowedRoles}>
+            <Component />
+        </ProtectedRoleRoute>
+    );
+
+    return GuardedRoute;
+};
 
 export const AppRouter = () => {
     const router = createBrowserRouter([
@@ -57,6 +70,22 @@ export const AppRouter = () => {
                 const { OrganizationDetailRoute } =
                     await import('./routes/organizations/slug');
                 return { Component: OrganizationDetailRoute };
+            },
+        },
+        {
+            path: paths.legal.terms.path,
+            lazy: async () => {
+                const { TermsOfServiceRoute } =
+                    await import('./routes/legal/terms');
+                return { Component: TermsOfServiceRoute };
+            },
+        },
+        {
+            path: paths.legal.privacy.path,
+            lazy: async () => {
+                const { PrivacyPolicyRoute } =
+                    await import('./routes/legal/privacy');
+                return { Component: PrivacyPolicyRoute };
             },
         },
         {
@@ -141,6 +170,16 @@ export const AppRouter = () => {
                     lazy: () =>
                         import('@/app/routes/app/users.tsx').then((m) => ({
                             Component: m.UsersRoute,
+                        })),
+                },
+                {
+                    path: paths.app.approvals.path,
+                    lazy: () =>
+                        import('@/app/routes/app/approvals.tsx').then((m) => ({
+                            Component: withRoleGuard(
+                                [ROLES.DOANTRUONG, ROLES.LCD],
+                                m.ApprovalsRoute,
+                            ),
                         })),
                 },
                 {
@@ -245,7 +284,10 @@ export const AppRouter = () => {
                     path: paths.app.auditLogs.path,
                     lazy: () =>
                         import('@/app/routes/app/audit-logs.tsx').then((m) => ({
-                            Component: m.AuditLogsRoute,
+                            Component: withRoleGuard(
+                                [ROLES.DOANTRUONG],
+                                m.AuditLogsRoute,
+                            ),
                         })),
                 },
                 {
@@ -253,7 +295,10 @@ export const AppRouter = () => {
                     lazy: () =>
                         import('@/app/routes/app/background-jobs.tsx').then(
                             (m) => ({
-                                Component: m.BackgroundJobsRoute,
+                                Component: withRoleGuard(
+                                    [ROLES.DOANTRUONG],
+                                    m.BackgroundJobsRoute,
+                                ),
                             }),
                         ),
                 },
@@ -261,7 +306,10 @@ export const AppRouter = () => {
                     path: paths.app.reports.path,
                     lazy: () =>
                         import('@/app/routes/app/reports.tsx').then((m) => ({
-                            Component: m.ReportsRoute,
+                            Component: withRoleGuard(
+                                [ROLES.DOANTRUONG, ROLES.LCD, ROLES.CLB],
+                                m.ReportsRoute,
+                            ),
                         })),
                 },
                 {
@@ -269,7 +317,10 @@ export const AppRouter = () => {
                     lazy: () =>
                         import('@/app/routes/app/certificate-templates.tsx').then(
                             (m) => ({
-                                Component: m.CertificateTemplatesRoute,
+                                Component: withRoleGuard(
+                                    [ROLES.DOANTRUONG],
+                                    m.CertificateTemplatesRoute,
+                                ),
                             }),
                         ),
                 },
@@ -278,7 +329,10 @@ export const AppRouter = () => {
                     lazy: () =>
                         import('@/app/routes/app/admin-organizations.tsx').then(
                             (m) => ({
-                                Component: m.AdminOrganizationsRoute,
+                                Component: withRoleGuard(
+                                    [ROLES.DOANTRUONG],
+                                    m.AdminOrganizationsRoute,
+                                ),
                             }),
                         ),
                 },
@@ -287,9 +341,32 @@ export const AppRouter = () => {
                     lazy: () =>
                         import('@/app/routes/app/org-settings.tsx').then(
                             (m) => ({
-                                Component: m.OrgSettingsRoute,
+                                Component: withRoleGuard(
+                                    [ROLES.CLB],
+                                    m.OrgSettingsRoute,
+                                ),
                             }),
                         ),
+                },
+                {
+                    path: paths.app.sepayOps.path,
+                    lazy: () =>
+                        import('@/app/routes/app/sepay-ops.tsx').then((m) => ({
+                            Component: withRoleGuard(
+                                [ROLES.DOANTRUONG, ROLES.LCD, ROLES.CLB],
+                                m.SepayOpsRoute,
+                            ),
+                        })),
+                },
+                {
+                    path: paths.app.titles.path,
+                    lazy: () =>
+                        import('@/app/routes/app/titles.tsx').then((m) => ({
+                            Component: withRoleGuard(
+                                [ROLES.DOANTRUONG, ROLES.LCD],
+                                m.TitlesRoute,
+                            ),
+                        })),
                 },
             ],
         },

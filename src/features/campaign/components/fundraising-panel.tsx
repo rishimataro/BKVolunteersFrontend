@@ -1,13 +1,17 @@
 import * as React from 'react';
+import { Link } from 'react-router';
 import { CircleDollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { paths } from '@/config/paths';
+import { ROLES, useUser } from '@/features/auth';
 import { StatusBadge } from '@/features/campaign/components/status-badge';
 import { toDisplayTitle } from '@/utils/display-text';
 import type {
     FundraisingDonationItem,
     FundraisingTransactionItem,
 } from '@/features/campaign/types';
+import type { SepayBankAccount } from '@/features/admin/api/sepay';
 
 const formatCurrency = (amount: number) =>
     new Intl.NumberFormat('vi-VN', {
@@ -24,6 +28,9 @@ export interface FundraisingConfig {
     currency: string;
     sepay_enabled: boolean;
     sepay_account_id: string;
+    sepay_bank_account_id: string;
+    sepay_mode: 'TRANSFER_CODE' | 'ORDER_VA';
+    sepay_va_prefix: string;
 }
 
 interface FundraisingPanelProps {
@@ -40,6 +47,14 @@ interface FundraisingPanelProps {
     onRejectDonation: (donationId: string) => void;
     onAttachTransaction: (transactionId: string, donationId: string) => void;
     onUnmatchTransaction: (transactionId: string) => void;
+    onExportDonations: (moduleId: string) => void;
+    sepayAccounts: SepayBankAccount[];
+    canSubmitSepayRequest: boolean;
+    onCreateSepayRequest: (payload: {
+        request_type: 'MAP_ACCOUNT';
+        module_id?: string;
+        note?: string;
+    }) => void;
 }
 
 export const FundraisingPanel: React.FC<FundraisingPanelProps> = ({
@@ -56,7 +71,15 @@ export const FundraisingPanel: React.FC<FundraisingPanelProps> = ({
     onRejectDonation,
     onAttachTransaction,
     onUnmatchTransaction,
+    onExportDonations,
+    sepayAccounts,
+    canSubmitSepayRequest,
+    onCreateSepayRequest,
 }) => {
+    const user = useUser();
+    const canOpenSepayOps =
+        user.data?.role === ROLES.DOANTRUONG || user.data?.role === ROLES.LCD;
+
     const [selectedDonationByTransaction, setSelectedDonationByTransaction] =
         React.useState<Record<string, string>>({});
 
@@ -70,11 +93,23 @@ export const FundraisingPanel: React.FC<FundraisingPanelProps> = ({
 
     return (
         <div className="space-y-4 border-t border-slate-200 pt-4">
-            <div className="flex items-center gap-2">
-                <CircleDollarSign className="size-4 text-blue-700" />
-                <h4 className="text-sm font-semibold text-slate-900">
-                    Vận hành gây quỹ
-                </h4>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                    <CircleDollarSign className="size-4 text-blue-700" />
+                    <h4 className="text-sm font-semibold text-slate-900">
+                        Vận hành gây quỹ
+                    </h4>
+                </div>
+                {fundraisingModuleId && canMutateCampaign ? (
+                    <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => onExportDonations(fundraisingModuleId)}
+                    >
+                        Tải CSV đóng góp
+                    </Button>
+                ) : null}
             </div>
             <select
                 value={fundraisingModuleId}
@@ -141,17 +176,103 @@ export const FundraisingPanel: React.FC<FundraisingPanelProps> = ({
                         Bật SePay
                     </label>
                     {config.sepay_enabled ? (
-                        <Input
-                            placeholder="Mã tài khoản SePay"
-                            value={config.sepay_account_id}
-                            onChange={(event) =>
-                                onConfigChange({
-                                    sepay_account_id: event.target.value,
-                                })
-                            }
-                        />
+                        <>
+                            <select
+                                value={config.sepay_bank_account_id}
+                                onChange={(event) =>
+                                    onConfigChange({
+                                        sepay_bank_account_id: event.target.value,
+                                        sepay_account_id: event.target.value,
+                                    })
+                                }
+                                className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900"
+                            >
+                                <option value="">
+                                    Chọn SePay bank_account_id
+                                </option>
+                                {sepayAccounts.map((account) => (
+                                    <option
+                                        key={account.sepay_account_id}
+                                        value={account.sepay_account_id}
+                                    >
+                                        {`${account.bank_short_name ?? account.bank_full_name ?? 'BANK'} - ${account.account_number} - ${account.sepay_account_id}`}
+                                    </option>
+                                ))}
+                            </select>
+                            <div className="flex flex-wrap items-center gap-2">
+                                {canOpenSepayOps ? (
+                                    <Link
+                                        to={paths.app.sepayOps.getHref()}
+                                        className="inline-flex h-8 items-center rounded-md border border-slate-300 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                                    >
+                                        Mở danh sách SePay account để lấy ID
+                                    </Link>
+                                ) : (
+                                    <span className="text-xs text-amber-700">
+                                        Tài khoản hiện tại không có quyền SePay Ops toàn trường.
+                                    </span>
+                                )}
+                                {sepayAccounts.length === 0 && canSubmitSepayRequest ? (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                            onCreateSepayRequest({
+                                                request_type: 'MAP_ACCOUNT',
+                                                module_id: fundraisingModuleId || undefined,
+                                                note: 'Yêu cầu cấp/mapping SePay account cho đơn vị',
+                                            })
+                                        }
+                                    >
+                                        Gửi yêu cầu duyệt
+                                    </Button>
+                                ) : null}
+                            </div>
+                            {sepayAccounts.length === 0 ? (
+                                <p className="text-xs text-amber-700">
+                                    Chưa có SePay account hợp lệ trong phạm vi đơn vị.
+                                </p>
+                            ) : null}
+                            <select
+                                value={config.sepay_mode}
+                                onChange={(event) =>
+                                    onConfigChange({
+                                        sepay_mode: event.target.value,
+                                    })
+                                }
+                                className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900"
+                            >
+                                <option value="TRANSFER_CODE">
+                                    Transfer code
+                                </option>
+                                <option value="ORDER_VA">Order VA</option>
+                            </select>
+                            {config.sepay_mode === 'ORDER_VA' ? (
+                                <Input
+                                    placeholder="VA prefix (tùy chọn)"
+                                    value={config.sepay_va_prefix}
+                                    onChange={(event) =>
+                                        onConfigChange({
+                                            sepay_va_prefix:
+                                                event.target.value,
+                                        })
+                                    }
+                                />
+                            ) : null}
+                            <p className="text-xs leading-5 text-slate-500">
+                                Dùng `bank_account_id` chuẩn SePay API v2. Chế
+                                độ `ORDER_VA` sẽ sinh tài khoản ảo và QR riêng
+                                cho từng donation.
+                            </p>
+                        </>
                     ) : null}
-                    <Button type="submit">Lưu cấu hình</Button>
+                    <Button
+                        type="submit"
+                        disabled={config.sepay_enabled && !config.sepay_bank_account_id}
+                    >
+                        Lưu cấu hình
+                    </Button>
                 </form>
             ) : null}
             <div className="space-y-2">
@@ -298,7 +419,7 @@ export const FundraisingPanel: React.FC<FundraisingPanelProps> = ({
                                     disabled={
                                         !canMutateCampaign ||
                                         transaction.match_status ===
-                                            'MATCHED' ||
+                                        'MATCHED' ||
                                         !selectedDonationId
                                     }
                                     onClick={() =>

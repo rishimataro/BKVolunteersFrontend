@@ -203,13 +203,13 @@ export const LandingRoute = () => {
                     <nav className="sm:ml-auto flex gap-4 sm:gap-6">
                         <a
                             className="text-xs hover:underline underline-offset-4"
-                            href="#"
+                            href={paths.legal.terms.getHref()}
                         >
                             Điều khoản dịch vụ
                         </a>
                         <a
                             className="text-xs hover:underline underline-offset-4"
-                            href="#"
+                            href={paths.legal.privacy.getHref()}
                         >
                             Chính sách bảo mật
                         </a>

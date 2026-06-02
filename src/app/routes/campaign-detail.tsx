@@ -4,6 +4,7 @@ import { ArrowLeft, CalendarDays, FileText } from 'lucide-react';
 
 import { Head } from '@/components/seo';
 import { Button } from '@/components/ui/button';
+import { DateTimeField } from '@/components/ui/datetime-field';
 import { Input } from '@/components/ui/input';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
@@ -22,6 +23,7 @@ import {
     ErrorState,
     LoadingState,
 } from '@/features/campaign/components/state-blocks';
+import { toIsoFromDateTimeLocal } from '@/utils/datetime-local';
 import type { PublicCampaignDetail } from '@/types/api';
 import { toDisplayText, toDisplayTitle } from '@/utils/display-text';
 
@@ -180,9 +182,9 @@ const CampaignDetailView = ({
                 item_target_id: form.item_target_id,
                 quantity: form.quantity,
                 donor_name: form.donor_name,
-                expected_handover_at: form.expected_handover_at
-                    ? new Date(form.expected_handover_at).toISOString()
-                    : undefined,
+                expected_handover_at: toIsoFromDateTimeLocal(
+                    form.expected_handover_at,
+                ),
                 note: form.note || undefined,
             });
             addNotification({
@@ -636,14 +638,13 @@ const CampaignDetailView = ({
                                                         )
                                                     }
                                                 />
-                                                <Input
-                                                    type="datetime-local"
+                                                <DateTimeField
                                                     value={
                                                         itemForm[module.id]
                                                             ?.expected_handover_at ??
                                                         ''
                                                     }
-                                                    onChange={(event) =>
+                                                    onChange={(value) =>
                                                         setItemForm(
                                                             (current) => ({
                                                                 ...current,
@@ -674,9 +675,7 @@ const CampaignDetailView = ({
                                                                             ?.donor_name ??
                                                                         `${user.data?.firstName ?? ''} ${user.data?.lastName ?? ''}`.trim(),
                                                                     expected_handover_at:
-                                                                        event
-                                                                            .target
-                                                                            .value,
+                                                                        value,
                                                                     note:
                                                                         current[
                                                                             module

@@ -11,6 +11,7 @@ import {
 import { ContentLayout } from '@/components/layouts';
 import { ActionDrawer } from '@/components/ui/action-drawer';
 import { Button } from '@/components/ui/button';
+import { DateTimeField } from '@/components/ui/datetime-field';
 import { Input } from '@/components/ui/input';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
@@ -39,6 +40,7 @@ import {
     unmatchFundraisingTransaction,
     updateFundraisingConfig,
     verifyFundraisingDonation,
+    exportFundraisingDonationsCsv,
     type FundraisingDonationItem,
     type FundraisingTransactionItem,
 } from '@/features/campaign/api/fundraising';
@@ -76,7 +78,13 @@ import {
 } from '@/features/campaign/components/state-blocks';
 import { StatusBadge } from '@/features/campaign/components/status-badge';
 import type { Meta, ModuleType, PublicCampaignCard } from '@/types/api';
+import { toIsoFromDateTimeLocal } from '@/utils/datetime-local';
 import { toDisplayText, toDisplayTitle } from '@/utils/display-text';
+import {
+    createSepayOperationRequest,
+    getSepayAccounts,
+    type SepayBankAccount,
+} from '@/features/admin/api/sepay';
 
 const moduleTypeLabel: Record<ModuleType, string> = {
     fundraising: 'Gây quỹ hiện kim',
@@ -313,6 +321,9 @@ export const CampaignsRoute = () => {
     >([]);
     const [fundraisingTransactions, setFundraisingTransactions] =
         React.useState<FundraisingTransactionItem[]>([]);
+    const [sepayAccounts, setSepayAccounts] = React.useState<SepayBankAccount[]>(
+        [],
+    );
     const [fundraisingConfig, setFundraisingConfig] = React.useState({
         target_amount: 0,
         receiver_name: '',
@@ -321,6 +332,9 @@ export const CampaignsRoute = () => {
         currency: 'VND',
         sepay_enabled: false,
         sepay_account_id: '',
+        sepay_bank_account_id: '',
+        sepay_mode: 'TRANSFER_CODE' as 'TRANSFER_CODE' | 'ORDER_VA',
+        sepay_va_prefix: '',
     });
 
     const [itemModuleId, setItemModuleId] = React.useState('');
@@ -454,7 +468,7 @@ export const CampaignsRoute = () => {
 
     const loadFundraisingData = React.useCallback(async (moduleId: string) => {
         if (!moduleId) return;
-        const [moduleDetail, donationsPage, transactionsPage] =
+        const [moduleDetail, donationsPage, transactionsPage, accounts] =
             await Promise.all([
                 getFundraisingModule(moduleId),
                 getFundraisingDonations(moduleId, { page: 1, limit: 100 }),
@@ -463,6 +477,7 @@ export const CampaignsRoute = () => {
                     page: 1,
                     limit: 100,
                 }),
+                getSepayAccounts(),
             ]);
 
         const config = moduleDetail.config ?? {};
@@ -474,9 +489,21 @@ export const CampaignsRoute = () => {
             currency: String(config.currency ?? 'VND'),
             sepay_enabled: Boolean(config.sepay_enabled),
             sepay_account_id: String(config.sepay_account_id ?? ''),
+            sepay_bank_account_id: String(
+                config.sepay_bank_account_id ??
+                    config.sepay_account_id ??
+                    '',
+            ),
+            sepay_mode:
+                String(config.sepay_mode ?? 'TRANSFER_CODE').toUpperCase() ===
+                'ORDER_VA'
+                    ? 'ORDER_VA'
+                    : 'TRANSFER_CODE',
+            sepay_va_prefix: String(config.sepay_va_prefix ?? ''),
         });
         setFundraisingDonations(donationsPage.items);
         setFundraisingTransactions(transactionsPage.items);
+        setSepayAccounts(accounts);
     }, []);
 
     const loadItemData = React.useCallback(
@@ -597,8 +624,8 @@ export const CampaignsRoute = () => {
         try {
             const payload = {
                 ...createForm,
-                start_at: new Date(createForm.start_at).toISOString(),
-                end_at: new Date(createForm.end_at).toISOString(),
+                start_at: toIsoFromDateTimeLocal(createForm.start_at) ?? '',
+                end_at: toIsoFromDateTimeLocal(createForm.end_at) ?? '',
             };
             const created = await createManagedCampaign(payload);
             addNotification({
@@ -653,8 +680,8 @@ export const CampaignsRoute = () => {
                 type: moduleForm.type,
                 title: moduleForm.title,
                 description: moduleForm.description,
-                start_at: new Date(moduleForm.start_at).toISOString(),
-                end_at: new Date(moduleForm.end_at).toISOString(),
+                start_at: toIsoFromDateTimeLocal(moduleForm.start_at) ?? '',
+                end_at: toIsoFromDateTimeLocal(moduleForm.end_at) ?? '',
                 settings,
             });
             addNotification({
@@ -748,8 +775,20 @@ export const CampaignsRoute = () => {
             await updateFundraisingConfig(fundraisingModuleId, {
                 ...fundraisingConfig,
                 sepay_account_id: fundraisingConfig.sepay_enabled
-                    ? fundraisingConfig.sepay_account_id
+                    ? fundraisingConfig.sepay_bank_account_id
                     : null,
+                sepay_bank_account_id: fundraisingConfig.sepay_enabled
+                    ? fundraisingConfig.sepay_bank_account_id
+                    : null,
+                sepay_mode: fundraisingConfig.sepay_enabled
+                    ? fundraisingConfig.sepay_mode
+                    : 'TRANSFER_CODE',
+                sepay_va_prefix:
+                    fundraisingConfig.sepay_enabled &&
+                    fundraisingConfig.sepay_mode === 'ORDER_VA' &&
+                    fundraisingConfig.sepay_va_prefix.trim()
+                        ? fundraisingConfig.sepay_va_prefix.trim()
+                        : null,
             });
             addNotification({
                 type: 'success',
@@ -761,6 +800,53 @@ export const CampaignsRoute = () => {
             addNotification({
                 type: 'error',
                 title: 'Lưu cấu hình thất bại',
+                message:
+                    error instanceof Error ? error.message : 'Lỗi hệ thống',
+            });
+        }
+    };
+
+    const handleExportDonations = async (moduleId: string) => {
+        try {
+            const blob = await exportFundraisingDonationsCsv(moduleId);
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `donations_${moduleId}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            addNotification({
+                type: 'success',
+                title: 'Xuất CSV thành công',
+                message: 'Tệp CSV đã được tải xuống.',
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                title: 'Lỗi',
+                message: 'Không thể xuất danh sách đóng góp.',
+            });
+        }
+    };
+
+    const onCreateSepayRequest = async (payload: {
+        request_type: 'MAP_ACCOUNT';
+        module_id?: string;
+        note?: string;
+    }) => {
+        try {
+            await createSepayOperationRequest(payload);
+            addNotification({
+                type: 'success',
+                title: 'Đã gửi yêu cầu duyệt',
+                message: 'LCD/Đoàn trường sẽ xem và xử lý yêu cầu SePay.',
+            });
+        } catch (error) {
+            addNotification({
+                type: 'error',
+                title: 'Gửi yêu cầu thất bại',
                 message:
                     error instanceof Error ? error.message : 'Lỗi hệ thống',
             });
@@ -1423,24 +1509,21 @@ export const CampaignsRoute = () => {
                                         }
                                     />
                                     <div className="grid gap-3 sm:grid-cols-2">
-                                        <Input
-                                            type="datetime-local"
+                                        <DateTimeField
                                             value={createForm.start_at}
-                                            onChange={(event) =>
+                                            onChange={(value) =>
                                                 setCreateForm((current) => ({
                                                     ...current,
-                                                    start_at:
-                                                        event.target.value,
+                                                    start_at: value,
                                                 }))
                                             }
                                         />
-                                        <Input
-                                            type="datetime-local"
+                                        <DateTimeField
                                             value={createForm.end_at}
-                                            onChange={(event) =>
+                                            onChange={(value) =>
                                                 setCreateForm((current) => ({
                                                     ...current,
-                                                    end_at: event.target.value,
+                                                    end_at: value,
                                                 }))
                                             }
                                         />
@@ -1567,29 +1650,24 @@ export const CampaignsRoute = () => {
                                             }
                                         />
                                         <div className="grid gap-3 sm:grid-cols-2">
-                                            <Input
-                                                type="datetime-local"
+                                            <DateTimeField
                                                 value={moduleForm.start_at}
-                                                onChange={(event) =>
+                                                onChange={(value) =>
                                                     setModuleForm(
                                                         (current) => ({
                                                             ...current,
-                                                            start_at:
-                                                                event.target
-                                                                    .value,
+                                                            start_at: value,
                                                         }),
                                                     )
                                                 }
                                             />
-                                            <Input
-                                                type="datetime-local"
+                                            <DateTimeField
                                                 value={moduleForm.end_at}
-                                                onChange={(event) =>
+                                                onChange={(value) =>
                                                     setModuleForm(
                                                         (current) => ({
                                                             ...current,
-                                                            end_at: event.target
-                                                                .value,
+                                                            end_at: value,
                                                         }),
                                                     )
                                                 }
@@ -1805,6 +1883,12 @@ export const CampaignsRoute = () => {
                                         onUnmatchTransaction={
                                             onUnmatchTransaction
                                         }
+                                        onExportDonations={handleExportDonations}
+                                        sepayAccounts={sepayAccounts}
+                                        canSubmitSepayRequest={
+                                            role === ROLES.CLB || role === ROLES.LCD
+                                        }
+                                        onCreateSepayRequest={onCreateSepayRequest}
                                     />
                                 ) : null}
 

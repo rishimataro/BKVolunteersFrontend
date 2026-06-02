@@ -11,6 +11,44 @@ export type {
     FundraisingTransactionItem,
 };
 
+export type FundraisingDonationPaymentDetail = {
+    id: string;
+    status: DonationStatus;
+    payment_mode?: 'TRANSFER_CODE' | 'ORDER_VA' | string;
+    payment_instruction?: {
+        receiver_name?: string | null;
+        bank_name?: string | null;
+        bank_account_no?: string | null;
+        payment_code?: string | null;
+        transfer_content?: string | null;
+        expires_at?: string | null;
+        vietqr_url?: string | null;
+        sepay_order_id?: string | null;
+        virtual_account?: {
+            id?: string | null;
+            va_number: string;
+            holder_name?: string | null;
+            amount?: number;
+            expires_at?: string | null;
+            status?: string | null;
+        } | null;
+        provider_qr_url?: string | null;
+        amount?: number;
+        currency?: string;
+    };
+    sepay_bank_account_id?: string | null;
+    matched_transaction_id?: string | null;
+    matched_at?: string | null;
+    verified_at?: string | null;
+    reject_reason?: string | null;
+    ingest_state?: string | null;
+    provider_references?: {
+        sepay_order_id?: string | null;
+        sepay_bank_account_id?: string | null;
+        sepay_virtual_account_id?: string | null;
+    } | null;
+};
+
 type FundraisingModuleResponse = Omit<FundraisingModuleDetail, 'config'>;
 
 export const getFundraisingModule = async (
@@ -30,25 +68,15 @@ export const createMoneyDonation = (
     moduleId: string,
     payload: { amount: number; donor_name?: string; message?: string },
 ) =>
-    api.post(`/fundraising/modules/${moduleId}/donations`, payload) as Promise<{
-        id: string;
-        status: string;
-    }>;
+    api.post(
+        `/fundraising/modules/${moduleId}/donations`,
+        payload,
+    ) as Promise<FundraisingDonationPaymentDetail>;
 
 export const getDonationById = (donationId: string) =>
-    api.get(`/fundraising/donations/${donationId}`) as Promise<{
-        id: string
-        status: string
-        payment_instruction?: {
-            payment_code?: string | null
-            transfer_content?: string | null
-            expires_at?: string | null
-            vietqr_url?: string | null
-            amount?: number
-            currency?: string
-        }
-        matched_transaction_id?: string | null
-    }>
+    api.get(
+        `/fundraising/donations/${donationId}`,
+    ) as Promise<FundraisingDonationPaymentDetail>;
 
 export const updateFundraisingConfig = (
     moduleId: string,
@@ -60,6 +88,9 @@ export const updateFundraisingConfig = (
         currency?: string;
         sepay_enabled?: boolean;
         sepay_account_id?: string | null;
+        sepay_bank_account_id?: string | null;
+        sepay_mode?: 'TRANSFER_CODE' | 'ORDER_VA';
+        sepay_va_prefix?: string | null;
     },
 ) =>
     api.patch(`/fundraising/modules/${moduleId}/config`, payload) as Promise<{
@@ -99,11 +130,11 @@ export const verifyFundraisingDonation = (
         `/fundraising/donations/${donationId}/verify`,
         payload
             ? {
-                  ...payload,
-                  transaction_id: payload.transaction_id
-                      ? String(payload.transaction_id)
-                      : undefined,
-              }
+                ...payload,
+                transaction_id: payload.transaction_id
+                    ? String(payload.transaction_id)
+                    : undefined,
+            }
             : {},
     ) as Promise<{
         id: string;
@@ -152,3 +183,8 @@ export const rejectFundraisingDonation = (donationId: string, reason: string) =>
         id: string;
         status: DonationStatus;
     }>;
+
+export const exportFundraisingDonationsCsv = (moduleId: string) =>
+    api.get(`/fundraising/modules/${moduleId}/donations/export`, {
+        responseType: 'blob',
+    }) as Promise<Blob>;
