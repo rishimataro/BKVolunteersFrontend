@@ -42,3 +42,25 @@ This project is indexed by GitNexus as **BKVolunteersFrontend** (53612 symbols, 
 | Index, status, clean, wiki CLI commands      | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md`             |
 
 <!-- gitnexus:end -->
+
+# Vietnamese UI Copy Lock
+
+Tất cả nội dung hiển thị cho người dùng cuối phải là tiếng Việt có dấu, đúng chính tả và tự nhiên.
+
+Bắt buộc:
+
+- Mọi label, button, menu, tiêu đề, placeholder, validation message, toast, empty state, modal, tooltip phải dùng tiếng Việt có dấu.
+- Không được viết tiếng Việt không dấu như: "Dang nhap", "Quan ly", "Cap nhat", "Thong tin".
+- Không được tự ý chuyển nội dung tiếng Việt có dấu thành ASCII.
+- Chỉ được bỏ dấu trong slug, route path, enum, key, className, biến code, mã định danh kỹ thuật.
+- Không đổi tên API field, database column, env key, route hoặc permission key sang tiếng Việt có dấu.
+- Nếu gặp text không dấu, phải sửa sang tiếng Việt có dấu trước khi hoàn thành task.
+- Trước khi báo hoàn tất, phải tự kiểm tra lại toàn bộ UI copy đã sửa.
+
+Ví dụ sửa đúng:
+
+- "Dang nhap" -> "Đăng nhập"
+- "Quan ly nguoi dung" -> "Quản lý người dùng"
+- "Cap nhat thanh cong" -> "Cập nhật thành công"
+- "Khong co du lieu" -> "Không có dữ liệu"
+- "Vui long nhap email" -> "Vui lòng nhập email"
