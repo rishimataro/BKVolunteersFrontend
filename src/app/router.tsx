@@ -6,8 +6,22 @@ import {
 } from 'react-router';
 
 import { DashboardLayout } from '@/components/layouts';
+import { env } from '@/config/env';
 import { paths } from '@/config/paths';
-import { ProtectedRoute } from '@/features/auth';
+import { ProtectedRoleRoute, ProtectedRoute, ROLES } from '@/features/auth';
+
+const withRoleGuard = (
+    allowedRoles: Array<(typeof ROLES)[keyof typeof ROLES]>,
+    Component: React.ComponentType,
+) => {
+    const GuardedRoute = () => (
+        <ProtectedRoleRoute allowedRoles={allowedRoles}>
+            <Component />
+        </ProtectedRoleRoute>
+    );
+
+    return GuardedRoute;
+};
 
 export const AppRouter = () => {
     const router = createBrowserRouter([
@@ -17,6 +31,71 @@ export const AppRouter = () => {
                 const { LandingRoute } = await import('./routes/landing');
                 return { Component: LandingRoute };
             },
+        },
+        {
+            path: paths.campaigns.path,
+            lazy: async () => {
+                const { PublicCampaignsRoute } =
+                    await import('./routes/campaigns');
+                return { Component: PublicCampaignsRoute };
+            },
+        },
+        {
+            path: paths.campaigns.detail.path,
+            lazy: async () => {
+                const { PublicCampaignDetailRoute } =
+                    await import('./routes/campaign-detail');
+                return { Component: PublicCampaignDetailRoute };
+            },
+        },
+        {
+            path: paths.certificates.verify.path,
+            lazy: async () => {
+                const { CertificateVerifyRoute } =
+                    await import('./routes/certificates/verify');
+                return { Component: CertificateVerifyRoute };
+            },
+        },
+        {
+            path: paths.organizations.path,
+            lazy: async () => {
+                const { OrganizationsRoute } =
+                    await import('./routes/organizations');
+                return { Component: OrganizationsRoute };
+            },
+        },
+        {
+            path: paths.organizations.detail.path,
+            lazy: async () => {
+                const { OrganizationDetailRoute } =
+                    await import('./routes/organizations/slug');
+                return { Component: OrganizationDetailRoute };
+            },
+        },
+        {
+            path: paths.legal.terms.path,
+            lazy: async () => {
+                const { TermsOfServiceRoute } =
+                    await import('./routes/legal/terms');
+                return { Component: TermsOfServiceRoute };
+            },
+        },
+        {
+            path: paths.legal.privacy.path,
+            lazy: async () => {
+                const { PrivacyPolicyRoute } =
+                    await import('./routes/legal/privacy');
+                return { Component: PrivacyPolicyRoute };
+            },
+        },
+        {
+            path: paths.auth.register.path,
+            element: (
+                <Navigate
+                    to={paths.campaigns.getHref()}
+                    replace
+                />
+            ),
         },
         {
             path: paths.auth.login.path,
@@ -50,6 +129,26 @@ export const AppRouter = () => {
             },
         },
         {
+            path: paths.auth.microsoftCallback.path,
+            lazy: async () => {
+                const { MicrosoftCallbackPage } =
+                    await import('./routes/auth/microsoft-callback');
+                return { Component: MicrosoftCallbackPage };
+            },
+        },
+        ...(env.ENABLE_API_MOCKING
+            ? [
+                  {
+                      path: paths.auth.microsoftMockLogin.path,
+                      lazy: async () => {
+                          const { MicrosoftMockLoginPage } =
+                              await import('./routes/auth/microsoft-mock-login');
+                          return { Component: MicrosoftMockLoginPage };
+                      },
+                  },
+              ]
+            : []),
+        {
             path: paths.app.root.path,
             element: (
                 <ProtectedRoute>
@@ -74,6 +173,16 @@ export const AppRouter = () => {
                         })),
                 },
                 {
+                    path: paths.app.approvals.path,
+                    lazy: () =>
+                        import('@/app/routes/app/approvals.tsx').then((m) => ({
+                            Component: withRoleGuard(
+                                [ROLES.DOANTRUONG, ROLES.LCD],
+                                m.ApprovalsRoute,
+                            ),
+                        })),
+                },
+                {
                     path: paths.app.profile.path,
                     lazy: () =>
                         import('@/app/routes/app/profile.tsx').then((m) => ({
@@ -88,10 +197,175 @@ export const AppRouter = () => {
                         })),
                 },
                 {
+                    path: paths.app.campaigns.detail.path,
+                    lazy: () =>
+                        import('@/app/routes/app/campaign-detail.tsx').then(
+                            (m) => ({
+                                Component: m.AppCampaignDetailRoute,
+                            }),
+                        ),
+                },
+                {
+                    path: paths.app.campaigns.preview.path,
+                    lazy: () =>
+                        import('@/app/routes/app/campaign-preview.tsx').then(
+                            (m) => ({
+                                Component: m.CampaignPreviewRoute,
+                            }),
+                        ),
+                },
+                {
                     path: paths.app.settings.path,
                     lazy: () =>
                         import('@/app/routes/app/settings.tsx').then((m) => ({
                             Component: m.SettingsRoute,
+                        })),
+                },
+                {
+                    path: paths.app.changePassword.path,
+                    lazy: () =>
+                        import('@/app/routes/app/change-password.tsx').then(
+                            (m) => ({
+                                Component: m.ChangePasswordRoute,
+                            }),
+                        ),
+                },
+                {
+                    path: paths.app.certificates.path,
+                    lazy: () =>
+                        import('@/app/routes/app/certificates.tsx').then(
+                            (m) => ({
+                                Component: m.CertificatesRoute,
+                            }),
+                        ),
+                },
+                {
+                    path: paths.app.myDonations.path,
+                    lazy: () =>
+                        import('@/app/routes/app/my-donations.tsx').then(
+                            (m) => ({
+                                Component: m.MyDonationsRoute,
+                            }),
+                        ),
+                },
+                {
+                    path: paths.app.donate.path,
+                    lazy: () =>
+                        import('@/app/routes/app/donate.tsx').then((m) => ({
+                            Component: m.DonateRoute,
+                        })),
+                },
+                {
+                    path: paths.app.donationPayment.path,
+                    lazy: () =>
+                        import('@/app/routes/app/donation-payment.tsx').then((m) => ({
+                            Component: m.DonationPaymentRoute,
+                        })),
+                },
+                {
+                    path: paths.app.eventManagement.path,
+                    lazy: () =>
+                        import('@/app/routes/app/event-management.tsx').then(
+                            (m) => ({
+                                Component: m.EventManagementRoute,
+                            }),
+                        ),
+                },
+                {
+                    path: paths.app.certificates.campaigns.path,
+                    lazy: () =>
+                        import('@/app/routes/app/campaign-certificates.tsx').then(
+                            (m) => ({
+                                Component: m.CampaignCertificatesRoute,
+                            }),
+                        ),
+                },
+                {
+                    path: paths.app.auditLogs.path,
+                    lazy: () =>
+                        import('@/app/routes/app/audit-logs.tsx').then((m) => ({
+                            Component: withRoleGuard(
+                                [ROLES.DOANTRUONG],
+                                m.AuditLogsRoute,
+                            ),
+                        })),
+                },
+                {
+                    path: paths.app.backgroundJobs.path,
+                    lazy: () =>
+                        import('@/app/routes/app/background-jobs.tsx').then(
+                            (m) => ({
+                                Component: withRoleGuard(
+                                    [ROLES.DOANTRUONG],
+                                    m.BackgroundJobsRoute,
+                                ),
+                            }),
+                        ),
+                },
+                {
+                    path: paths.app.reports.path,
+                    lazy: () =>
+                        import('@/app/routes/app/reports.tsx').then((m) => ({
+                            Component: withRoleGuard(
+                                [ROLES.DOANTRUONG, ROLES.LCD, ROLES.CLB],
+                                m.ReportsRoute,
+                            ),
+                        })),
+                },
+                {
+                    path: paths.app.certificateTemplates.path,
+                    lazy: () =>
+                        import('@/app/routes/app/certificate-templates.tsx').then(
+                            (m) => ({
+                                Component: withRoleGuard(
+                                    [ROLES.DOANTRUONG],
+                                    m.CertificateTemplatesRoute,
+                                ),
+                            }),
+                        ),
+                },
+                {
+                    path: paths.app.adminOrganizations.path,
+                    lazy: () =>
+                        import('@/app/routes/app/admin-organizations.tsx').then(
+                            (m) => ({
+                                Component: withRoleGuard(
+                                    [ROLES.DOANTRUONG],
+                                    m.AdminOrganizationsRoute,
+                                ),
+                            }),
+                        ),
+                },
+                {
+                    path: paths.app.orgSettings.path,
+                    lazy: () =>
+                        import('@/app/routes/app/org-settings.tsx').then(
+                            (m) => ({
+                                Component: withRoleGuard(
+                                    [ROLES.CLB],
+                                    m.OrgSettingsRoute,
+                                ),
+                            }),
+                        ),
+                },
+                {
+                    path: paths.app.sepayOps.path,
+                    lazy: () =>
+                        import('@/app/routes/app/sepay-ops.tsx').then((m) => ({
+                            Component: withRoleGuard(
+                                [ROLES.DOANTRUONG, ROLES.LCD, ROLES.CLB],
+                                m.SepayOpsRoute,
+                            ),
+                        })),
+                },
+                {
+                    path: paths.app.titles.path,
+                    lazy: () =>
+                        import('@/app/routes/app/titles.tsx').then((m) => ({
+                            Component: withRoleGuard(
+                                [ROLES.DOANTRUONG, ROLES.LCD],
+                                m.TitlesRoute,
+                            ),
                         })),
                 },
             ],

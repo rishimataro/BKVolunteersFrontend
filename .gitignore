@@ -29,6 +29,10 @@ storybook-static
 .env.development.local
 .env.test.local
 .env.production.local
+.ops-releases/
+.vite-smoke.err.log
+.vite-smoke.out.log
+debug.log
 
 npm-debug.log*
 yarn-debug.log*

@@ -55,3 +55,30 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
     return children;
 };
+
+export const ProtectedRoleRoute = ({
+    allowedRoles,
+    children,
+    forbiddenFallback,
+}: {
+    allowedRoles: RoleTypes[];
+    children: React.ReactNode;
+    forbiddenFallback?: React.ReactNode;
+}) => {
+    return (
+        <ProtectedRoute>
+            <Authorization
+                allowedRoles={allowedRoles}
+                forbiddenFallback={
+                    forbiddenFallback ?? (
+                        <div className="rounded-xl border border-slate-200 bg-white p-5 text-sm text-slate-600">
+                            Vai trò hiện tại không có quyền truy cập màn hình này.
+                        </div>
+                    )
+                }
+            >
+                {children}
+            </Authorization>
+        </ProtectedRoute>
+    );
+};

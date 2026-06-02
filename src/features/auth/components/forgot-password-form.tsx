@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Link } from '@/components/ui/link';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
+import { forgotPassword } from '@/features/auth/api/auth';
 
 import {
     PasswordRecoveryShell,
@@ -13,18 +14,16 @@ import {
     authInputClass,
     authPrimaryButtonClass,
 } from './password-recovery-shell';
-import {
-    RECOVERY_DEMO_CODE,
-    startPasswordRecovery,
-} from '../lib/password-recovery';
+import { startPasswordRecovery } from '../lib/password-recovery';
 
 export const ForgotPasswordForm = () => {
     const { addNotification } = useNotifications();
     const navigate = useNavigate();
     const [email, setEmail] = React.useState('');
     const [error, setError] = React.useState('');
+    const [isLoading, setIsLoading] = React.useState(false);
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         if (!email.trim()) {
@@ -32,21 +31,29 @@ export const ForgotPasswordForm = () => {
             return;
         }
 
-        startPasswordRecovery(email.trim());
+        setIsLoading(true);
         setError('');
 
-        addNotification({
-            type: 'success',
-            title: 'Đã gửi mã xác thực',
-            message: `Mã demo đã được gửi tới ${email.trim()}. Dùng mã ${RECOVERY_DEMO_CODE} để tiếp tục.`,
-            duration: 8000,
-        });
+        try {
+            await forgotPassword({ email: email.trim() });
+            startPasswordRecovery(email.trim());
 
-        navigate(paths.auth.verifyCode.getHref());
+            addNotification({
+                type: 'success',
+                title: 'Đã gửi mã xác thực',
+                message: `Mã xác thực đã được gửi tới ${email.trim()}. Vui lòng kiểm tra hộp thư.`,
+                duration: 8000,
+            });
+
+            navigate(paths.auth.verifyCode.getHref());
+        } catch {
+            setError('Có lỗi xảy ra. Vui lòng thử lại sau.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
-        // Start section: Forgot-password-form
         <PasswordRecoveryShell
             activeStep={1}
             pageTitle="Khôi phục mật khẩu"
@@ -55,9 +62,7 @@ export const ForgotPasswordForm = () => {
             assetSrc="/forgot-password.svg"
             assetAlt="Minh họa nhập email khôi phục mật khẩu"
         >
-            {/* Start: Form forgot-password */}
             <form onSubmit={handleSubmit} className="space-y-7" noValidate>
-                {/* Email field */}
                 <div>
                     <Label
                         className="block mb-2 text-base font-semibold sm:text-lg text-slate-600"
@@ -87,20 +92,15 @@ export const ForgotPasswordForm = () => {
                     )}
                 </div>
 
-                {/* Helper message */}
-                <div className="rounded-[1.35rem] border border-[#79D7BE]/35 bg-[#79D7BE]/10 px-5 py-4 text-sm leading-6 text-slate-500">
-                    Mã xác thực sẽ được mô phỏng ở giao diện frontend để bạn
-                    tiếp tục qua bước nhập mã trước khi đặt mật khẩu mới.
-                </div>
-
-                {/* Button continue */}
-                <button type="submit" className={authPrimaryButtonClass}>
-                    Tiếp tục
+                <button
+                    type="submit"
+                    className={authPrimaryButtonClass}
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Đang gửi...' : 'Tiếp tục'}
                 </button>
             </form>
-            {/* End: Form forgot-password */}
 
-            {/* Footer link */}
             <div className="mt-7 text-center text-sm text-slate-500 sm:text-left">
                 Đã nhớ mật khẩu?{' '}
                 <Link
@@ -111,6 +111,5 @@ export const ForgotPasswordForm = () => {
                 </Link>
             </div>
         </PasswordRecoveryShell>
-        // End section: Forgot-password-form
     );
 };

@@ -1,7 +1,11 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, type Mock } from 'vitest';
 import { MemoryRouter, Routes, Route } from 'react-router';
-import { ProtectedRoute, Authorization } from '../lib/authorization';
+import {
+    ProtectedRoleRoute,
+    ProtectedRoute,
+    Authorization,
+} from '../lib/authorization';
 import { ROLES } from '../lib/authorization-hooks';
 import { useUser } from '../lib/auth-provider';
 
@@ -12,7 +16,7 @@ vi.mock('../lib/auth-provider', () => ({
 
 describe('ProtectedRoute', () => {
     it('redirects to login if user is not authenticated', () => {
-        (useUser as vi.Mock).mockReturnValue({ data: null });
+        (useUser as Mock).mockReturnValue({ data: null });
 
         render(
             <MemoryRouter initialEntries={['/app']}>
@@ -40,8 +44,8 @@ describe('ProtectedRoute', () => {
     });
 
     it('renders children if user is authenticated', () => {
-        (useUser as vi.Mock).mockReturnValue({
-            data: { id: '1', role: ROLES.USER },
+        (useUser as Mock).mockReturnValue({
+            data: { id: '1', role: ROLES.SINHVIEN },
         });
 
         render(
@@ -59,12 +63,12 @@ describe('ProtectedRoute', () => {
 
 describe('Authorization', () => {
     it('renders children if role is allowed', () => {
-        (useUser as vi.Mock).mockReturnValue({
-            data: { id: '1', role: ROLES.ADMIN },
+        (useUser as Mock).mockReturnValue({
+            data: { id: '1', role: ROLES.DOANTRUONG },
         });
 
         render(
-            <Authorization allowedRoles={[ROLES.ADMIN]}>
+            <Authorization allowedRoles={[ROLES.DOANTRUONG]}>
                 <div data-testid="authorized">Admin Only Content</div>
             </Authorization>,
         );
@@ -73,13 +77,13 @@ describe('Authorization', () => {
     });
 
     it('renders forbiddenFallback if role is not allowed', () => {
-        (useUser as vi.Mock).mockReturnValue({
-            data: { id: '1', role: ROLES.USER },
+        (useUser as Mock).mockReturnValue({
+            data: { id: '1', role: ROLES.SINHVIEN },
         });
 
         render(
             <Authorization
-                allowedRoles={[ROLES.ADMIN]}
+                allowedRoles={[ROLES.DOANTRUONG]}
                 forbiddenFallback={<div data-testid="forbidden">Forbidden</div>}
             >
                 <div data-testid="authorized">Admin Only Content</div>
@@ -88,5 +92,38 @@ describe('Authorization', () => {
 
         expect(screen.queryByTestId('authorized')).toBeNull();
         expect(screen.getByTestId('forbidden')).toBeDefined();
+    });
+});
+
+describe('ProtectedRoleRoute', () => {
+    it('renders forbidden fallback for authenticated users without role access', () => {
+        (useUser as Mock).mockReturnValue({
+            data: { id: '1', role: ROLES.SINHVIEN },
+        });
+
+        render(
+            <MemoryRouter initialEntries={['/app/audit-logs']}>
+                <Routes>
+                    <Route
+                        path="/app/audit-logs"
+                        element={
+                            <ProtectedRoleRoute
+                                allowedRoles={[ROLES.DOANTRUONG]}
+                                forbiddenFallback={
+                                    <div data-testid="role-forbidden">
+                                        Forbidden by role
+                                    </div>
+                                }
+                            >
+                                <div data-testid="role-protected">Role Only</div>
+                            </ProtectedRoleRoute>
+                        }
+                    />
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        expect(screen.queryByTestId('role-protected')).toBeNull();
+        expect(screen.getByTestId('role-forbidden')).toBeDefined();
     });
 });

@@ -5,10 +5,15 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
+    const localPort = Number(env.VITE_APP_LOCAL_PORT || env.PORT) || 3000;
     return {
         base: './',
         server: {
-            port: Number(env.PORT) || 3000,
+            port: localPort,
+            allowedHosts: ['bkvolunteer.magure.app', 'localhost'],
+        },
+        preview: {
+            port: localPort,
         },
         plugins: [
             react({
