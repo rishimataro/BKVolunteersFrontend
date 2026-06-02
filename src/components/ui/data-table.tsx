@@ -1,8 +1,10 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
-import { Spinner } from './spinner';
-import { Button } from './button';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
+
+import { Button } from './button';
+import { Spinner } from './spinner';
 
 export interface Column<T> {
     key: string;
@@ -39,7 +41,7 @@ function DataTable<T>({
     data,
     keyExtractor,
     isLoading,
-    emptyMessage = 'Không có dữ liệu',
+    emptyMessage = 'Không có dữ liệu phù hợp',
     pagination,
     sortKey,
     sortOrder,
@@ -49,21 +51,21 @@ function DataTable<T>({
     return (
         <div
             className={cn(
-                'overflow-hidden rounded-xl border border-slate-200 bg-white',
+                'overflow-hidden border border-[#E5E7EB] bg-white',
                 className,
             )}
         >
             <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="min-w-full text-left text-[16px] leading-[1.7] text-[#0A0A0A]">
                     <thead>
-                        <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold uppercase text-slate-500">
+                        <tr className="border-b border-[#0A0A0A] bg-[#F9FAFB] text-left text-[12px] font-semibold uppercase tracking-[0.16em] text-[#4B5563]">
                             {columns.map((col) => (
                                 <th
                                     key={col.key}
                                     className={cn(
-                                        'px-4 py-3',
+                                        'px-4 py-3.5 align-middle first:pl-5 last:pr-5',
                                         col.sortable &&
-                                            'cursor-pointer select-none hover:text-slate-700',
+                                            'cursor-pointer select-none hover:text-[#0A0A0A]',
                                         col.headerClassName,
                                     )}
                                     onClick={() => {
@@ -72,52 +74,57 @@ function DataTable<T>({
                                         }
                                     }}
                                 >
-                                    <span className="inline-flex items-center gap-1">
+                                    <span className="inline-flex items-center gap-2">
                                         {col.header}
                                         {col.sortable &&
-                                            sortKey ===
-                                                (col.sortKey ?? col.key) && (
-                                                <span>
-                                                    {sortOrder === 'asc'
-                                                        ? '↑'
-                                                        : '↓'}
-                                                </span>
-                                            )}
+                                        sortKey === (col.sortKey ?? col.key) ? (
+                                            <span className="text-[#0A0A0A]">
+                                                {sortOrder === 'asc'
+                                                    ? '↑'
+                                                    : '↓'}
+                                            </span>
+                                        ) : null}
                                     </span>
                                 </th>
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100">
+                    <tbody className="divide-y divide-[#E5E7EB]">
                         {isLoading ? (
                             <tr>
                                 <td
                                     colSpan={columns.length}
-                                    className="px-4 py-12 text-center text-sm text-slate-500"
+                                    className="px-4 py-16 text-center text-[16px] text-[#4B5563]"
                                 >
-                                    <Spinner size="md" />
+                                    <div className="flex flex-col items-center gap-3">
+                                        <Spinner size="md" />
+                                        <span>Đang tải bảng dữ liệu...</span>
+                                    </div>
                                 </td>
                             </tr>
                         ) : data.length === 0 ? (
                             <tr>
                                 <td
                                     colSpan={columns.length}
-                                    className="px-4 py-12 text-center text-sm text-slate-500"
+                                    className="px-4 py-16 text-center text-[16px] text-[#4B5563]"
                                 >
                                     {emptyMessage}
                                 </td>
                             </tr>
                         ) : (
-                            data.map((item) => (
+                            data.map((item, rowIndex) => (
                                 <tr
                                     key={keyExtractor(item)}
-                                    className="hover:bg-slate-50"
+                                    className={cn(
+                                        'align-top transition-colors hover:bg-[#F9FAFB]',
+                                        rowIndex % 2 === 1 && 'bg-[#FCFCFC]',
+                                    )}
                                 >
                                     {columns.map((col) => (
                                         <td
                                             key={col.key}
                                             className={cn(
-                                                'px-4 py-3',
+                                                'px-4 py-4 first:pl-5 last:pr-5',
                                                 col.className,
                                             )}
                                         >
@@ -130,11 +137,15 @@ function DataTable<T>({
                     </tbody>
                 </table>
             </div>
-            {pagination && pagination.totalPages > 1 && (
-                <div className="flex items-center justify-between border-t border-slate-200 px-4 py-3">
-                    <p className="text-sm text-slate-500">
-                        Trang {pagination.page} / {pagination.totalPages} (Tổng:{' '}
-                        {pagination.total})
+            {pagination && pagination.totalPages > 1 ? (
+                <div className="flex flex-col gap-3 border-t border-[#E5E7EB] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-[14px] leading-[1.5] text-[#4B5563]">
+                        Trang {pagination.page} / {pagination.totalPages}. Tổng
+                        cộng{' '}
+                        <span className="font-semibold text-[#0A0A0A]">
+                            {pagination.total.toLocaleString('vi-VN')}
+                        </span>{' '}
+                        bản ghi.
                     </p>
                     <div className="flex items-center gap-2">
                         <Button
@@ -146,6 +157,7 @@ function DataTable<T>({
                             }
                         >
                             <ChevronLeftIcon className="size-4" />
+                            Trước
                         </Button>
                         <Button
                             variant="outline"
@@ -155,11 +167,12 @@ function DataTable<T>({
                                 pagination.onPageChange(pagination.page + 1)
                             }
                         >
+                            Sau
                             <ChevronRightIcon className="size-4" />
                         </Button>
                     </div>
                 </div>
-            )}
+            ) : null}
         </div>
     );
 }

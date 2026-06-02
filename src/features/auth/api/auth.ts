@@ -37,7 +37,8 @@ export const getUser = async (): Promise<User | null> => {
     }
 };
 
-export const logout = (_refreshToken?: string | null): Promise<void> => {
+export const logout = (refreshToken?: string | null): Promise<void> => {
+    void refreshToken;
     return api.post('/auth/logout');
 };
 
