@@ -7,8 +7,8 @@ import { Head } from '../seo';
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
     return (
         <>
-            <Head title="Dashboard" />
-            <div className="flex min-h-screen w-full bg-background text-foreground transition-colors duration-300">
+            <Head title="BK Volunteers" />
+            <div className="flex min-h-screen w-full bg-slate-50 text-slate-900 transition-colors duration-300">
                 {/* Desktop Sidebar */}
                 <Sidebar />
 

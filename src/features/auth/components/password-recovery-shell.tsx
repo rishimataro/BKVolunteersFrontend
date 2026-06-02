@@ -39,7 +39,7 @@ export const authPrimaryButtonClass =
     'inline-flex h-12 sm:h-14 w-full items-center justify-center rounded-full bg-[#4DA1A9] px-4 sm:px-6 text-[1.05rem] font-semibold text-white shadow-[5px_20px_20px_-24px_rgba(77,161,169,0.95)] transition-all duration-200 hover:bg-[#428f96] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#79D7BE]/50 active:translate-y-0 active:scale-[0.985]';
 
 export const authSecondaryButtonClass =
-    'inline-flex h-12 sm:h-14 w-full items-center justify-center rounded-full border border-slate-300 bg-white/95 px-4 sm:px-6 text-base font-medium text-slate-400 transition-all duration-200 hover:border-[#79D7BE] hover:text-[#2E5077] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-200 active:translate-y-0 active:scale-[0.985]';
+    'inline-flex h-12 sm:h-14 w-full items-center justify-center rounded-full border border-slate-300 bg-white/95 px-4 sm:px-6 text-base font-medium text-slate-700 transition-all duration-200 hover:border-[#79D7BE] hover:text-[#2E5077] hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-slate-200 active:translate-y-0 active:scale-[0.985]';
 
 export const authHelperLinkClass =
     'font-semibold text-[#2E5077] transition-colors duration-200 hover:text-[#4DA1A9] hover:underline';
@@ -115,7 +115,7 @@ export const PasswordRecoveryShell = ({
                                                                     ? 'border-[#4DA1A9] bg-[#4DA1A9] text-white shadow-[0_20px_40px_-28px_rgba(77,161,169,0.95)]'
                                                                     : isCompleted
                                                                       ? 'border-[#79D7BE] bg-[#79D7BE]/25 text-[#2E5077]'
-                                                                      : 'border-slate-200 bg-white/85 text-slate-400'
+                    : 'border-slate-200 bg-white/85 text-slate-600'
                                                             }`}
                                                         >
                                                             <Icon className="h-4 w-4" />

@@ -29,6 +29,12 @@ storybook-static
 .env.development.local
 .env.test.local
 .env.production.local
+.ops-releases/
+.vite-smoke.err.log
+.vite-smoke.out.log
+tsconfig.app.tsbuildinfo
+tsconfig.node.tsbuildinfo
+debug.log
 
 npm-debug.log*
 yarn-debug.log*
@@ -40,3 +46,6 @@ mocked-db.json
 
 
 
+
+.codex-frontend.err.log
+.codex-frontend.out.log

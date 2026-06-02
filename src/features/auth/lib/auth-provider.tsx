@@ -31,17 +31,26 @@ const authConfig = {
     },
     loginFn: async (data: LoginInput) => {
         const response = await loginWithEmailAndPassword(data);
-        // Response already unwrapped to .data by axios interceptor
-        // response is { accessToken: string, user: User }
-        useAuthStore.getState().setAuth(response.user, response.accessToken);
-        return response.user;
+        const user = response.user ?? response.account ?? null;
+        const accessToken = response.accessToken ?? response.access_token ?? null;
+        const refreshToken =
+            response.refreshToken ?? response.refresh_token ?? null;
+
+        if (!user || !accessToken) {
+            useAuthStore.getState().clearAuth();
+            throw new Error('Login response is missing user or access token');
+        }
+
+        useAuthStore.getState().setAuth(user, accessToken, refreshToken);
+        return user;
     },
     registerFn: async () => {
         throw new Error('Register is not implemented');
     },
     logoutFn: async () => {
         try {
-            await apiLogout();
+            const refreshToken = useAuthStore.getState().refreshToken;
+            await apiLogout(refreshToken);
         } finally {
             useAuthStore.getState().clearAuth();
         }

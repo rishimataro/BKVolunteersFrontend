@@ -66,6 +66,10 @@ src/
     cp .env.example .env
     ```
 
+Mẫu production hiện có tại:
+
+- `BKVolunteersFrontend/.env.production.example`
+
 ### Development
 
 Start the development server:
@@ -94,6 +98,14 @@ pnpm test:e2e
 # Vitest UI
 pnpm test:ui
 ```
+
+## Test Accounts (Backend Seed)
+
+- Student 1: `102220001@sv1.dut.udn.vn` / `102220001`
+- Student 2: `105220001@sv1.dut.udn.vn` / `105220001`
+- Org admin: `lcd.cntt@dut.udn.vn` / `Password@123`
+- School admin: `school.admin@dut.udn.vn` / `Password@123`
+- School reviewer: `reviewer@dut.udn.vn` / `Password@123`
 
 ### Code Generation
 

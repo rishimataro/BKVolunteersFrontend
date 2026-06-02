@@ -3,6 +3,30 @@ export const paths = {
         path: '/',
         getHref: () => '/',
     },
+    campaigns: {
+        path: '/campaigns',
+        getHref: () => '/campaigns',
+        detail: {
+            path: '/campaigns/:slug',
+            getHref: (slug: string) => `/campaigns/${slug}`,
+        },
+    },
+
+    certificates: {
+        verify: {
+            path: '/certificates/verify',
+            getHref: () => '/certificates/verify',
+        },
+    },
+
+    organizations: {
+        path: '/organizations',
+        getHref: () => '/organizations',
+        detail: {
+            path: '/organizations/:slug',
+            getHref: (slug: string) => `/organizations/${slug}`,
+        },
+    },
 
     auth: {
         register: {
@@ -27,9 +51,13 @@ export const paths = {
             path: '/auth/reset-password',
             getHref: () => '/auth/reset-password',
         },
-        verifyEmail: {
-            path: '/auth/verify-email',
-            getHref: (token: string) => `/auth/verify-email?token=${token}`,
+        microsoftCallback: {
+            path: '/auth/microsoft/callback',
+            getHref: () => '/auth/microsoft/callback',
+        },
+        microsoftMockLogin: {
+            path: '/auth/microsoft/mock-login',
+            getHref: () => '/auth/microsoft/mock-login',
         },
     },
 
@@ -46,6 +74,14 @@ export const paths = {
         campaigns: {
             path: 'campaigns',
             getHref: () => '/app/campaigns',
+            detail: {
+                path: 'campaigns/:slug',
+                getHref: (slug: string) => `/app/campaigns/${slug}`,
+            },
+            preview: {
+                path: 'campaigns/:id/preview',
+                getHref: (id: string) => `/app/campaigns/${id}/preview`,
+            },
         },
         users: {
             path: 'users',
@@ -58,6 +94,59 @@ export const paths = {
         settings: {
             path: 'settings',
             getHref: () => '/app/settings',
+        },
+        changePassword: {
+            path: 'change-password',
+            getHref: () => '/app/change-password',
+        },
+        myDonations: {
+            path: 'my-donations',
+            getHref: () => '/app/my-donations',
+        },
+        donationPayment: {
+            path: 'donations/:donationId/payment',
+            getHref: (donationId: string) => `/app/donations/${donationId}/payment`,
+        },
+        donate: {
+            path: 'donate/:moduleId',
+            getHref: (moduleId: string) => `/app/donate/${moduleId}`,
+        },
+        eventManagement: {
+            path: 'events/:moduleId',
+            getHref: (moduleId: string) => `/app/events/${moduleId}`,
+        },
+        certificates: {
+            path: 'certificates',
+            getHref: () => '/app/certificates',
+            campaigns: {
+                path: 'certificates/campaigns/:campaignId',
+                getHref: (campaignId: string) =>
+                    `/app/certificates/campaigns/${campaignId}`,
+            },
+        },
+        certificateTemplates: {
+            path: 'certificate-templates',
+            getHref: () => '/app/certificate-templates',
+        },
+        adminOrganizations: {
+            path: 'organizations',
+            getHref: () => '/app/organizations',
+        },
+        orgSettings: {
+            path: 'org-settings',
+            getHref: () => '/app/org-settings',
+        },
+        auditLogs: {
+            path: 'audit-logs',
+            getHref: () => '/app/audit-logs',
+        },
+        backgroundJobs: {
+            path: 'background-jobs',
+            getHref: () => '/app/background-jobs',
+        },
+        reports: {
+            path: 'reports',
+            getHref: () => '/app/reports',
         },
     },
 } as const;

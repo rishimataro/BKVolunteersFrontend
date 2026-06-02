@@ -11,6 +11,17 @@ import type {
 } from '../types';
 import { HttpStatus } from '@/types/http';
 
+type VerifyCodeInput = {
+    email: string;
+    code: string;
+};
+
+type ResetPasswordPayload = {
+    resetToken: string;
+    newPassword: string;
+    newPasswordConfirm: string;
+};
+
 export const getUser = async (): Promise<User | null> => {
     try {
         return await api.get('/auth/me');
@@ -26,7 +37,7 @@ export const getUser = async (): Promise<User | null> => {
     }
 };
 
-export const logout = (): Promise<void> => {
+export const logout = (_refreshToken?: string | null): Promise<void> => {
     return api.post('/auth/logout');
 };
 
@@ -43,10 +54,14 @@ export const forgotPassword = (
 };
 
 export const resetPassword = (
-    token: string,
-    data: ResetPasswordInput,
+    tokenOrPayload: string | ResetPasswordPayload,
+    data?: ResetPasswordInput,
 ): Promise<GeneralResponse> => {
-    return api.post(`/password/reset-password/${token}`, data);
+    if (typeof tokenOrPayload === 'string') {
+        return api.post(`/password/reset-password/${tokenOrPayload}`, data);
+    }
+
+    return api.post('/password/reset-password', tokenOrPayload);
 };
 
 export const changePassword = (
@@ -63,4 +78,10 @@ export const sendVerificationEmail = (
 
 export const verifyEmail = (token: string): Promise<GeneralResponse> => {
     return api.get(`/verify-email/${token}`);
+};
+
+export const verifyCode = (
+    data: VerifyCodeInput,
+): Promise<{ resetToken: string }> => {
+    return api.post('/password/verify-code', data);
 };

@@ -15,7 +15,7 @@ function Spinner({
     return (
         <Loader2Icon
             role="status"
-            aria-label="Loading"
+            aria-label="Đang tải"
             className={cn('animate-spin', spinnerVariants[size], className)}
             {...props}
         />
