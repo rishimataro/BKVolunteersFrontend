@@ -7,6 +7,7 @@ import type {
     LoginInput,
     ForgotPasswordInput,
     ResetPasswordInput,
+    ChangePasswordInput,
 } from '../types';
 import { HttpStatus } from '@/types/http';
 
@@ -46,6 +47,12 @@ export const resetPassword = (
     data: ResetPasswordInput,
 ): Promise<GeneralResponse> => {
     return api.post(`/password/reset-password/${token}`, data);
+};
+
+export const changePassword = (
+    data: ChangePasswordInput,
+): Promise<GeneralResponse> => {
+    return api.patch('/auth/change-password', data);
 };
 
 export const sendVerificationEmail = (

@@ -36,6 +36,9 @@ const authConfig = {
         useAuthStore.getState().setAuth(response.user, response.accessToken);
         return response.user;
     },
+    registerFn: async () => {
+        throw new Error('Register is not implemented');
+    },
     logoutFn: async () => {
         try {
             await apiLogout();

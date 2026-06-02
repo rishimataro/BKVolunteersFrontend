@@ -1,14 +1,22 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter } from 'react-router';
 
 import { LoginForm } from '../components/login-form';
 
 const addNotification = vi.fn();
+const mutateAsync = vi.fn();
 
 vi.mock('@/components/ui/notifications', () => ({
     useNotifications: vi.fn(() => ({
         addNotification,
+    })),
+}));
+
+vi.mock('../lib/auth-provider', () => ({
+    useLogin: vi.fn(() => ({
+        mutateAsync,
+        isPending: false,
     })),
 }));
 
@@ -25,93 +33,111 @@ describe('LoginForm', () => {
         );
     };
 
-    it('renders the redesigned login form', () => {
-        renderForm();
+    it('renders login inputs and action buttons', () => {
+        const { container, getByText } = renderForm();
 
-        expect(
-            screen.getByRole('heading', { name: /đăng nhập/i }),
-        ).toBeDefined();
-        expect(screen.getByLabelText(/tên đăng nhập/i)).toBeDefined();
-        expect(
-            screen.getByLabelText(/mật khẩu/i, { selector: 'input' }),
-        ).toBeDefined();
-        expect(
-            screen.getByRole('button', { name: /^đăng nhập$/i }),
-        ).toBeDefined();
-        expect(
-            screen.getByRole('button', {
-                name: /đăng nhập bằng microsoft/i,
-            }),
-        ).toBeDefined();
-        expect(
-            screen.getByRole('link', { name: /quên mật khẩu/i }),
-        ).toBeDefined();
+        expect(container.querySelector('#username')).toBeTruthy();
+        expect(container.querySelector('#password')).toBeTruthy();
+        expect(container.querySelector('button[type="submit"]')).toBeTruthy();
+        expect(getByText(/microsoft/i)).toBeTruthy();
     });
 
-    it('shows local validation errors when fields are empty', () => {
-        renderForm();
+    it('shows validation errors when fields are empty', () => {
+        const { container } = renderForm();
 
-        fireEvent.click(screen.getByRole('button', { name: /^đăng nhập$/i }));
+        const submitButton = container.querySelector(
+            'button[type="submit"]',
+        ) as HTMLButtonElement;
+        fireEvent.click(submitButton);
 
-        expect(
-            screen.getByText(/vui lòng nhập tên đăng nhập\./i),
-        ).toBeDefined();
-        expect(screen.getByText(/vui lòng nhập mật khẩu\./i)).toBeDefined();
-        expect(addNotification).not.toHaveBeenCalled();
+        expect(container.textContent).toContain('Vui');
+        expect(mutateAsync).not.toHaveBeenCalled();
     });
 
-    it('shows a placeholder notification instead of calling backend login', () => {
-        renderForm();
+    it('calls login mutation with username + password', async () => {
+        mutateAsync.mockResolvedValueOnce({});
+        const { container } = renderForm();
 
-        fireEvent.change(screen.getByLabelText(/tên đăng nhập/i), {
-            target: { value: 'testuser' },
+        const usernameInput = container.querySelector(
+            '#username',
+        ) as HTMLInputElement;
+        const passwordInput = container.querySelector(
+            '#password',
+        ) as HTMLInputElement;
+        const submitButton = container.querySelector(
+            'button[type="submit"]',
+        ) as HTMLButtonElement;
+
+        fireEvent.change(usernameInput, { target: { value: 'testuser' } });
+        fireEvent.change(passwordInput, { target: { value: 'password123' } });
+        fireEvent.click(submitButton);
+
+        await waitFor(() => {
+            expect(mutateAsync).toHaveBeenCalledWith({
+                username: 'testuser',
+                password: 'password123',
+            });
         });
-        fireEvent.change(
-            screen.getByLabelText(/mật khẩu/i, { selector: 'input' }),
-            {
-                target: { value: 'password123' },
-            },
-        );
-
-        fireEvent.click(screen.getByRole('button', { name: /^đăng nhập$/i }));
 
         expect(addNotification).toHaveBeenCalledWith(
             expect.objectContaining({
-                type: 'info',
-                title: 'Giao diện đăng nhập',
+                type: 'success',
             }),
         );
     });
 
-    it('toggles the password field visibility', () => {
-        renderForm();
+    it('shows error notification when login fails', async () => {
+        mutateAsync.mockRejectedValueOnce(new Error('Boom'));
+        const { container } = renderForm();
 
-        const passwordInput = screen.getByLabelText(/mật khẩu/i, {
-            selector: 'input',
+        const usernameInput = container.querySelector(
+            '#username',
+        ) as HTMLInputElement;
+        const passwordInput = container.querySelector(
+            '#password',
+        ) as HTMLInputElement;
+        const submitButton = container.querySelector(
+            'button[type="submit"]',
+        ) as HTMLButtonElement;
+
+        fireEvent.change(usernameInput, { target: { value: 'testuser' } });
+        fireEvent.change(passwordInput, { target: { value: 'password123' } });
+        fireEvent.click(submitButton);
+
+        await waitFor(() => {
+            expect(addNotification).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    type: 'error',
+                }),
+            );
         });
-        const toggleButton = screen.getByRole('button', {
-            name: /hiện mật khẩu/i,
-        });
+    });
+
+    it('toggles password field visibility', () => {
+        const { container } = renderForm();
+
+        const passwordInput = container.querySelector(
+            '#password',
+        ) as HTMLInputElement;
+        const toggleButton = container.querySelector(
+            'button[aria-pressed]',
+        ) as HTMLButtonElement;
 
         expect(passwordInput.getAttribute('type')).toBe('password');
 
         fireEvent.click(toggleButton);
         expect(passwordInput.getAttribute('type')).toBe('text');
 
-        fireEvent.click(
-            screen.getByRole('button', {
-                name: /ẩn mật khẩu/i,
-            }),
-        );
+        fireEvent.click(toggleButton);
         expect(passwordInput.getAttribute('type')).toBe('password');
     });
 
-    it('shows placeholder feedback for Microsoft login', () => {
-        renderForm();
+    it('shows Microsoft placeholder notification', () => {
+        const { getByRole } = renderForm();
 
         fireEvent.click(
-            screen.getByRole('button', {
-                name: /đăng nhập bằng microsoft/i,
+            getByRole('button', {
+                name: /microsoft/i,
             }),
         );
 

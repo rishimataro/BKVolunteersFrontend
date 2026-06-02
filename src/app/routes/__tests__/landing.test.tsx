@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { beforeEach, describe, it, expect, vi } from 'vitest';
+import { beforeEach, describe, it, expect, vi, type Mock } from 'vitest';
 import { MemoryRouter, useNavigate } from 'react-router';
 import { LandingRoute } from '../landing';
 import { paths } from '@/config/paths';
@@ -34,7 +34,7 @@ describe('LandingRoute', () => {
 
     it('navigates to login when clicking Đăng nhập in header', () => {
         const navigate = vi.fn();
-        (useNavigate as vi.Mock).mockReturnValue(navigate);
+        (useNavigate as Mock).mockReturnValue(navigate);
 
         render(
             <MemoryRouter>
@@ -48,7 +48,7 @@ describe('LandingRoute', () => {
 
     it('navigates to login when clicking Bắt đầu ngay in hero', () => {
         const navigate = vi.fn();
-        (useNavigate as vi.Mock).mockReturnValue(navigate);
+        (useNavigate as Mock).mockReturnValue(navigate);
 
         render(
             <MemoryRouter>
@@ -62,7 +62,7 @@ describe('LandingRoute', () => {
 
     it('navigates to register when clicking Đăng ký tình nguyện viên', () => {
         const navigate = vi.fn();
-        (useNavigate as vi.Mock).mockReturnValue(navigate);
+        (useNavigate as Mock).mockReturnValue(navigate);
 
         render(
             <MemoryRouter>
@@ -81,7 +81,7 @@ describe('LandingRoute', () => {
 
     it('navigates to login when clicking Tham gia ngay in CTA', () => {
         const navigate = vi.fn();
-        (useNavigate as vi.Mock).mockReturnValue(navigate);
+        (useNavigate as Mock).mockReturnValue(navigate);
 
         render(
             <MemoryRouter>
@@ -115,7 +115,7 @@ describe('LandingRoute', () => {
                 email: 'nguyenvana@example.com',
                 firstName: 'Nguyen',
                 lastName: 'An',
-                role: 'USER',
+                role: 'SINHVIEN',
             },
             accessToken: 'token-123',
         });

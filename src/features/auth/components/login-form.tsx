@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Axios from 'axios';
 import { Eye, EyeOff, Globe, HandHeart, Heart, Sparkles } from 'lucide-react';
 
 import { Input } from '@/components/ui/input';
@@ -7,6 +8,7 @@ import { Link } from '@/components/ui/link';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
 import { MicrosoftIcon } from '@/components/ui/icon';
+import { useLogin } from '../lib/auth-provider';
 
 type LoginFormErrors = {
     username?: string;
@@ -38,12 +40,13 @@ const decorativeIcons = [
 
 export const LoginForm = () => {
     const { addNotification } = useNotifications();
+    const login = useLogin();
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [showPassword, setShowPassword] = React.useState(false);
     const [errors, setErrors] = React.useState<LoginFormErrors>({});
 
-    const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         const isUsernameValid = validateField('username', username);
@@ -53,12 +56,28 @@ export const LoginForm = () => {
             return;
         }
 
-        addNotification({
-            type: 'info',
-            title: 'Giao diện đăng nhập',
-            message:
-                'Trang đăng nhập hiện mới là giao diện mẫu. Backend sẽ được kết nối ở bước tiếp theo.',
-        });
+        try {
+            await login.mutateAsync({
+                username: username.trim(),
+                password,
+            });
+            addNotification({
+                type: 'success',
+                title: 'Dang nhap thanh cong',
+                message: 'Phien dang nhap da duoc tao.',
+            });
+        } catch (error) {
+            const message = Axios.isAxiosError(error)
+                ? ((error.response?.data as { message?: string } | undefined)
+                      ?.message ?? error.message)
+                : 'Dang nhap that bai, vui long thu lai.';
+
+            addNotification({
+                type: 'error',
+                title: 'Dang nhap that bai',
+                message,
+            });
+        }
     };
 
     const validateField = (
@@ -228,9 +247,10 @@ export const LoginForm = () => {
 
                                 <button
                                     type="submit"
+                                    disabled={login.isPending}
                                     className="inline-flex h-12 sm:h-14 w-full items-center justify-center rounded-full bg-[#58aab3] px-4 sm:px-6 text-[1.05rem] font-semibold text-white shadow-[5px_20px_20px_-24px_rgba(54,131,140,0.9)] transition-all duration-200 hover:bg-[#4a9ea9] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#8fe5e2]/50 active:translate-y-0 active:scale-[0.985]"
                                 >
-                                    Đăng nhập
+                                    {login.isPending ? 'Dang xu ly...' : 'Dang nhap'}
                                 </button>
                             </form>
 
@@ -282,3 +302,5 @@ export const LoginForm = () => {
         // End section: Login-form
     );
 };
+
+

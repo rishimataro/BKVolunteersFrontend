@@ -12,11 +12,11 @@ const handlers = [
         }
         return HttpResponse.json({
             id: '1',
-            username: 'admin',
-            email: 'admin@example.com',
-            firstName: 'Admin',
-            lastName: 'User',
-            role: 'ADMIN',
+            username: 'doantruong01',
+            email: 'doantruong@example.com',
+            firstName: 'Doan',
+            lastName: 'Truong',
+            role: 'DOANTRUONG',
             createdAt: Date.now(),
         });
     }),
@@ -25,11 +25,11 @@ const handlers = [
         return HttpResponse.json({
             user: {
                 id: '1',
-                username: 'admin',
-                email: 'admin@example.com',
-                firstName: 'Admin',
-                lastName: 'User',
-                role: 'ADMIN',
+                username: 'doantruong01',
+                email: 'doantruong@example.com',
+                firstName: 'Doan',
+                lastName: 'Truong',
+                role: 'DOANTRUONG',
                 createdAt: Date.now(),
             },
             accessToken: 'mock-token',
@@ -40,11 +40,11 @@ const handlers = [
         return HttpResponse.json({
             user: {
                 id: '2',
-                username: 'newuser',
-                email: 'newuser@example.com',
-                firstName: 'New',
-                lastName: 'User',
-                role: 'USER',
+                username: '102230001',
+                email: '102230001@sv1.dut.udn.vn',
+                firstName: 'Sinh',
+                lastName: 'Vien',
+                role: 'SINHVIEN',
                 createdAt: Date.now(),
             },
             accessToken: 'mock-new-token',

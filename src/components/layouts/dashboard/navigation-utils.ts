@@ -32,7 +32,7 @@ export const useNavigationItems = () => {
                     to: paths.app.campaigns.getHref(),
                     icon: Heart,
                 },
-                checkAccess({ allowedRoles: [ROLES.ADMIN] })
+                checkAccess({ allowedRoles: [ROLES.DOANTRUONG] })
                     ? {
                           name: 'Thành viên',
                           to: paths.app.users.getHref(),

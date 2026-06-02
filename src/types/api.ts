@@ -1,6 +1,6 @@
 export type BaseEntity = {
     id: string;
-    createdAt: number;
+    createdAt: number | string | Date;
 };
 
 export type Entity<T> = {
@@ -13,12 +13,28 @@ export type Meta = {
     totalPages: number;
 };
 
+export type UserRole =
+    | 'SINHVIEN'
+    | 'LCD'
+    | 'CLB'
+    | 'DOANTRUONG';
+
+export type UserStatus = 'ACTIVE' | 'LOCKED' | 'DISABLED';
+
 export type User = Entity<{
     username: string;
     email: string;
     firstName: string;
     lastName: string;
-    role: 'ADMIN' | 'USER';
+    role: UserRole;
+    status?: UserStatus;
+    facultyId?: number | null;
+    mssv?: string;
+    fullName?: string;
+    className?: string | null;
+    phone?: string | null;
+    totalPoints?: number;
+    updatedAt?: number | string | Date;
 }>;
 
 export type AuthResponse = {
@@ -26,14 +42,12 @@ export type AuthResponse = {
     user: User;
 };
 
-// Định nghĩa mã lỗi đặc thù để xử lý UI linh hoạt
 export type ApiError = {
     message: string;
     statusCode: number;
-    error?: string; // Ví dụ: "Conflict", "Unauthorized"
+    error?: string;
 };
 
-// Kiểu dữ liệu cho các phản hồi chung của Backend (như gửi mail thành công)
 export type GeneralResponse = {
     message: string;
 };
