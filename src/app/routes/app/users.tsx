@@ -1,29 +1,39 @@
 ﻿import * as React from 'react';
 import {
+    Filter,
     GraduationCap,
+    KeyRound,
+    Lock,
     LockKeyhole,
+    LockOpen,
+    PencilLine,
+    Plus,
+    Search,
     ShieldCheck,
+    Trash2,
+    Upload,
     UserCog,
     Users,
+    X,
+    type LucideIcon,
 } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router';
 
+import { Head } from '@/components/seo';
 import { ContentLayout } from '@/components/layouts';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button-variants';
+import { paths } from '@/config/paths';
 import { DataTable, type Column } from '@/components/ui/data-table';
-import { Input } from '@/components/ui/input';
 import {
-    FilterField,
-    FilterToolbar,
-    ManagementGrid,
-    ManagementHeader,
-    ManagementPanel,
-    ManagementPanelHeader,
-    ManagementStatCard,
-    editorialInsetNoteClassName,
-    editorialSelectClassName,
-} from '@/components/ui/management-shell';
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { useNotifications } from '@/components/ui/notifications';
 import { Authorization, ROLES, useUser } from '@/features/auth';
 import {
@@ -85,7 +95,20 @@ const ROLE_FILTER_OPTIONS = [
     ...ROLE_OPTIONS,
 ];
 
-const selectClassName = editorialSelectClassName;
+const selectClassName =
+    'h-12 w-full rounded-lg border border-[#C3C6D2] bg-[#F3F4F5] px-4 text-[15px] leading-5 text-[#191C1D] outline-none transition focus:border-[#A9C7FF] focus:ring-4 focus:ring-[#A9C7FF]/20 disabled:cursor-not-allowed disabled:opacity-60';
+
+const inputClassName =
+    'h-12 rounded-lg border-[#C3C6D2] bg-[#F3F4F5] text-[#191C1D] placeholder:text-[#737781] focus:border-[#A9C7FF] focus:ring-4 focus:ring-[#A9C7FF]/20';
+
+const panelClassName =
+    'rounded-xl border border-[#C3C6D2] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.05)]';
+
+const cardLabelClassName =
+    'text-[12px] font-bold uppercase tracking-[0.08em] text-[#424750]';
+
+const fieldLabelClassName =
+    'text-[12px] font-bold uppercase tracking-[0.08em] text-[#424750]';
 
 const formatDateTime = (value: string | null) => {
     if (!value) {
@@ -203,6 +226,285 @@ const buildUpdatePayload = (form: UserFormState): UpdateUserPayload => {
     };
 };
 
+const getStatusLabel = (status: UserManagementItem['status']) => {
+    if (status === 'ACTIVE') {
+        return 'Hoạt động';
+    }
+
+    if (status === 'LOCKED') {
+        return 'Bị khóa';
+    }
+
+    return 'Đã vô hiệu';
+};
+
+const getStatusBadgeClassName = (status: UserManagementItem['status']) => {
+    if (status === 'ACTIVE') {
+        return 'bg-[#006D37] text-white';
+    }
+
+    if (status === 'LOCKED') {
+        return 'bg-[#BA1A1A] text-white';
+    }
+
+    return 'bg-[#737781] text-white';
+};
+
+const getRoleBadgeClassName = (role: UserRole) => {
+    if (role === 'DOANTRUONG') {
+        return 'bg-[#6F2D00] text-white';
+    }
+
+    if (role === 'LCD' || role === 'CLB') {
+        return 'bg-[#D6E3FF] text-[#0E4686]';
+    }
+
+    return 'bg-[#E7E8E9] text-[#424750]';
+};
+
+const getAvatarToneClassName = (role: UserRole) => {
+    if (role === 'DOANTRUONG') {
+        return 'bg-[#FFDBCB] text-[#773305]';
+    }
+
+    if (role === 'LCD' || role === 'CLB') {
+        return 'bg-[#D6E3FF] text-[#0E4686]';
+    }
+
+    return 'bg-[#E7E8E9] text-[#424750]';
+};
+
+const getUserInitials = (user: UserManagementItem) => {
+    const source = user.fullName || user.username || user.email;
+    return source
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase() ?? '')
+        .join('');
+};
+
+const getUserIdentifier = (user: UserManagementItem) =>
+    user.mssv || user.username || user.id;
+
+const getAssignmentLabel = (user: UserManagementItem) =>
+    user.managedClubName || user.facultyName || 'Chưa gán đơn vị';
+
+const getSecondaryAssignmentLabel = (user: UserManagementItem) => {
+    if (user.managedClubName && user.facultyName) {
+        return user.facultyName;
+    }
+
+    if (user.className) {
+        return `Lớp ${user.className}`;
+    }
+
+    return user.phone || 'Chưa có thông tin bổ sung';
+};
+
+const editorialInsetNoteClassName =
+    'rounded-xl border border-[#C3C6D2] bg-[#F3F4F5] p-4 text-[14px] leading-6 text-[#424750]';
+
+type FilterFieldProps = {
+    label: string;
+    hint?: string;
+    children: React.ReactNode;
+};
+
+const FilterField = ({ label, hint, children }: FilterFieldProps) => {
+    return (
+        <label className="grid gap-2 text-left">
+            <span className={fieldLabelClassName}>{label}</span>
+            {children}
+            {hint ? (
+                <span className="text-[12px] leading-4 text-[#737781]">
+                    {hint}
+                </span>
+            ) : null}
+        </label>
+    );
+};
+
+const FilterToolbar = ({
+    children,
+    className,
+}: {
+    children: React.ReactNode;
+    className?: string;
+}) => {
+    return (
+        <section className={`${panelClassName} p-5 sm:p-6 ${className ?? ''}`}>
+            <div className="grid gap-5">{children}</div>
+        </section>
+    );
+};
+
+const ManagementGrid = ({
+    children,
+    className,
+}: {
+    children: React.ReactNode;
+    className?: string;
+}) => {
+    return (
+        <div
+            className={`grid gap-4 md:grid-cols-2 xl:grid-cols-4 ${className ?? ''}`}
+        >
+            {children}
+        </div>
+    );
+};
+
+type ManagementStatCardProps = {
+    label: string;
+    value: string;
+    note?: string;
+    icon: LucideIcon;
+    tone?: 'default' | 'success' | 'warning' | 'danger';
+};
+
+const managementStatToneMap: Record<
+    NonNullable<ManagementStatCardProps['tone']>,
+    { iconBox: string; iconColor: string }
+> = {
+    default: {
+        iconBox: 'bg-[#EEF3FB]',
+        iconColor: 'text-[#002A58]',
+    },
+    success: {
+        iconBox: 'bg-[#E7F6EE]',
+        iconColor: 'text-[#006D37]',
+    },
+    warning: {
+        iconBox: 'bg-[#FFF0E5]',
+        iconColor: 'text-[#6F2D00]',
+    },
+    danger: {
+        iconBox: 'bg-[#FDE8E8]',
+        iconColor: 'text-[#BA1A1A]',
+    },
+};
+
+const ManagementStatCard = ({
+    label,
+    value,
+    note,
+    icon: Icon,
+    tone = 'default',
+}: ManagementStatCardProps) => {
+    const toneClass = managementStatToneMap[tone];
+
+    return (
+        <section className={`${panelClassName} p-4`}>
+            <div className="flex items-center gap-4">
+                <div
+                    className={`flex h-14 w-14 items-center justify-center rounded-xl ${toneClass.iconBox}`}
+                >
+                    <Icon
+                        className={`size-6 ${toneClass.iconColor}`}
+                        strokeWidth={1.5}
+                    />
+                </div>
+                <div className="grid gap-1">
+                    <p className={cardLabelClassName}>{label}</p>
+                    <p className="text-[24px] font-semibold leading-8 text-[#191C1D]">
+                        {value}
+                    </p>
+                    {note ? (
+                        <p className="text-[13px] leading-5 text-[#737781]">
+                            {note}
+                        </p>
+                    ) : null}
+                </div>
+            </div>
+        </section>
+    );
+};
+
+const ManagementPanel = ({
+    children,
+    className,
+}: {
+    children: React.ReactNode;
+    className?: string;
+}) => {
+    return (
+        <section className={`${panelClassName} ${className ?? ''}`}>
+            {children}
+        </section>
+    );
+};
+
+const ManagementPanelHeader = ({
+    title,
+    description,
+    actions,
+}: {
+    title: string;
+    description?: string;
+    actions?: React.ReactNode;
+}) => {
+    return (
+        <div className="flex flex-col gap-3 border-b border-[#E1E3E4] pb-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+                <h3 className="text-[24px] font-semibold leading-8 text-[#191C1D]">
+                    {title}
+                </h3>
+                {description ? (
+                    <p className="mt-2 max-w-2xl text-[14px] leading-6 text-[#424750]">
+                        {description}
+                    </p>
+                ) : null}
+            </div>
+            {actions ? (
+                <div className="flex flex-wrap gap-2">{actions}</div>
+            ) : null}
+        </div>
+    );
+};
+
+type ManagementHeaderProps = {
+    badge?: string;
+    title: string;
+    description: string;
+    icon: LucideIcon;
+    actions?: React.ReactNode;
+};
+
+const ManagementHeader = ({
+    badge,
+    title,
+    description,
+    icon: Icon,
+    actions,
+}: ManagementHeaderProps) => {
+    return (
+        <section className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+            <div className="space-y-3">
+                {badge ? <p className={cardLabelClassName}>{badge}</p> : null}
+                <div className="flex items-start gap-4">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-[#EEF3FB] text-[#002A58]">
+                        <Icon className="size-7" strokeWidth={1.5} />
+                    </div>
+                    <div className="space-y-2">
+                        <h2 className="text-[40px] font-bold leading-[48px] text-[#002A58]">
+                            {title}
+                        </h2>
+                        <p className="max-w-3xl text-[16px] leading-6 text-[#424750]">
+                            {description}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {actions ? (
+                <div className="flex flex-wrap items-center gap-3">
+                    {actions}
+                </div>
+            ) : null}
+        </section>
+    );
+};
+
 export const UsersRoute = () => {
     const authUser = useUser();
     const queryClient = useQueryClient();
@@ -218,6 +520,7 @@ export const UsersRoute = () => {
         null,
     );
     const [form, setForm] = React.useState<UserFormState>(DEFAULT_FORM);
+    const [isFormDialogOpen, setIsFormDialogOpen] = React.useState(false);
 
     const usersQuery = useQuery({
         queryKey: ['users', page, search, roleFilter, statusFilter],
@@ -236,6 +539,13 @@ export const UsersRoute = () => {
         queryFn: getUserOptions,
     });
 
+    const closeFormDialog = React.useCallback(() => {
+        setIsFormDialogOpen(false);
+        setFormMode('create');
+        setEditingUserId(null);
+        setForm(DEFAULT_FORM);
+    }, []);
+
     const invalidateUsers = async () => {
         await queryClient.invalidateQueries({ queryKey: ['users'] });
     };
@@ -248,7 +558,7 @@ export const UsersRoute = () => {
                 title: 'Tạo tài khoản thành công',
                 message: 'Tài khoản mới đã được lưu vào hệ thống.',
             });
-            setForm(DEFAULT_FORM);
+            closeFormDialog();
             await invalidateUsers();
         },
     });
@@ -267,9 +577,7 @@ export const UsersRoute = () => {
                 title: 'Cập nhật thành công',
                 message: 'Thông tin tài khoản đã được cập nhật.',
             });
-            setFormMode('create');
-            setEditingUserId(null);
-            setForm(DEFAULT_FORM);
+            closeFormDialog();
             await invalidateUsers();
         },
     });
@@ -301,9 +609,7 @@ export const UsersRoute = () => {
                 message: 'Tài khoản đã được xóa mềm khỏi danh sách hoạt động.',
             });
             if (editingUserId) {
-                setFormMode('create');
-                setEditingUserId(null);
-                setForm(DEFAULT_FORM);
+                closeFormDialog();
             }
             await invalidateUsers();
         },
@@ -350,12 +656,14 @@ export const UsersRoute = () => {
         setFormMode('edit');
         setEditingUserId(user.id);
         setForm(buildFormFromUser(user));
+        setIsFormDialogOpen(true);
     };
 
     const onCreateNew = () => {
         setFormMode('create');
         setEditingUserId(null);
         setForm(DEFAULT_FORM);
+        setIsFormDialogOpen(true);
     };
 
     const onDelete = async (user: UserManagementItem) => {
@@ -377,47 +685,67 @@ export const UsersRoute = () => {
 
     const columns: Column<UserManagementItem>[] = [
         {
-            key: 'account',
-            header: 'Tài khoản',
-            className: 'min-w-[260px]',
+            key: 'user',
+            header: 'Họ tên & avatar',
+            className: 'min-w-[320px]',
             render: (user) => (
-                <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                        <span className="font-semibold text-[#0A0A0A]">
-                            {user.fullName || user.username}
-                        </span>
-                        {user.id === currentUserId ? (
-                            <Badge variant="outline">Bạn</Badge>
-                        ) : null}
+                <div className="flex items-center gap-4">
+                    <div
+                        className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold ${getAvatarToneClassName(user.role)}`}
+                    >
+                        {getUserInitials(user)}
                     </div>
-                    <p className="text-sm text-[#4B5563]">{user.email}</p>
-                    <p className="text-xs text-[#4B5563]">
-                        {user.mssv
-                            ? `MSSV: ${user.mssv}`
-                            : `Tên đăng nhập: ${user.username}`}
-                    </p>
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                            <p className="text-[16px] font-semibold leading-6 text-[#191C1D]">
+                                {user.fullName || user.username}
+                            </p>
+                            {user.id === currentUserId ? (
+                                <span className="rounded-md bg-[#D6E3FF] px-2 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-[#0E4686]">
+                                    Bạn
+                                </span>
+                            ) : null}
+                        </div>
+                        <p className="text-[14px] leading-5 text-[#424750]">
+                            {user.email}
+                        </p>
+                    </div>
                 </div>
+            ),
+        },
+        {
+            key: 'identifier',
+            header: 'MSSV / ID',
+            className: 'min-w-[140px] text-[#191C1D]',
+            render: (user) => (
+                <span className="text-[15px] leading-6 text-[#191C1D]">
+                    {getUserIdentifier(user)}
+                </span>
             ),
         },
         {
             key: 'role',
             header: 'Vai trò',
-            className: 'min-w-[180px]',
+            className: 'min-w-[170px]',
             render: (user) => (
-                <Badge variant="secondary">{getRoleLabel(user.role)}</Badge>
+                <span
+                    className={`inline-flex rounded-lg px-3 py-1 text-[12px] font-bold uppercase tracking-[0.08em] ${getRoleBadgeClassName(user.role)}`}
+                >
+                    {getRoleLabel(user.role)}
+                </span>
             ),
         },
         {
             key: 'assignment',
-            header: 'Khoa / câu lạc bộ',
+            header: 'Đơn vị',
             className: 'min-w-[220px]',
             render: (user) => (
                 <div className="space-y-1">
-                    <p className="font-medium text-[#0A0A0A]">
-                        {user.facultyName || 'Chưa gán khoa'}
+                    <p className="text-[15px] font-medium leading-6 text-[#191C1D]">
+                        {getAssignmentLabel(user)}
                     </p>
-                    <p className="text-sm text-[#4B5563]">
-                        {user.managedClubName || 'Chưa gán câu lạc bộ'}
+                    <p className="text-[13px] leading-5 text-[#737781]">
+                        {getSecondaryAssignmentLabel(user)}
                     </p>
                 </div>
             ),
@@ -425,65 +753,81 @@ export const UsersRoute = () => {
         {
             key: 'status',
             header: 'Trạng thái',
-            className: 'min-w-[160px]',
+            className: 'min-w-[140px]',
             render: (user) => (
-                <Badge
-                    variant={
-                        user.status === 'ACTIVE'
-                            ? 'default'
-                            : user.status === 'LOCKED'
-                              ? 'outline'
-                              : 'destructive'
-                    }
-                >
-                    {user.status === 'ACTIVE'
-                        ? 'Đang hoạt động'
-                        : user.status === 'LOCKED'
-                          ? 'Tạm khóa'
-                          : 'Đã vô hiệu hóa'}
-                </Badge>
+                <div className="space-y-1">
+                    <span
+                        className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] ${getStatusBadgeClassName(user.status)}`}
+                    >
+                        {getStatusLabel(user.status)}
+                    </span>
+                    <p className="text-[12px] leading-4 text-[#737781]">
+                        {formatDateTime(user.lastLoginAt)}
+                    </p>
+                </div>
             ),
-        },
-        {
-            key: 'lastLogin',
-            header: 'Đăng nhập gần nhất',
-            className: 'min-w-[180px] text-[#4B5563]',
-            render: (user) => formatDateTime(user.lastLoginAt),
         },
         {
             key: 'actions',
             header: 'Thao tác',
-            className: 'min-w-[220px]',
+            className: 'min-w-[200px]',
             render: (user) => {
                 const isSelf = user.id === currentUserId;
 
                 return (
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap justify-center gap-2">
                         <Button
                             type="button"
-                            variant="outline"
-                            size="sm"
+                            variant="ghost"
+                            size="icon-sm"
+                            className="rounded-lg border border-[#C3C6D2] bg-white text-[#424750] hover:bg-[#EEF3FB] hover:text-[#002A58]"
                             onClick={() => onEdit(user)}
+                            title="Chỉnh sửa"
                         >
-                            Chỉnh sửa
+                            <PencilLine className="size-4" strokeWidth={1.5} />
                         </Button>
                         <Button
                             type="button"
-                            variant="outline"
-                            size="sm"
-                            disabled={isSelf}
+                            variant="ghost"
+                            size="icon-sm"
+                            className="rounded-lg border border-[#C3C6D2] bg-white text-[#424750] hover:bg-[#EEF3FB] hover:text-[#002A58]"
                             onClick={() => onToggleLock(user)}
+                            disabled={isSelf}
+                            title={
+                                user.status === 'LOCKED'
+                                    ? 'Mở khóa tài khoản'
+                                    : 'Khóa tài khoản'
+                            }
                         >
-                            {user.status === 'LOCKED' ? 'Mở khóa' : 'Tạm khóa'}
+                            {user.status === 'LOCKED' ? (
+                                <LockOpen
+                                    className="size-4"
+                                    strokeWidth={1.5}
+                                />
+                            ) : (
+                                <Lock className="size-4" strokeWidth={1.5} />
+                            )}
                         </Button>
                         <Button
                             type="button"
-                            variant="destructive"
-                            size="sm"
+                            variant="ghost"
+                            size="icon-sm"
+                            className="rounded-lg border border-[#C3C6D2] bg-white text-[#424750] hover:bg-[#EEF3FB] hover:text-[#002A58]"
+                            onClick={() => onEdit(user)}
+                            title="Đặt lại mật khẩu"
+                        >
+                            <KeyRound className="size-4" strokeWidth={1.5} />
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-sm"
+                            className="rounded-lg border border-[#F2B8B5] bg-white text-[#BA1A1A] hover:bg-[#FDE8E8] hover:text-[#93000A]"
                             disabled={isSelf}
                             onClick={() => onDelete(user)}
+                            title="Xóa tài khoản"
                         >
-                            Xóa
+                            <Trash2 className="size-4" strokeWidth={1.5} />
                         </Button>
                     </div>
                 );
@@ -496,7 +840,7 @@ export const UsersRoute = () => {
             allowedRoles={[ROLES.DOANTRUONG]}
             forbiddenFallback={
                 <ContentLayout title="Quản lý người dùng">
-                    <ManagementPanel>
+                    <ManagementPanel className="p-5 sm:p-6">
                         <p className="text-sm leading-6 text-[#D97706]">
                             Chỉ tài khoản Đoàn trường mới được phép quản lý
                             người dùng.
@@ -505,21 +849,44 @@ export const UsersRoute = () => {
                 </ContentLayout>
             }
         >
-            <ContentLayout title="Quản lý người dùng">
-                <div className="space-y-6">
+            <>
+                <Head title="Quản lý người dùng" />
+                <div className="space-y-6 font-sans">
                     <ManagementHeader
                         badge="Quản trị hệ thống"
                         icon={UserCog}
-                        title="Quản lý tài khoản người dùng"
-                        description="Tạo mới, cập nhật, tạm khóa hoặc xóa mềm tài khoản trên cơ sở dữ liệu thật. Tất cả thay đổi đều đi qua API hiện tại và giữ nguyên phân quyền hệ thống."
+                        title="Quản lý người dùng"
+                        description="Theo dõi tài khoản trên toàn hệ thống, giữ luồng phê duyệt và phân quyền hiện tại, đồng thời đưa giao diện về đúng ngôn ngữ quản trị học thuật của Unity Academic."
                         actions={
-                            <Button
-                                type="button"
-                                size="lg"
-                                onClick={onCreateNew}
-                            >
-                                Tạo tài khoản mới
-                            </Button>
+                            <>
+                                <Link
+                                    to={paths.app.users.dataTransfer.getHref()}
+                                    className={buttonVariants({
+                                        variant: 'outline',
+                                        size: 'lg',
+                                        className:
+                                            'rounded-lg border-[#C3C6D2] bg-white px-6 normal-case tracking-normal text-[#424750] hover:bg-[#F3F4F5]',
+                                    })}
+                                >
+                                    <Upload
+                                        className="size-4"
+                                        strokeWidth={1.5}
+                                    />
+                                    Nhập và xuất dữ liệu
+                                </Link>
+                                <Button
+                                    type="button"
+                                    size="lg"
+                                    className="rounded-lg bg-[#002A58] px-6 normal-case tracking-normal text-white hover:bg-[#004080]"
+                                    onClick={onCreateNew}
+                                >
+                                    <Plus
+                                        className="size-4"
+                                        strokeWidth={1.5}
+                                    />
+                                    Tạo tài khoản mới
+                                </Button>
+                            </>
                         }
                     />
 
@@ -542,7 +909,7 @@ export const UsersRoute = () => {
                             label="Tạm khóa"
                             value={statLocked.toLocaleString('vi-VN')}
                             note="Theo dữ liệu đang hiển thị"
-                            tone="warning"
+                            tone="danger"
                         />
                         <ManagementStatCard
                             icon={GraduationCap}
@@ -555,15 +922,15 @@ export const UsersRoute = () => {
                     <FilterToolbar>
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                             <div>
-                                <h3 className="text-base font-semibold text-[#0A0A0A]">
+                                <h3 className="text-[24px] font-semibold leading-8 text-[#191C1D]">
                                     Bộ lọc danh sách
                                 </h3>
-                                <p className="text-sm text-[#4B5563]">
+                                <p className="text-[14px] leading-6 text-[#424750]">
                                     Tìm nhanh theo email, MSSV hoặc tên đăng
-                                    nhập.
+                                    nhập. Dữ liệu vẫn đi qua API hiện tại.
                                 </p>
                             </div>
-                            <p className="text-sm text-[#4B5563]">
+                            <p className="text-[14px] leading-6 text-[#737781]">
                                 Trang {meta?.page ?? page} /{' '}
                                 {meta?.totalPages ?? 1}
                             </p>
@@ -574,15 +941,21 @@ export const UsersRoute = () => {
                                 label="Tìm kiếm"
                                 hint="Hỗ trợ email, tên đăng nhập và MSSV"
                             >
-                                <Input
-                                    value={search}
-                                    onChange={(event) => {
-                                        setSearch(event.target.value);
-                                        setPage(1);
-                                    }}
-                                    placeholder="Nhập từ khóa cần tìm"
-                                    className="h-10"
-                                />
+                                <div className="relative">
+                                    <Search
+                                        className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[#737781]"
+                                        strokeWidth={1.5}
+                                    />
+                                    <Input
+                                        value={search}
+                                        onChange={(event) => {
+                                            setSearch(event.target.value);
+                                            setPage(1);
+                                        }}
+                                        placeholder="Nhập từ khóa cần tìm"
+                                        className={`${inputClassName} pl-11`}
+                                    />
+                                </div>
                             </FilterField>
                             <FilterField label="Vai trò">
                                 <select
@@ -633,7 +1006,7 @@ export const UsersRoute = () => {
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    className="w-full"
+                                    className="h-12 w-full rounded-lg border-[#C3C6D2] bg-[#E7E8E9] normal-case tracking-normal text-[#424750] hover:bg-[#E1E3E4]"
                                     onClick={() => {
                                         setSearch('');
                                         setRoleFilter('');
@@ -641,212 +1014,161 @@ export const UsersRoute = () => {
                                         setPage(1);
                                     }}
                                 >
+                                    <Filter
+                                        className="size-4"
+                                        strokeWidth={1.5}
+                                    />
                                     Đặt lại bộ lọc
                                 </Button>
                             </div>
                         </div>
                     </FilterToolbar>
 
-                    <div className="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(360px,0.95fr)]">
-                        <ManagementPanel className="p-0">
-                            <div className="px-5 pt-5 sm:px-6">
-                                <ManagementPanelHeader
-                                    title="Danh sách tài khoản"
-                                    description="Theo dõi vai trò, trạng thái, đơn vị phụ trách và lịch sử đăng nhập gần nhất."
-                                />
-                            </div>
-                            <div className="px-2 pb-2 pt-4 sm:px-3">
-                                <DataTable
-                                    columns={columns}
-                                    data={users}
-                                    keyExtractor={(item) => item.id}
-                                    isLoading={usersQuery.isLoading}
-                                    emptyMessage="Không có tài khoản phù hợp với bộ lọc hiện tại."
-                                    pagination={
-                                        meta
-                                            ? {
-                                                  page: meta.page,
-                                                  totalPages: meta.totalPages,
-                                                  total: meta.total,
-                                                  onPageChange: setPage,
-                                              }
-                                            : undefined
-                                    }
-                                />
-                            </div>
-                        </ManagementPanel>
-
-                        <ManagementPanel>
+                    <ManagementPanel className="overflow-hidden p-0">
+                        <div className="px-5 pt-5 sm:px-6">
                             <ManagementPanelHeader
-                                title={
-                                    formMode === 'create'
-                                        ? 'Tạo tài khoản mới'
-                                        : 'Cập nhật tài khoản'
-                                }
-                                description={
-                                    formMode === 'create'
-                                        ? 'Thiết lập thông tin đúng theo từng vai trò và lưu trực tiếp qua API.'
-                                        : 'Chỉnh sửa đúng phạm vi cho phép mà không làm thay đổi logic phân quyền.'
-                                }
-                                actions={
-                                    formMode === 'edit' ? (
-                                        <Button
-                                            type="button"
-                                            variant="outline"
-                                            onClick={onCreateNew}
-                                        >
-                                            Hủy chỉnh sửa
-                                        </Button>
-                                    ) : undefined
+                                title="Danh sách tài khoản"
+                                description="Theo dõi vai trò, trạng thái, đơn vị phụ trách và lịch sử đăng nhập gần nhất."
+                            />
+                        </div>
+                        <div className="px-2 pb-2 pt-4 sm:px-3">
+                            <DataTable
+                                columns={columns}
+                                data={users}
+                                keyExtractor={(item) => item.id}
+                                isLoading={usersQuery.isLoading}
+                                emptyMessage="Không có tài khoản phù hợp với bộ lọc hiện tại."
+                                className="overflow-hidden rounded-xl border-[#C3C6D2]"
+                                pagination={
+                                    meta
+                                        ? {
+                                              page: meta.page,
+                                              totalPages: meta.totalPages,
+                                              total: meta.total,
+                                              onPageChange: setPage,
+                                          }
+                                        : undefined
                                 }
                             />
+                        </div>
+                    </ManagementPanel>
 
-                            <form
-                                className="mt-5 space-y-4"
-                                onSubmit={onSubmit}
-                            >
-                                <FilterField
-                                    label="Vai trò"
-                                    hint="Vai trò quyết định loại trường dữ liệu cần nhập."
+                    <Dialog
+                        open={isFormDialogOpen}
+                        onOpenChange={(open) => {
+                            if (!open) {
+                                closeFormDialog();
+                            }
+                        }}
+                    >
+                        <DialogContent>
+                            <div className="flex items-start justify-between border-b border-[#E1E3E4] px-5 py-5 sm:px-6">
+                                <div>
+                                    <p className={cardLabelClassName}>
+                                        {formMode === 'create'
+                                            ? 'Tạo mới trong hộp thoại'
+                                            : 'Cập nhật trong hộp thoại'}
+                                    </p>
+                                    <DialogTitle className="mt-2 text-[24px] font-semibold leading-8 text-[#002A58]">
+                                        {formMode === 'create'
+                                            ? 'Tạo tài khoản mới'
+                                            : 'Cập nhật tài khoản'}
+                                    </DialogTitle>
+                                    <DialogDescription className="mt-2 max-w-2xl text-[14px] leading-6 text-[#424750]">
+                                        {formMode === 'create'
+                                            ? 'Điền thông tin trong hộp thoại để giữ màn hình quản lý gọn như bản tham khảo.'
+                                            : 'Chỉnh sửa tài khoản trong hộp thoại để không đẩy toàn bộ biểu mẫu lên trang chính.'}
+                                    </DialogDescription>
+                                </div>
+                                <DialogClose
+                                    render={
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="icon-sm"
+                                            className="rounded-lg border border-[#C3C6D2] bg-white text-[#424750] hover:bg-[#F3F4F5]"
+                                        />
+                                    }
                                 >
-                                    <select
-                                        className={selectClassName}
-                                        value={form.role}
-                                        disabled={formMode === 'edit'}
-                                        onChange={(event) =>
-                                            setForm((current) => ({
-                                                ...DEFAULT_FORM,
-                                                role: event.target
-                                                    .value as UserRole,
-                                                email: current.email,
-                                            }))
-                                        }
+                                    <X className="size-4" strokeWidth={1.5} />
+                                </DialogClose>
+                            </div>
+
+                            <div className="max-h-[calc(100vh-11rem)] overflow-y-auto px-5 py-5 sm:px-6">
+                                <form className="space-y-4" onSubmit={onSubmit}>
+                                    <FilterField
+                                        label="Vai trò"
+                                        hint="Vai trò quyết định loại trường dữ liệu cần nhập."
                                     >
-                                        {ROLE_OPTIONS.map((option) => (
-                                            <option
-                                                key={option.value}
-                                                value={option.value}
-                                            >
-                                                {option.label}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </FilterField>
-
-                                {form.role === 'SINHVIEN' ? (
-                                    <>
-                                        <div className="grid gap-4 sm:grid-cols-2">
-                                            <FilterField label="MSSV">
-                                                <Input
-                                                    placeholder="Nhập mã số sinh viên"
-                                                    value={form.mssv}
-                                                    onChange={(event) =>
-                                                        setForm((current) => ({
-                                                            ...current,
-                                                            mssv: event.target
-                                                                .value,
-                                                        }))
-                                                    }
-                                                    className="h-10"
-                                                />
-                                            </FilterField>
-                                            <FilterField label="Họ và tên">
-                                                <Input
-                                                    placeholder="Nhập họ và tên"
-                                                    value={form.fullName}
-                                                    onChange={(event) =>
-                                                        setForm((current) => ({
-                                                            ...current,
-                                                            fullName:
-                                                                event.target
-                                                                    .value,
-                                                        }))
-                                                    }
-                                                    className="h-10"
-                                                />
-                                            </FilterField>
-                                        </div>
-
-                                        <FilterField label="Khoa">
-                                            <select
-                                                className={selectClassName}
-                                                value={form.facultyId}
-                                                onChange={(event) =>
-                                                    setForm((current) => ({
-                                                        ...current,
-                                                        facultyId:
-                                                            event.target.value,
-                                                    }))
-                                                }
-                                            >
-                                                <option value="">
-                                                    Chọn khoa
+                                        <select
+                                            className={selectClassName}
+                                            value={form.role}
+                                            disabled={formMode === 'edit'}
+                                            onChange={(event) =>
+                                                setForm((current) => ({
+                                                    ...DEFAULT_FORM,
+                                                    role: event.target
+                                                        .value as UserRole,
+                                                    email: current.email,
+                                                }))
+                                            }
+                                        >
+                                            {ROLE_OPTIONS.map((option) => (
+                                                <option
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
+                                                    {option.label}
                                                 </option>
-                                                {faculties.map((faculty) => (
-                                                    <option
-                                                        key={faculty.id}
-                                                        value={String(
-                                                            faculty.id,
-                                                        )}
-                                                    >
-                                                        {faculty.code} -{' '}
-                                                        {faculty.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </FilterField>
+                                            ))}
+                                        </select>
+                                    </FilterField>
 
-                                        <div className="grid gap-4 sm:grid-cols-2">
-                                            <FilterField label="Lớp">
-                                                <Input
-                                                    placeholder="Ví dụ: 23TCLC_DT3"
-                                                    value={form.className}
-                                                    onChange={(event) =>
-                                                        setForm((current) => ({
-                                                            ...current,
-                                                            className:
-                                                                event.target
-                                                                    .value,
-                                                        }))
-                                                    }
-                                                    className="h-10"
-                                                />
-                                            </FilterField>
-                                            <FilterField label="Số điện thoại">
-                                                <Input
-                                                    placeholder="Nhập số điện thoại"
-                                                    value={form.phone}
-                                                    onChange={(event) =>
-                                                        setForm((current) => ({
-                                                            ...current,
-                                                            phone: event.target
-                                                                .value,
-                                                        }))
-                                                    }
-                                                    className="h-10"
-                                                />
-                                            </FilterField>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        <FilterField label="Tên đăng nhập">
-                                            <Input
-                                                placeholder="Nhập tên đăng nhập"
-                                                value={form.username}
-                                                onChange={(event) =>
-                                                    setForm((current) => ({
-                                                        ...current,
-                                                        username:
-                                                            event.target.value,
-                                                    }))
-                                                }
-                                                className="h-10"
-                                            />
-                                        </FilterField>
+                                    {form.role === 'SINHVIEN' ? (
+                                        <>
+                                            <div className="grid gap-4 sm:grid-cols-2">
+                                                <FilterField label="MSSV">
+                                                    <Input
+                                                        placeholder="Nhập mã số sinh viên"
+                                                        value={form.mssv}
+                                                        onChange={(event) =>
+                                                            setForm(
+                                                                (current) => ({
+                                                                    ...current,
+                                                                    mssv: event
+                                                                        .target
+                                                                        .value,
+                                                                }),
+                                                            )
+                                                        }
+                                                        className={
+                                                            inputClassName
+                                                        }
+                                                    />
+                                                </FilterField>
+                                                <FilterField label="Họ và tên">
+                                                    <Input
+                                                        placeholder="Nhập họ và tên"
+                                                        value={form.fullName}
+                                                        onChange={(event) =>
+                                                            setForm(
+                                                                (current) => ({
+                                                                    ...current,
+                                                                    fullName:
+                                                                        event
+                                                                            .target
+                                                                            .value,
+                                                                }),
+                                                            )
+                                                        }
+                                                        className={
+                                                            inputClassName
+                                                        }
+                                                    />
+                                                </FilterField>
+                                            </div>
 
-                                        {form.role === 'LCD' ? (
-                                            <FilterField label="Khoa quản lý">
+                                            <FilterField label="Khoa">
                                                 <select
                                                     className={selectClassName}
                                                     value={form.facultyId}
@@ -877,11 +1199,69 @@ export const UsersRoute = () => {
                                                     )}
                                                 </select>
                                             </FilterField>
-                                        ) : null}
 
-                                        {form.role === 'CLB' ? (
                                             <div className="grid gap-4 sm:grid-cols-2">
-                                                <FilterField label="Khoa phụ trách">
+                                                <FilterField label="Lớp">
+                                                    <Input
+                                                        placeholder="Ví dụ: 23TCLC_DT3"
+                                                        value={form.className}
+                                                        onChange={(event) =>
+                                                            setForm(
+                                                                (current) => ({
+                                                                    ...current,
+                                                                    className:
+                                                                        event
+                                                                            .target
+                                                                            .value,
+                                                                }),
+                                                            )
+                                                        }
+                                                        className={
+                                                            inputClassName
+                                                        }
+                                                    />
+                                                </FilterField>
+                                                <FilterField label="Số điện thoại">
+                                                    <Input
+                                                        placeholder="Nhập số điện thoại"
+                                                        value={form.phone}
+                                                        onChange={(event) =>
+                                                            setForm(
+                                                                (current) => ({
+                                                                    ...current,
+                                                                    phone: event
+                                                                        .target
+                                                                        .value,
+                                                                }),
+                                                            )
+                                                        }
+                                                        className={
+                                                            inputClassName
+                                                        }
+                                                    />
+                                                </FilterField>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <FilterField label="Tên đăng nhập">
+                                                <Input
+                                                    placeholder="Nhập tên đăng nhập"
+                                                    value={form.username}
+                                                    onChange={(event) =>
+                                                        setForm((current) => ({
+                                                            ...current,
+                                                            username:
+                                                                event.target
+                                                                    .value,
+                                                        }))
+                                                    }
+                                                    className={inputClassName}
+                                                />
+                                            </FilterField>
+
+                                            {form.role === 'LCD' ? (
+                                                <FilterField label="Khoa quản lý">
                                                     <select
                                                         className={
                                                             selectClassName
@@ -900,7 +1280,7 @@ export const UsersRoute = () => {
                                                         }
                                                     >
                                                         <option value="">
-                                                            Chọn khoa (nếu có)
+                                                            Chọn khoa
                                                         </option>
                                                         {faculties.map(
                                                             (faculty) => (
@@ -924,127 +1304,206 @@ export const UsersRoute = () => {
                                                         )}
                                                     </select>
                                                 </FilterField>
-                                                <FilterField
-                                                    label="Câu lạc bộ quản lý"
-                                                    hint={
-                                                        clubs.length === 0
-                                                            ? 'Hiện chưa có câu lạc bộ trong cơ sở dữ liệu.'
-                                                            : undefined
-                                                    }
-                                                >
-                                                    <select
-                                                        className={
-                                                            selectClassName
-                                                        }
-                                                        value={
-                                                            form.managedClubId
-                                                        }
-                                                        onChange={(event) =>
-                                                            setForm(
-                                                                (current) => ({
-                                                                    ...current,
-                                                                    managedClubId:
-                                                                        event
-                                                                            .target
-                                                                            .value,
-                                                                }),
-                                                            )
+                                            ) : null}
+
+                                            {form.role === 'CLB' ? (
+                                                <div className="grid gap-4 sm:grid-cols-2">
+                                                    <FilterField label="Khoa phụ trách">
+                                                        <select
+                                                            className={
+                                                                selectClassName
+                                                            }
+                                                            value={
+                                                                form.facultyId
+                                                            }
+                                                            onChange={(event) =>
+                                                                setForm(
+                                                                    (
+                                                                        current,
+                                                                    ) => ({
+                                                                        ...current,
+                                                                        facultyId:
+                                                                            event
+                                                                                .target
+                                                                                .value,
+                                                                    }),
+                                                                )
+                                                            }
+                                                        >
+                                                            <option value="">
+                                                                Chọn khoa (nếu
+                                                                có)
+                                                            </option>
+                                                            {faculties.map(
+                                                                (faculty) => (
+                                                                    <option
+                                                                        key={
+                                                                            faculty.id
+                                                                        }
+                                                                        value={String(
+                                                                            faculty.id,
+                                                                        )}
+                                                                    >
+                                                                        {
+                                                                            faculty.code
+                                                                        }{' '}
+                                                                        -{' '}
+                                                                        {
+                                                                            faculty.name
+                                                                        }
+                                                                    </option>
+                                                                ),
+                                                            )}
+                                                        </select>
+                                                    </FilterField>
+                                                    <FilterField
+                                                        label="Câu lạc bộ quản lý"
+                                                        hint={
+                                                            clubs.length === 0
+                                                                ? 'Hiện chưa có câu lạc bộ trong cơ sở dữ liệu.'
+                                                                : undefined
                                                         }
                                                     >
-                                                        <option value="">
-                                                            {clubs.length === 0
-                                                                ? 'Chưa có dữ liệu câu lạc bộ'
-                                                                : 'Chọn câu lạc bộ'}
-                                                        </option>
-                                                        {clubs.map((club) => (
-                                                            <option
-                                                                key={club.id}
-                                                                value={club.id}
-                                                            >
-                                                                {club.name}
+                                                        <select
+                                                            className={
+                                                                selectClassName
+                                                            }
+                                                            value={
+                                                                form.managedClubId
+                                                            }
+                                                            onChange={(event) =>
+                                                                setForm(
+                                                                    (
+                                                                        current,
+                                                                    ) => ({
+                                                                        ...current,
+                                                                        managedClubId:
+                                                                            event
+                                                                                .target
+                                                                                .value,
+                                                                    }),
+                                                                )
+                                                            }
+                                                        >
+                                                            <option value="">
+                                                                {clubs.length ===
+                                                                0
+                                                                    ? 'Chưa có dữ liệu câu lạc bộ'
+                                                                    : 'Chọn câu lạc bộ'}
                                                             </option>
-                                                        ))}
-                                                    </select>
-                                                </FilterField>
-                                            </div>
-                                        ) : null}
-                                    </>
-                                )}
+                                                            {clubs.map(
+                                                                (club) => (
+                                                                    <option
+                                                                        key={
+                                                                            club.id
+                                                                        }
+                                                                        value={
+                                                                            club.id
+                                                                        }
+                                                                    >
+                                                                        {
+                                                                            club.name
+                                                                        }
+                                                                    </option>
+                                                                ),
+                                                            )}
+                                                        </select>
+                                                    </FilterField>
+                                                </div>
+                                            ) : null}
+                                        </>
+                                    )}
 
-                                <FilterField label="Email">
-                                    <Input
-                                        type="email"
-                                        placeholder="Nhập địa chỉ email"
-                                        value={form.email}
-                                        onChange={(event) =>
-                                            setForm((current) => ({
-                                                ...current,
-                                                email: event.target.value,
-                                            }))
-                                        }
-                                        className="h-10"
-                                    />
-                                </FilterField>
+                                    <FilterField label="Email">
+                                        <Input
+                                            type="email"
+                                            placeholder="Nhập địa chỉ email"
+                                            value={form.email}
+                                            onChange={(event) =>
+                                                setForm((current) => ({
+                                                    ...current,
+                                                    email: event.target.value,
+                                                }))
+                                            }
+                                            className={inputClassName}
+                                        />
+                                    </FilterField>
 
-                                <FilterField
-                                    label="Mật khẩu"
-                                    hint={
-                                        formMode === 'create'
-                                            ? 'Cần nhập mật khẩu cho tài khoản mới.'
-                                            : 'Để trống nếu muốn giữ nguyên mật khẩu hiện tại.'
-                                    }
-                                >
-                                    <Input
-                                        type="password"
-                                        placeholder={
+                                    <FilterField
+                                        label="Mật khẩu"
+                                        hint={
                                             formMode === 'create'
-                                                ? 'Nhập mật khẩu'
-                                                : 'Nhập mật khẩu mới nếu cần'
+                                                ? 'Cần nhập mật khẩu cho tài khoản mới.'
+                                                : 'Để trống nếu muốn giữ nguyên mật khẩu hiện tại.'
                                         }
-                                        value={form.password}
-                                        onChange={(event) =>
-                                            setForm((current) => ({
-                                                ...current,
-                                                password: event.target.value,
-                                            }))
-                                        }
-                                        className="h-10"
-                                    />
-                                </FilterField>
+                                    >
+                                        <Input
+                                            type="password"
+                                            placeholder={
+                                                formMode === 'create'
+                                                    ? 'Nhập mật khẩu'
+                                                    : 'Nhập mật khẩu mới nếu cần'
+                                            }
+                                            value={form.password}
+                                            onChange={(event) =>
+                                                setForm((current) => ({
+                                                    ...current,
+                                                    password:
+                                                        event.target.value,
+                                                }))
+                                            }
+                                            className={inputClassName}
+                                        />
+                                    </FilterField>
 
-                                <div className={editorialInsetNoteClassName}>
-                                    <p className="font-medium text-[#0A0A0A]">
-                                        Lưu ý triển khai
-                                    </p>
-                                    <ul className="mt-2 space-y-1">
-                                        <li>
-                                            • Vai trò sinh viên sử dụng MSSV làm
-                                            định danh chính.
-                                        </li>
-                                        <li>
-                                            • Vai trò quản lý sử dụng tên đăng
-                                            nhập riêng và giữ nguyên logic phân
-                                            quyền hiện tại.
-                                        </li>
-                                    </ul>
-                                </div>
+                                    <div
+                                        className={editorialInsetNoteClassName}
+                                    >
+                                        <p className="font-medium text-[#0A0A0A]">
+                                            Lưu ý triển khai
+                                        </p>
+                                        <ul className="mt-2 space-y-1">
+                                            <li>
+                                                • Vai trò sinh viên sử dụng MSSV
+                                                làm định danh chính.
+                                            </li>
+                                            <li>
+                                                • Vai trò quản lý sử dụng tên
+                                                đăng nhập riêng và giữ nguyên
+                                                logic phân quyền hiện tại.
+                                            </li>
+                                        </ul>
+                                    </div>
 
-                                <Button
-                                    type="submit"
-                                    size="lg"
-                                    disabled={
-                                        isSubmitting || usersQuery.isLoading
-                                    }
-                                >
-                                    {formMode === 'create'
-                                        ? 'Lưu tài khoản'
-                                        : 'Cập nhật tài khoản'}
-                                </Button>
-                            </form>
-                        </ManagementPanel>
-                    </div>
+                                    <div className="flex flex-col gap-3 border-t border-[#E1E3E4] pt-4 sm:flex-row sm:justify-end">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            className="rounded-lg border-[#C3C6D2] normal-case tracking-normal"
+                                            onClick={closeFormDialog}
+                                        >
+                                            Hủy
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            size="lg"
+                                            className="rounded-lg bg-[#002A58] normal-case tracking-normal text-white hover:bg-[#004080]"
+                                            disabled={
+                                                isSubmitting ||
+                                                usersQuery.isLoading
+                                            }
+                                        >
+                                            {formMode === 'create'
+                                                ? 'Lưu tài khoản'
+                                                : 'Cập nhật tài khoản'}
+                                        </Button>
+                                    </div>
+                                </form>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
                 </div>
-            </ContentLayout>
+            </>
         </Authorization>
     );
 };

@@ -61,12 +61,7 @@ export const AppRouter = () => {
         },
         {
             path: paths.auth.register.path,
-            element: (
-                <Navigate
-                    to={paths.campaigns.getHref()}
-                    replace
-                />
-            ),
+            element: <Navigate to={paths.campaigns.getHref()} replace />,
         },
         {
             path: paths.auth.login.path,
@@ -135,6 +130,15 @@ export const AppRouter = () => {
                         import('@/app/routes/app/dashboard.tsx').then((m) => ({
                             Component: m.DashboardRoute,
                         })),
+                },
+                {
+                    path: paths.app.users.dataTransfer.path,
+                    lazy: () =>
+                        import('@/app/routes/app/users-data-transfer.tsx').then(
+                            (m) => ({
+                                Component: m.UserDataTransferRoute,
+                            }),
+                        ),
                 },
                 {
                     path: paths.app.users.path,
@@ -219,9 +223,11 @@ export const AppRouter = () => {
                 {
                     path: paths.app.donationPayment.path,
                     lazy: () =>
-                        import('@/app/routes/app/donation-payment.tsx').then((m) => ({
-                            Component: m.DonationPaymentRoute,
-                        })),
+                        import('@/app/routes/app/donation-payment.tsx').then(
+                            (m) => ({
+                                Component: m.DonationPaymentRoute,
+                            }),
+                        ),
                 },
                 {
                     path: paths.app.eventManagement.path,
