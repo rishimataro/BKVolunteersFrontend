@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { ArrowLeft, CalendarDays, FileText } from 'lucide-react';
 
 import { Head } from '@/components/seo';
@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
-import { useUser } from '@/features/auth';
+import { ROLES, useUser } from '@/features/auth';
 import { getPublicCampaignDetail } from '@/features/campaign/api/public';
 import { createEventRegistration } from '@/features/campaign/api/events';
 import {
@@ -15,6 +15,7 @@ import {
     getItemTargets,
     type ItemTargetItem,
 } from '@/features/campaign/api/item-donations';
+import { ApprovalCampaignDetailView } from '@/features/campaign/components/approval-campaign-detail-view';
 import { ModuleBlock } from '@/components/ui/module-block';
 import { StatusBadge } from '@/features/campaign/components/status-badge';
 import {
@@ -33,13 +34,40 @@ export const PublicCampaignDetailRoute = () => (
     />
 );
 
-export const AppCampaignDetailRoute = () => (
+const AppCampaignDetailRoutePublic = () => (
     <CampaignDetailView
         backHref={paths.app.campaigns.getHref()}
         backLabel="Chiến dịch công khai"
         headTitle="Chi tiết chiến dịch"
     />
 );
+
+export const AppCampaignDetailRoute = () => {
+    const user = useUser();
+    const [searchParams] = useSearchParams();
+    const role = user.data?.role;
+
+    if (role === ROLES.DOANTRUONG || role === ROLES.LCD) {
+        return (
+            <ApprovalCampaignDetailView
+                approvalId={searchParams.get('approvalId')}
+                role={role}
+                backHref={
+                    role === ROLES.DOANTRUONG
+                        ? paths.app.dashboard.getHref()
+                        : paths.app.campaigns.getHref()
+                }
+                backLabel={
+                    role === ROLES.DOANTRUONG
+                        ? 'Quay lại tổng quan'
+                        : 'Quay lại danh sách phê duyệt'
+                }
+            />
+        );
+    }
+
+    return <AppCampaignDetailRoutePublic />;
+};
 
 const formatDate = (value: string) =>
     new Intl.DateTimeFormat('vi-VN', {

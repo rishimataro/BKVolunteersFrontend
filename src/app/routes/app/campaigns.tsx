@@ -31,6 +31,11 @@ import {
     type ManagedCampaignItem,
 } from '@/features/campaign/api/campaign';
 import {
+    approvalTransition,
+    getApprovalQueue,
+    type ApprovalQueueItem,
+} from '@/features/campaign/api/approval';
+import {
     attachFundraisingTransaction,
     getFundraisingDonations,
     getFundraisingModule,
@@ -69,6 +74,12 @@ import { FundraisingPanel } from '@/features/campaign/components/fundraising-pan
 import { ItemDonationPanel } from '@/features/campaign/components/item-donation-panel';
 import { EventPanel } from '@/features/campaign/components/event-panel';
 import { CampaignCard } from '@/features/campaign/components/campaign-card';
+import {
+    SchoolApprovalQueue,
+    type ApprovalQueueAction,
+    type ApprovalQueueFilterState,
+    type ApprovalReviewDialogState,
+} from '@/features/campaign/components/school-approval-queue';
 import {
     EmptyState,
     ErrorState,
@@ -131,6 +142,16 @@ type CampaignActionDialogState =
           targetId: string;
           value: string;
       };
+
+const defaultApprovalFilters: ApprovalQueueFilterState = {
+    q: '',
+    status: '',
+    module_type: '',
+    urgency: '',
+    sort: 'newest',
+    page: 1,
+    pageSize: 8,
+};
 
 const StudentCampaignDiscovery = () => {
     const [filters, setFilters] = React.useState<PublicCampaignFilters>({
@@ -354,6 +375,21 @@ export const CampaignsRoute = () => {
         React.useState<CampaignActionDialogState | null>(null);
     const [submittingActionDialog, setSubmittingActionDialog] =
         React.useState(false);
+    const [approvalQueue, setApprovalQueue] = React.useState<
+        ApprovalQueueItem[]
+    >([]);
+    const [approvalLoading, setApprovalLoading] = React.useState(false);
+    const [approvalError, setApprovalError] = React.useState<string | null>(
+        null,
+    );
+    const [approvalFilters, setApprovalFilters] =
+        React.useState<ApprovalQueueFilterState>(defaultApprovalFilters);
+    const [approvalSubmitting, setApprovalSubmitting] = React.useState<{
+        campaignId: string;
+        action: ApprovalQueueAction;
+    } | null>(null);
+    const [approvalReviewDialog, setApprovalReviewDialog] =
+        React.useState<ApprovalReviewDialogState | null>(null);
 
     const [createForm, setCreateForm] = React.useState({
         title: '',
@@ -383,6 +419,7 @@ export const CampaignsRoute = () => {
     const role = user.data?.role;
     const isStudent = role === ROLES.SINHVIEN;
     const canManageCampaign = role === ROLES.CLB;
+    const canReviewCampaign = role === ROLES.DOANTRUONG || role === ROLES.LCD;
     const canMutateCampaign = role === ROLES.CLB;
     const canDeleteDraft =
         canMutateCampaign &&
@@ -393,6 +430,46 @@ export const CampaignsRoute = () => {
         setActionDialog(null);
         setSubmittingActionDialog(false);
     }, []);
+
+    const closeApprovalReviewDialog = React.useCallback(() => {
+        setApprovalReviewDialog(null);
+    }, []);
+
+    const loadApprovalQueue = React.useCallback(async () => {
+        if (!canReviewCampaign) return;
+        setApprovalLoading(true);
+        setApprovalError(null);
+
+        try {
+            const data = await getApprovalQueue({
+                status: approvalFilters.status || undefined,
+                module_type: approvalFilters.module_type || undefined,
+                q: approvalFilters.q.trim() || undefined,
+                page: 1,
+                limit: 100,
+            });
+            setApprovalQueue(data);
+        } catch (error) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Lỗi hệ thống khi tải danh sách phê duyệt.';
+            setApprovalError(message);
+            addNotification({
+                type: 'error',
+                title: 'Không tải được hàng đợi phê duyệt',
+                message,
+            });
+        } finally {
+            setApprovalLoading(false);
+        }
+    }, [
+        addNotification,
+        approvalFilters.module_type,
+        approvalFilters.q,
+        approvalFilters.status,
+        canReviewCampaign,
+    ]);
 
     const loadCampaigns = React.useCallback(async () => {
         if (!canManageCampaign) return;
@@ -529,6 +606,11 @@ export const CampaignsRoute = () => {
     React.useEffect(() => {
         void loadCampaigns();
     }, [loadCampaigns]);
+
+    React.useEffect(() => {
+        if (!canReviewCampaign) return;
+        void loadApprovalQueue();
+    }, [canReviewCampaign, loadApprovalQueue]);
 
     React.useEffect(() => {
         if (!selectedCampaignId) {
@@ -1205,10 +1287,11 @@ export const CampaignsRoute = () => {
                 }
                 case 'handover-item-pledge': {
                     const parsedQuantity = Number(trimmedValue);
-                    if (!Number.isFinite(parsedQuantity) || parsedQuantity <= 0) {
-                        throw new Error(
-                            'Số lượng thực nhận phải lớn hơn 0.',
-                        );
+                    if (
+                        !Number.isFinite(parsedQuantity) ||
+                        parsedQuantity <= 0
+                    ) {
+                        throw new Error('Số lượng thực nhận phải lớn hơn 0.');
                     }
                     await handoverItemPledge(actionDialog.targetId, {
                         received_quantity: parsedQuantity,
@@ -1281,10 +1364,132 @@ export const CampaignsRoute = () => {
         }
     };
 
+    const updateApprovalFilters = React.useCallback(
+        (patch: Partial<ApprovalQueueFilterState>) => {
+            setApprovalFilters((current) => ({
+                ...current,
+                ...patch,
+                page: typeof patch.page === 'number' ? patch.page : 1,
+            }));
+        },
+        [],
+    );
+
+    const resetApprovalFilters = React.useCallback(() => {
+        setApprovalFilters(defaultApprovalFilters);
+    }, []);
+
+    const submitApprovalAction = React.useCallback(
+        async (
+            campaignId: string,
+            action: ApprovalQueueAction,
+            reason?: string,
+        ) => {
+            setApprovalSubmitting({ campaignId, action });
+
+            try {
+                await approvalTransition(campaignId, action, reason);
+
+                const successTitle: Record<ApprovalQueueAction, string> = {
+                    'pre-approve': 'Đã sơ duyệt chiến dịch',
+                    approve: 'Đã phê duyệt chiến dịch',
+                    'request-revision': 'Đã gửi yêu cầu chỉnh sửa',
+                    reject: 'Đã từ chối chiến dịch',
+                };
+
+                const successMessage: Record<ApprovalQueueAction, string> = {
+                    'pre-approve': 'Hồ sơ đã chuyển sang bước chờ duyệt cuối.',
+                    approve: 'Chiến dịch đã được phê duyệt theo đúng luồng.',
+                    'request-revision':
+                        'Đơn vị tổ chức đã nhận phản hồi để cập nhật hồ sơ.',
+                    reject: 'Hồ sơ đã được đưa ra khỏi hàng đợi phê duyệt.',
+                };
+
+                addNotification({
+                    type: 'success',
+                    title: successTitle[action],
+                    message: successMessage[action],
+                });
+
+                closeApprovalReviewDialog();
+                await loadApprovalQueue();
+            } catch (error) {
+                addNotification({
+                    type: 'error',
+                    title: 'Không thể cập nhật hồ sơ phê duyệt',
+                    message:
+                        error instanceof Error ? error.message : 'Lỗi hệ thống',
+                });
+            } finally {
+                setApprovalSubmitting(null);
+            }
+        },
+        [addNotification, closeApprovalReviewDialog, loadApprovalQueue],
+    );
+
+    const submitApprovalReviewDialog = React.useCallback(async () => {
+        if (!approvalReviewDialog) return;
+
+        const reason = approvalReviewDialog.value.trim();
+        if (!reason) {
+            addNotification({
+                type: 'error',
+                title: 'Thiếu nội dung phản hồi',
+                message: 'Vui lòng nhập lý do trước khi gửi phản hồi.',
+            });
+            return;
+        }
+
+        await submitApprovalAction(
+            approvalReviewDialog.campaignId,
+            approvalReviewDialog.action,
+            reason,
+        );
+    }, [addNotification, approvalReviewDialog, submitApprovalAction]);
+
     if (!user.data) return null;
 
     if (isStudent) {
         return <StudentCampaignDiscovery />;
+    }
+
+    if (canReviewCampaign) {
+        return (
+            <ContentLayout title="Phê Duyệt Chiến Dịch">
+                <SchoolApprovalQueue
+                    role={role}
+                    items={approvalQueue}
+                    loading={approvalLoading}
+                    error={approvalError}
+                    filters={approvalFilters}
+                    actionSubmitting={approvalSubmitting}
+                    reviewDialog={approvalReviewDialog}
+                    onFiltersChange={updateApprovalFilters}
+                    onResetFilters={resetApprovalFilters}
+                    onRefresh={() => void loadApprovalQueue()}
+                    onQuickAction={(campaignId, action) => {
+                        void submitApprovalAction(campaignId, action);
+                    }}
+                    onOpenReviewDialog={(campaignId, campaignTitle, action) =>
+                        setApprovalReviewDialog({
+                            campaignId,
+                            campaignTitle,
+                            action,
+                            value: '',
+                        })
+                    }
+                    onCloseReviewDialog={closeApprovalReviewDialog}
+                    onReviewReasonChange={(value) =>
+                        setApprovalReviewDialog((current) =>
+                            current ? { ...current, value } : current,
+                        )
+                    }
+                    onSubmitReviewDialog={() => {
+                        void submitApprovalReviewDialog();
+                    }}
+                />
+            </ContentLayout>
+        );
     }
 
     if (!canManageCampaign) {
