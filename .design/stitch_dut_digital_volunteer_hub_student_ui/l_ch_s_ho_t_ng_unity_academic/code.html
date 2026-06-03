@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lịch sử Hoạt động | VolunteerHub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#0e4686",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-primary-fixed": "#001b3d",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container-high": "#e7e8e9",
+                        "surface-tint": "#305ea0",
+                        "primary-container": "#004080",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "on-primary-container": "#83aef5",
+                        "tertiary-container": "#6f2d00",
+                        "on-tertiary-fixed-variant": "#773305",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#c3c6d2",
+                        "secondary-fixed-dim": "#4ae183",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-surface-variant": "#424750",
+                        "inverse-primary": "#a9c7ff",
+                        "inverse-surface": "#2e3132",
+                        "on-background": "#191c1d",
+                        "surface": "#f8f9fa",
+                        "on-secondary-container": "#00743a",
+                        "surface-dim": "#d9dadb",
+                        "on-tertiary-fixed": "#341100",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffdbcb",
+                        "primary": "#002a58",
+                        "tertiary": "#4c1d00",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#f59561",
+                        "primary-fixed": "#d6e3ff",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-container-low": "#f3f4f5",
+                        "surface-variant": "#e1e3e4",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#005228",
+                        "outline": "#737781",
+                        "on-error": "#ffffff",
+                        "secondary": "#006d37",
+                        "error-container": "#ffdad6",
+                        "background": "#f8f9fa",
+                        "on-secondary-fixed": "#00210c",
+                        "surface-container": "#edeeef",
+                        "secondary-container": "#6bfe9c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "stack-md": "24px",
+                        "stack-sm": "12px",
+                        "margin-mobile": "16px",
+                        "base": "8px",
+                        "container-max": "1280px",
+                        "stack-lg": "48px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "h3": ["Public Sans"],
+                        "h1": ["Public Sans"],
+                        "label-bold": ["Public Sans"],
+                        "body-sm": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}],
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Public Sans', sans-serif; background-color: #f8f9fa; }
+    </style>
+</head>
+<body class="bg-background text-on-background">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-[#F8F9FA] border-b border-[#E2E8F0] shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<div class="flex justify-between items-center h-16 px-6 max-w-[1280px] mx-auto w-full">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold tracking-tight text-[#004080]">VolunteerHub</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-slate-600 hover:text-[#004080] font-body-sm transition-colors" href="#">Dashboard</a>
+<a class="text-slate-600 hover:text-[#004080] font-body-sm transition-colors" href="#">Campaigns</a>
+<a class="text-[#004080] font-semibold border-b-2 border-[#004080] py-5 font-body-sm" href="#">My Impact</a>
+<a class="text-slate-600 hover:text-[#004080] font-body-sm transition-colors" href="#">Fundraising</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-100 transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-slate-600" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-slate-100 transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-slate-600" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-slate-200">
+<img alt="User profile avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a young university student, smiling confidently. The lighting is soft and natural, coming from a large window. The background is a slightly blurred academic setting with bookshelves and warm wooden tones, reflecting an atmosphere of learning and leadership. The student has a clean, modern appearance consistent with a prestige university identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSBtNw636m6hnXuWPqguD9mu70vc7xHXX9PhrNDXImbvptSA5YMixi-GHONKl5f1_2Cmne1Td28hVkEc3wmMKJf03JdLCTJ17ud8TVP9o3IE46RDuOoR90tr2zd7nHUJ27vSikjUy4JqaapmLl184JA0QVQSak_-uwgUQh85ltx2RvITfyAug-2k8zsonFePNTz74SH8RFBXVE0d9IMTd3fxhKGC4hTbMsrcJ6JH5RskraRlW2964lYweDxo3H_BiK1p4gpmRiHjuj"/>
+</div>
+</div>
+</div>
+</nav>
+<div class="flex max-w-[1280px] mx-auto pt-16">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col pt-8 pb-6 h-[calc(100vh-64px)] w-64 border-r border-[#E2E8F0] bg-white sticky top-16">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+</div>
+<div>
+<h2 class="text-lg font-black text-[#004080]">UniVolunteer</h2>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Empowering Impact</p>
+</div>
+</div>
+</div>
+<nav class="flex-1">
+<a class="text-slate-500 px-6 py-3 flex items-center gap-3 hover:bg-slate-50 transition-all active:scale-95 duration-150 font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+<a class="text-slate-500 px-6 py-3 flex items-center gap-3 hover:bg-slate-50 transition-all active:scale-95 duration-150 font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+                    Campaigns
+                </a>
+<a class="bg-blue-50 text-[#004080] border-r-4 border-[#004080] px-6 py-3 flex items-center gap-3 active:scale-95 duration-150 font-body-sm font-medium" href="#">
+<span class="material-symbols-outlined" data-icon="volunteer_activism">volunteer_activism</span>
+                    My Impact
+                </a>
+<a class="text-slate-500 px-6 py-3 flex items-center gap-3 hover:bg-slate-50 transition-all active:scale-95 duration-150 font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+                    Fundraising
+                </a>
+<a class="text-slate-500 px-6 py-3 flex items-center gap-3 hover:bg-slate-50 transition-all active:scale-95 duration-150 font-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+                    Administration
+                </a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full bg-[#004080] text-white py-3 rounded-xl font-button flex items-center justify-center gap-2 shadow-lg shadow-blue-900/10 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                    Start a Campaign
+                </button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 p-gutter bg-[#F8F9FA]">
+<!-- Header Section -->
+<div class="mb-stack-lg">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="font-h1 text-h1 text-primary mb-2">Lịch sử Hoạt động</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">Theo dõi hành trình cống hiến và những đóng góp của bạn cho cộng đồng thông qua các chiến dịch tình nguyện tại trường.</p>
+</div>
+<div class="flex gap-stack-sm">
+<div class="flex flex-col gap-1">
+<label class="font-label-bold text-label-bold text-outline">NĂM HỌC</label>
+<select class="bg-white border border-outline-variant rounded-lg px-4 py-2 font-body-sm focus:ring-2 focus:ring-primary/20 outline-none">
+<option>2023 - 2024</option>
+<option>2022 - 2023</option>
+<option>2021 - 2022</option>
+</select>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-bold text-label-bold text-outline">HỌC KỲ</label>
+<select class="bg-white border border-outline-variant rounded-lg px-4 py-2 font-body-sm focus:ring-2 focus:ring-primary/20 outline-none">
+<option>Học kỳ 1</option>
+<option>Học kỳ 2</option>
+<option>Học kỳ Hè</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- Bento Grid Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-stack-lg">
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<span class="material-symbols-outlined text-primary mb-3" data-icon="event_available">event_available</span>
+<div class="text-h3 font-h3 text-primary">12</div>
+<div class="text-body-sm font-body-sm text-outline">Chiến dịch tham gia</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<span class="material-symbols-outlined text-secondary mb-3" data-icon="timer">timer</span>
+<div class="text-h3 font-h3 text-secondary">84</div>
+<div class="text-body-sm font-body-sm text-outline">Giờ tình nguyện</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<span class="material-symbols-outlined text-tertiary-container mb-3" data-icon="card_membership">card_membership</span>
+<div class="text-h3 font-h3 text-tertiary-container">08</div>
+<div class="text-body-sm font-body-sm text-outline">Giấy chứng nhận</div>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<span class="material-symbols-outlined text-primary-container mb-3" data-icon="volunteer_activism">volunteer_activism</span>
+<div class="text-h3 font-h3 text-primary-container">5.2tr</div>
+<div class="text-body-sm font-body-sm text-outline">Quỹ đã đóng góp</div>
+</div>
+</div>
+<!-- Activity Table Container -->
+<div class="bg-white rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex items-center justify-between">
+<h3 class="font-h3 text-h3 text-primary">Danh sách Hoạt động</h3>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-4 py-2 text-body-sm font-medium border border-outline-variant rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+                            Lọc kết quả
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 text-body-sm font-medium border border-outline-variant rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+                            Xuất báo cáo
+                        </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-6 py-4 font-label-bold text-label-bold text-outline uppercase tracking-wider">Tên chiến dịch</th>
+<th class="px-6 py-4 font-label-bold text-label-bold text-outline uppercase tracking-wider">Vai trò</th>
+<th class="px-6 py-4 font-label-bold text-label-bold text-outline uppercase tracking-wider">Thời gian</th>
+<th class="px-6 py-4 font-label-bold text-label-bold text-outline uppercase tracking-wider">Trạng thái</th>
+<th class="px-6 py-4 font-label-bold text-label-bold text-outline uppercase tracking-wider text-right">Hành động</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1: Đã xác nhận -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-blue-50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="campaign">campaign</span>
+</div>
+<div>
+<div class="font-body-md font-semibold text-primary">Mùa hè Xanh 2024 - Đắk Lắk</div>
+<div class="text-body-sm text-outline">Mã: MHX24-DL</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-blue-100 text-[#004080] text-[12px] font-bold">TVV Nòng cốt</span>
+</td>
+<td class="px-6 py-4 font-body-sm text-on-surface-variant">
+                                    15/06 - 30/07/2024
+                                </td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-white text-[12px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                                        Đã xác nhận
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<a class="inline-flex items-center gap-1 text-primary hover:underline font-button text-sm" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="workspace_premium">workspace_premium</span>
+                                        Giấy chứng nhận
+                                    </a>
+</td>
+</tr>
+<!-- Row 2: Đang xử lý -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-orange-50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-orange-600" data-icon="volunteer_activism">volunteer_activism</span>
+</div>
+<div>
+<div class="font-body-md font-semibold text-primary">Hiến máu Nhân đạo Đợt 2</div>
+<div class="text-body-sm text-outline">Mã: HMN24-02</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[12px] font-bold">Người đóng góp</span>
+</td>
+<td class="px-6 py-4 font-body-sm text-on-surface-variant">
+                                    05/10/2024
+                                </td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-500 text-white text-[12px] font-bold">
+                                        Đang xử lý
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-outline cursor-not-allowed font-button text-sm flex items-center gap-1 justify-end w-full" disabled="" title="Chờ xét duyệt để tải giấy chứng nhận">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+                                        Chưa khả dụng
+                                    </button>
+</td>
+</tr>
+<!-- Row 3: Đã tham gia -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-emerald-50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-secondary" data-icon="school">school</span>
+</div>
+<div>
+<div class="font-body-md font-semibold text-primary">Tiếp sức Mùa thi 2024</div>
+<div class="text-body-sm text-outline">Mã: TSMT-2024</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-blue-100 text-[#004080] text-[12px] font-bold">Điều phối viên</span>
+</td>
+<td class="px-6 py-4 font-body-sm text-on-surface-variant">
+                                    25/06 - 29/06/2024
+                                </td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container text-white text-[12px] font-bold">
+                                        Đã tham gia
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<a class="inline-flex items-center gap-1 text-primary hover:underline font-button text-sm" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="workspace_premium">workspace_premium</span>
+                                        Giấy chứng nhận
+                                    </a>
+</td>
+</tr>
+<!-- Row 4: Đã xác nhận -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-blue-50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary" data-icon="park">park</span>
+</div>
+<div>
+<div class="font-body-md font-semibold text-primary">Ngày hội Trồng cây Học kỳ 2</div>
+<div class="text-body-sm text-outline">Mã: NHT-HK2</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-blue-100 text-[#004080] text-[12px] font-bold">Tình nguyện viên</span>
+</td>
+<td class="px-6 py-4 font-body-sm text-on-surface-variant">
+                                    12/03/2024
+                                </td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-white text-[12px] font-bold">
+                                        Đã xác nhận
+                                    </span>
+</td>
+<td class="px-6 py-4 text-right">
+<a class="inline-flex items-center gap-1 text-primary hover:underline font-button text-sm" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="workspace_premium">workspace_premium</span>
+                                        Giấy chứng nhận
+                                    </a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-6 border-t border-outline-variant flex items-center justify-between">
+<div class="text-body-sm text-outline">Hiển thị 1 - 4 trong tổng số 12 hoạt động</div>
+<div class="flex gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-primary bg-primary text-white font-bold text-xs">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container-high transition-colors font-bold text-xs">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container-high transition-colors font-bold text-xs">3</button>
+<button class="w-8 h-8 flex items-center justify-center rounded border border-outline-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Focus Section: Upcoming Impact -->
+<div class="mt-stack-lg grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="bg-primary-container p-8 rounded-2xl text-white relative overflow-hidden">
+<div class="relative z-10">
+<h4 class="text-h3 font-h3 mb-2">Đạt 100 giờ để nhận Huy hiệu Vàng</h4>
+<p class="text-primary-fixed mb-6 opacity-90">Bạn chỉ còn cách mục tiêu 16 giờ tình nguyện nữa. Tiếp tục phát huy nhé!</p>
+<div class="w-full h-3 bg-white/20 rounded-full mb-2 overflow-hidden">
+<div class="h-full bg-secondary-container w-[84%]"></div>
+</div>
+<div class="flex justify-between text-label-bold uppercase">
+<span>84 Giờ hiện tại</span>
+<span>Mục tiêu 100 giờ</span>
+</div>
+</div>
+<!-- Decorative Background element -->
+<div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+</div>
+<div class="bg-white p-8 rounded-2xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div>
+<h4 class="text-h3 font-h3 text-primary mb-2">Đề xuất Hoạt động Mới</h4>
+<p class="text-body-md text-on-surface-variant mb-6">Dựa trên kỹ năng Công nghệ thông tin của bạn, chúng tôi đề xuất:</p>
+<div class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-low border border-outline-variant">
+<img class="w-16 h-16 rounded-lg object-cover" data-alt="A futuristic technology lab filled with clean white workstations and blue LED lighting. Students are collaborating around a large touchscreen interface displaying lines of code and data visualizations. The atmosphere is academic and innovative, emphasizing prestige and cutting-edge research in a modern university setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJSCVCvJhtE5z7TYwuKqFIp0mC4FR998KIHAq8WB9rEjsGUFuEq4u98qo2kIlnd5Y9S7VmtnihP_zvvw8yvgZED30OLTgYt4bz9szB3_szvJ3HvGpJn8wdhHE_Af6MJ11bPd5eiXJuswXT8E0jBX4uHCxq9XvJX98wauus_OTsXwpdsnixqBfDhpIc_ZsXOQo5RZA5XAXQHAbVQfa21mxuyOxMPjOKxL6FYt8Kyg-CTTflH5TTKWDubpmIPu_2C-s4Bib3m4CUSPt2"/>
+<div class="flex-1">
+<div class="font-bold text-primary">Dạy Code cho trẻ em vùng cao</div>
+<div class="text-body-sm text-outline">Bắt đầu: 20/11/2024</div>
+</div>
+<span class="material-symbols-outlined text-primary" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+<button class="mt-4 text-primary font-button flex items-center gap-2 hover:underline">
+                        Xem tất cả chiến dịch
+                        <span class="material-symbols-outlined text-sm" data-icon="open_in_new">open_in_new</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+<!-- Mobile Bottom Navigation Shell -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-outline-variant px-6 h-16 flex items-center justify-between z-50">
+<button class="flex flex-col items-center gap-1 text-outline">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-bold">Dashboard</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-outline">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="text-[10px] font-bold">Campaigns</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-primary">
+<span class="material-symbols-outlined" data-icon="volunteer_activism" style="font-variation-settings: 'FILL' 1;">volunteer_activism</span>
+<span class="text-[10px] font-bold">My Impact</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-outline">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="text-[10px] font-bold">Donate</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-outline">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="text-[10px] font-bold">Profile</span>
+</button>
+</div>
+</body></html>

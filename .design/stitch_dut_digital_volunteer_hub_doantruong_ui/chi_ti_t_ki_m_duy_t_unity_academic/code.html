@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Campaign Detail Audit View - Hệ thống Quản trị Tình nguyện</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#d6e3ff",
+                        "background": "#f8f9fa",
+                        "inverse-on-surface": "#f0f1f2",
+                        "secondary": "#006d37",
+                        "on-secondary-fixed": "#00210c",
+                        "inverse-primary": "#a9c7ff",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#001b3d",
+                        "outline": "#737781",
+                        "on-surface-variant": "#424750",
+                        "on-tertiary-container": "#f59561",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "tertiary-fixed": "#ffdbcb",
+                        "tertiary-container": "#6f2d00",
+                        "surface-tint": "#305ea0",
+                        "secondary-fixed-dim": "#4ae183",
+                        "surface-container": "#edeeef",
+                        "primary-container": "#004080",
+                        "on-tertiary-fixed": "#341100",
+                        "on-tertiary-fixed-variant": "#773305",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "error-container": "#ffdad6",
+                        "primary": "#002a58",
+                        "on-primary-fixed-variant": "#0e4686",
+                        "on-surface": "#191c1d",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-variant": "#e1e3e4",
+                        "on-secondary-container": "#00743a",
+                        "surface-container-low": "#f3f4f5",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#005228",
+                        "surface": "#f8f9fa",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#4c1d00",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2e3132",
+                        "surface-bright": "#f8f9fa",
+                        "secondary-container": "#6bfe9c",
+                        "surface-dim": "#d9dadb",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#83aef5",
+                        "on-background": "#191c1d",
+                        "surface-container-high": "#e7e8e9",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#c3c6d2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "stack-sm": "12px",
+                        "base": "8px",
+                        "stack-md": "24px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "stack-lg": "48px"
+                    },
+                    "fontFamily": {
+                        "label-bold": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "body-sm": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "h2": ["Public Sans"],
+                        "h3": ["Public Sans"],
+                        "h1": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .audit-scroll::-webkit-scrollbar { width: 4px; }
+        .audit-scroll::-webkit-scrollbar-thumb { background: #c3c6d2; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface flex overflow-hidden h-screen">
+<!-- SideNavBar (Authority: JSON) -->
+<aside class="bg-surface border-r border-outline-variant h-screen w-72 flex-shrink-0 flex flex-col p-stack-sm">
+<div class="mb-stack-lg px-4 pt-4">
+<h1 class="font-h3 text-h3 text-primary">Đại học Chính quy</h1>
+<p class="text-on-surface-variant font-body-sm">Cổng quản trị tình nguyện</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md">Bảng điều khiển</span>
+</a>
+<!-- Active Tab: Duyệt chiến dịch -->
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container font-label-bold rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+<span class="font-body-md">Duyệt chiến dịch</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+<span class="font-body-md">Quản lý đơn vị</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-body-md">Báo cáo &amp; Kiểm toán</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-md">Cài đặt hệ thống</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-stack-sm">
+<button class="w-full mb-stack-sm bg-primary text-on-primary font-button py-2 rounded-lg active:scale-95 transition-transform duration-150">
+                Xuất báo cáo năm
+            </button>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-body-md">Trợ giúp</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-body-md">Đăng xuất</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+<!-- TopNavBar (Authority: JSON) -->
+<header class="bg-surface-bright h-16 border-b border-outline-variant shadow-sm flex justify-between items-center px-gutter w-full z-10">
+<div class="flex items-center gap-8">
+<span class="font-h3 text-h3 font-bold text-primary">Hệ thống Quản trị Tình nguyện</span>
+<div class="hidden md:flex gap-6">
+<a class="text-on-surface-variant hover:text-primary font-label-bold" href="#">Tổng quan</a>
+<a class="text-primary border-b-2 border-primary pb-1 font-label-bold" href="#">Phê duyệt</a>
+<a class="text-on-surface-variant hover:text-primary font-label-bold" href="#">Thống kê</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+</button>
+<img alt="Administrator Profile" class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A professional portrait of a university administrator in their late 40s wearing a clean, modern suit and glasses. The lighting is soft and academic, set against a blurred background of a prestigious campus library with rich wooden tones and leather-bound books. The overall aesthetic is professional, authoritative, and sophisticated, matching a modern light-mode corporate UI." src="https://lh3.googleusercontent.com/aida/ADBb0uhqPOnwD17DBOz-kN_oLFNR5c8Pmx4GuVdr39M7-KS1qeEQz3TmMoCV6CFT0160cQlA4XnFpgt_FsQ8L0rTuwHi-Zw_1sxjVg18C16xgv8TdY5yPd-1Mwu3IOvf3ug4MNhwL4_I8v0DT01EoMIML34btQeEzJP3rAf0EbLULYoNNJ_9HdGSuVg7TwDpAlEo5H48S4tBGyZvXvDt6vhU5CToiWx3bqaRiM2jkoZFTYlkJc2hR77tVBlTUkvY"/>
+</div>
+</header>
+<!-- Content Area -->
+<div class="flex-1 overflow-y-auto bg-background p-gutter">
+<div class="max-w-container-max mx-auto">
+<!-- Header Actions Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-stack-md gap-4">
+<div>
+<div class="flex items-center gap-3 mb-1">
+<span class="bg-[#FF9800] text-white px-3 py-1 rounded-full font-label-bold text-[10px]">CHỜ SƠ DUYỆT</span>
+<span class="text-on-surface-variant font-body-sm">ID: CMP-2024-0892</span>
+</div>
+<h2 class="font-h2 text-h2 text-primary">Chiến dịch Mùa Hè Xanh 2024 - Đắk Lắk</h2>
+<p class="text-on-surface-variant font-body-md">Đơn vị đề xuất: Đoàn Thanh niên - Khoa Kinh tế Đối ngoại</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline text-on-surface hover:bg-surface-container transition-colors rounded-lg font-button">
+<span class="material-symbols-outlined text-[20px]" data-icon="print">print</span>
+                            In hồ sơ
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 border border-outline text-on-surface hover:bg-surface-container transition-colors rounded-lg font-button">
+<span class="material-symbols-outlined text-[20px]" data-icon="share">share</span>
+                            Chia sẻ
+                        </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Left Column: Details (8 cols) -->
+<div class="col-span-12 lg:col-span-8 space-y-gutter">
+<!-- Main Proposal Card -->
+<div class="bg-white border border-outline-variant rounded-xl p-stack-md shadow-sm">
+<h3 class="font-h3 text-h3 text-primary mb-stack-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="description">description</span>
+                                Kế hoạch chi tiết
+                            </h3>
+<div class="space-y-stack-md">
+<section>
+<h4 class="font-label-bold text-primary mb-2">MỤC TIÊU CHIẾN DỊCH</h4>
+<p class="text-on-surface-variant font-body-md leading-relaxed">
+                                        Triển khai xây dựng 02 nhà tình nghĩa cho các hộ nghèo tại xã Ea H'leo, tỉnh Đắk Lắk. Tổ chức lớp học hè kỹ năng sống cho hơn 150 em nhỏ địa phương. Nâng cấp hệ thống chiếu sáng đường nông thôn với hơn 5km dây điện và đèn LED tiết kiệm điện.
+                                    </p>
+</section>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-md">
+<section class="p-4 bg-surface-container-low rounded-lg border border-outline-variant">
+<h4 class="font-label-bold text-primary mb-3">CHỈ TIÊU TUYỂN QUÂN</h4>
+<div class="flex items-end gap-2 mb-1">
+<span class="font-h2 text-h2 text-primary">120</span>
+<span class="text-on-surface-variant font-body-md mb-1 pb-1">Tình nguyện viên</span>
+</div>
+<div class="w-full bg-outline-variant h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[65%]"></div>
+</div>
+<p class="mt-2 text-on-surface-variant font-body-sm">65% sinh viên năm 2 &amp; 3 ưu tiên</p>
+</section>
+<section class="p-4 bg-surface-container-low rounded-lg border border-outline-variant">
+<h4 class="font-label-bold text-primary mb-3">NGÂN SÁCH DỰ KIẾN</h4>
+<div class="flex items-end gap-2 mb-1">
+<span class="font-h2 text-h2 text-primary">450.0M</span>
+<span class="text-on-surface-variant font-body-md mb-1 pb-1">VNĐ</span>
+</div>
+<div class="flex justify-between text-on-surface-variant font-body-sm mt-2">
+<span>Xã hội hóa: 70%</span>
+<span>Trường cấp: 30%</span>
+</div>
+</section>
+</div>
+<section>
+<h4 class="font-label-bold text-primary mb-3">LỘ TRÌNH THỰC HIỆN</h4>
+<div class="space-y-4">
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<div class="w-0.5 h-full bg-outline-variant"></div>
+</div>
+<div class="pb-4">
+<p class="font-label-bold text-on-surface">Giai đoạn 1: Chuẩn bị &amp; Tuyển quân</p>
+<p class="text-on-surface-variant font-body-sm">15/05/2024 - 30/05/2024</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<div class="w-0.5 h-full bg-outline-variant"></div>
+</div>
+<div class="pb-4">
+<p class="font-label-bold text-on-surface">Giai đoạn 2: Tập huấn kỹ năng</p>
+<p class="text-on-surface-variant font-body-sm">01/06/2024 - 10/06/2024</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="flex flex-col items-center">
+<div class="w-3 h-3 rounded-full bg-outline-variant"></div>
+</div>
+<div class="">
+<p class="font-label-bold text-on-surface-variant">Giai đoạn 3: Ra quân tại địa phương</p>
+<p class="text-on-surface-variant font-body-sm">15/06/2024 - 15/07/2024</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<!-- Documents Section -->
+<div class="bg-white border border-outline-variant rounded-xl p-stack-md shadow-sm">
+<h3 class="font-h3 text-h3 text-primary mb-stack-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="attachment">attachment</span>
+                                Hồ sơ đính kèm
+                            </h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-error" data-icon="picture_as_pdf">picture_as_pdf</span>
+<div>
+<p class="font-label-bold text-on-surface">PRD_MuaHeXanh_2024.pdf</p>
+<p class="text-[11px] text-on-surface-variant uppercase tracking-wider">Tài liệu dự án • 4.2 MB</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" data-icon="download">download</span>
+</div>
+<div class="flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="verified_user">verified_user</span>
+<div>
+<p class="font-label-bold text-on-surface">CongVan_PheDuyet_Khoa.pdf</p>
+<p class="text-[11px] text-on-surface-variant uppercase tracking-wider">Văn bản pháp lý • 1.1 MB</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" data-icon="download">download</span>
+</div>
+<div class="flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="article">article</span>
+<div>
+<p class="font-label-bold text-on-surface">Bang_Du_Toan_Chi_Tiet.xlsx</p>
+<p class="text-[11px] text-on-surface-variant uppercase tracking-wider">Ngân sách • 245 KB</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" data-icon="download">download</span>
+</div>
+<div class="flex items-center justify-between p-3 border border-outline-variant rounded-lg hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-tertiary-container" data-icon="image">image</span>
+<div>
+<p class="font-label-bold text-on-surface">Ban_Do_Khu_Vuc_Trien_Khai.jpg</p>
+<p class="text-[11px] text-on-surface-variant uppercase tracking-wider">Hình ảnh • 8.5 MB</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors" data-icon="download">download</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Audit Log & Actions (4 cols) -->
+<div class="col-span-12 lg:col-span-4 space-y-gutter">
+<!-- Audit Log Card -->
+<div class="bg-white border border-outline-variant rounded-xl flex flex-col h-[500px] shadow-sm">
+<div class="p-4 border-b border-outline-variant flex items-center justify-between">
+<h3 class="font-label-bold text-primary uppercase tracking-widest">Lịch sử thẩm định</h3>
+<span class="bg-surface-container text-on-surface-variant px-2 py-0.5 rounded text-[10px]">4 BẢN GHI</span>
+</div>
+<div class="flex-1 overflow-y-auto audit-scroll p-4 space-y-6">
+<!-- Log Item -->
+<div class="flex gap-3">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container text-sm" data-icon="person">person</span>
+</div>
+<div>
+<p class="font-label-bold text-body-sm text-on-surface">Admin: Nguyễn Văn A</p>
+<p class="text-[11px] text-on-surface-variant mb-2">12/05/2024 • 14:30</p>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant text-on-surface-variant font-body-sm italic">
+                                            "Đã kiểm tra sơ bộ hồ sơ pháp lý. Cần bổ sung thêm cam kết của chính quyền địa phương xã Ea H'leo về mặt bằng xây dựng."
+                                        </div>
+</div>
+</div>
+<!-- Log Item -->
+<div class="flex gap-3">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container text-sm" data-icon="update">update</span>
+</div>
+<div>
+<p class="font-label-bold text-body-sm text-on-surface">Hệ thống</p>
+<p class="text-[11px] text-on-surface-variant mb-2">14/05/2024 • 09:15</p>
+<p class="text-on-surface-variant font-body-sm">Đơn vị đã cập nhật hồ sơ: <span class="text-primary underline">CongVan_DiaPhuong.pdf</span></p>
+</div>
+</div>
+<!-- Log Item -->
+<div class="flex gap-3">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container text-sm" data-icon="person">person</span>
+</div>
+<div>
+<p class="font-label-bold text-body-sm text-on-surface">Admin: Trần Thị B</p>
+<p class="text-[11px] text-on-surface-variant mb-2">15/05/2024 • 16:45</p>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant text-on-surface-variant font-body-sm italic">
+                                            "Ngân sách xã hội hóa 70% là khá cao, cần giải trình rõ các nguồn tài trợ cam kết."
+                                        </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Audit Action Card -->
+<div class="bg-white border-2 border-primary-container rounded-xl p-stack-md shadow-lg">
+<h3 class="font-label-bold text-primary uppercase tracking-widest mb-stack-sm">Thực hiện phê duyệt</h3>
+<div class="space-y-4">
+<div>
+<label class="block font-label-bold text-on-surface-variant mb-2 text-xs">NHẬN XÉT CỦA BẠN</label>
+<textarea class="w-full h-32 p-3 bg-surface border border-outline-variant rounded-lg font-body-sm focus:ring-2 focus:ring-primary-container focus:outline-none" placeholder="Nhập ý kiến thẩm định tại đây..."></textarea>
+</div>
+<div class="grid grid-cols-1 gap-2">
+<button class="w-full py-3 bg-secondary text-white font-button rounded-lg flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+                                        Phê duyệt chiến dịch
+                                    </button>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2.5 bg-[#FFB74D] text-white font-button rounded-lg flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit_note">edit_note</span>
+                                            Yêu cầu sửa
+                                        </button>
+<button class="py-2.5 bg-error text-white font-button rounded-lg flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]" data-icon="cancel">cancel</span>
+                                            Từ chối hồ sơ
+                                        </button>
+</div>
+</div>
+<div class="pt-2 border-t border-outline-variant">
+<label class="flex items-center gap-2 cursor-pointer">
+<input class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+<span class="text-[11px] text-on-surface-variant italic">Gửi thông báo kết quả qua Email &amp; SMS cho người phụ trách đơn vị.</span>
+</label>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple micro-interactions
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('click', (e) => {
+                // Prevent default for demo links
+                if(el.getAttribute('href') === '#') e.preventDefault();
+            });
+        });
+
+        // Simulating audit log scroll to bottom on load
+        const auditLog = document.querySelector('.audit-scroll');
+        if(auditLog) {
+            auditLog.scrollTop = auditLog.scrollHeight;
+        }
+    </script>
+</body></html>

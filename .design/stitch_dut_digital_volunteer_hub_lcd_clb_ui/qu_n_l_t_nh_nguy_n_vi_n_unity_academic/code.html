@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c3c6d2",
+                        "on-secondary-container": "#00743a",
+                        "tertiary": "#4c1d00",
+                        "on-primary-fixed-variant": "#0e4686",
+                        "primary-fixed": "#d6e3ff",
+                        "primary-container": "#004080",
+                        "on-surface-variant": "#424750",
+                        "secondary-fixed-dim": "#4ae183",
+                        "on-primary": "#ffffff",
+                        "background": "#f8f9fa",
+                        "on-tertiary-fixed-variant": "#773305",
+                        "primary": "#002a58",
+                        "outline": "#737781",
+                        "surface": "#f8f9fa",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#a9c7ff",
+                        "on-secondary-fixed": "#00210c",
+                        "tertiary-fixed": "#ffdbcb",
+                        "on-background": "#191c1d",
+                        "surface-container-low": "#f3f4f5",
+                        "secondary": "#006d37",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#305ea0",
+                        "surface-container": "#edeeef",
+                        "on-surface": "#191c1d",
+                        "on-primary-container": "#83aef5",
+                        "inverse-on-surface": "#f0f1f2",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#6f2d00",
+                        "surface-container-high": "#e7e8e9",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-dim": "#d9dadb",
+                        "surface-bright": "#f8f9fa",
+                        "surface-variant": "#e1e3e4",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-primary-fixed": "#001b3d",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#6bfe9c",
+                        "secondary-fixed": "#6bfe9c",
+                        "inverse-surface": "#2e3132",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#005228",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-tertiary-container": "#f59561"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "stack-lg": "48px",
+                        "stack-md": "24px",
+                        "gutter": "24px",
+                        "stack-sm": "12px",
+                        "base": "8px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "label-bold": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "body-sm": ["Public Sans"],
+                        "h3": ["Public Sans"],
+                        "h1": ["Public Sans"],
+                        "h2": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}],
+                        "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Public Sans', sans-serif; background-color: #f8f9fa; }
+        .shadow-soft { box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05); }
+        .shadow-hover:hover { box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.08); }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Sidebar -->
+<nav class="fixed left-0 top-0 h-full flex flex-col p-base bg-surface border-r border-outline-variant w-64 z-50">
+<div class="mb-stack-lg p-4">
+<h2 class="font-h2 text-h2 font-bold text-primary">Unity Academic</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Organizer Portal</p>
+</div>
+<div class="flex-1 space-y-2">
+<!-- Active Navigation -->
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+<span class="font-body-md text-body-md">Chiến dịch của tôi</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-primary font-bold bg-secondary-container rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-body-md text-body-md">Quản lý tình nguyện viên</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="verified">verified</span>
+<span class="font-body-md text-body-md">Xác minh đóng góp</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-body-md text-body-md">Báo cáo tổng kết</span>
+</a>
+</div>
+<div class="mt-auto p-4 bg-surface-container-low rounded-xl border border-outline-variant">
+<p class="font-label-bold text-label-bold text-primary mb-2">QUẢN TRỊ VIÊN</p>
+<div class="flex items-center gap-3 mb-4">
+<img alt="University Club Logo" class="w-10 h-10 rounded-full" data-alt="A high-quality, professional logo of a university academic volunteer club. The emblem uses a prestigious deep navy and emerald green color scheme, representing growth and academic integrity. The style is clean, modern, and corporate, reflecting the organized nature of student-led impact programs." src="https://lh3.googleusercontent.com/aida/AP1WRLtfOxQkEIo97P_st1Iro7PsOcObV3QzG2DWSwHmDjl2n6t4IfhFLqgLGbx97gHzH1kYdp7OmZuEnSYnT8pX5GZXDDMUmJABfPXEajhgbBW6aHlPYaEaS2lEifbzCio6JXMd6PUMZ3OUm84mRUIKp7nKc1ewo_mechmdWoQ4dNRs-nCZIif3VfMdfYCg90t-KkB2Wxr8hFdyEqK8zRwZW9IG73IUpwap19Vj9pM8dw1cbVSW-uLkyBilUZg"/>
+<div>
+<p class="font-body-sm text-body-sm font-bold">BK Volunteers</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Level 3</p>
+</div>
+</div>
+<button class="w-full py-2 bg-primary text-on-primary rounded-lg font-button text-button hover:opacity-90 transition-all">
+                Nâng cấp tài khoản
+            </button>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center h-16 px-gutter bg-surface border-b border-outline-variant sticky top-0 z-40">
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-h3 text-h3 font-bold text-primary">Mùa hè Xanh 2024</h1>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-4">
+<a class="font-body-sm text-body-sm text-primary font-bold border-b-2 border-primary pb-1" href="#">Tổng quan</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Hướng dẫn</a>
+</div>
+<div class="h-6 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<img alt="Organizer Profile" class="w-8 h-8 rounded-full border border-outline" data-alt="A professional headshot of a young university administrator for their digital profile. The subject is dressed in modern business casual attire against a clean, softly lit academic backdrop. The overall lighting is bright and professional, following the high-key light mode aesthetic of the university portal." src="https://lh3.googleusercontent.com/aida/AP1WRLv-N7YGXAntwcheZ96M0bxidZa4Rn_GI-kkRokCOn2FIfbMQjollPIFjRCbweffrTm1aufJODDe7dFmy_3TAatPwyHV6Zjpqu8HPHa7nFKiOVQcNXHyxV326RN9Lyl7ij0wLrcgNAgzAERPcr7b_9AuelOgWTYFrzCxCwZ1PQXf5vFMZVx3hNtpNiTRZf1FtMINRKpD5p692jSHq_aN_0MaKDncQYbaAf4tIQkbIzj4O1oL_6opnPI-HnNq"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-8 max-w-container-max mx-auto w-full space-y-8">
+<!-- Summary Stats (Bento Grid) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-soft shadow-hover transition-all">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined p-3 bg-primary/10 text-primary rounded-lg" data-icon="person_add">person_add</span>
+<span class="text-on-surface-variant font-label-bold text-label-bold">+12 hôm nay</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Tổng đăng ký</p>
+<h3 class="font-h2 text-h2 font-bold text-primary">85</h3>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-soft shadow-hover transition-all">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined p-3 bg-secondary/10 text-secondary rounded-lg" data-icon="check_circle">check_circle</span>
+<span class="text-secondary font-label-bold text-label-bold">53% Tỷ lệ duyệt</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Đã duyệt</p>
+<h3 class="font-h2 text-h2 font-bold text-secondary">45</h3>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant shadow-soft shadow-hover transition-all">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined p-3 bg-tertiary-container/10 text-on-tertiary-container rounded-lg" data-icon="pending">pending</span>
+<span class="text-on-tertiary-container font-label-bold text-label-bold">Cần xử lý</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Chờ duyệt</p>
+<h3 class="font-h2 text-h2 font-bold text-on-tertiary-container">20</h3>
+</div>
+</div>
+<!-- Filters & Actions Bar -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant flex flex-wrap items-center justify-between gap-4">
+<div class="flex items-center gap-4 flex-1 min-w-[300px]">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded-lg font-body-sm text-body-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Tìm kiếm theo tên hoặc MSSV..." type="text"/>
+</div>
+<select class="px-4 py-2 border border-outline-variant rounded-lg font-body-sm text-body-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+<option value="">Khoa: Tất cả</option>
+<option value="khmt">Khoa KHMT</option>
+<option value="ktxd">Khoa KT Xây dựng</option>
+<option value="ck">Khoa Cơ khí</option>
+</select>
+<select class="px-4 py-2 border border-outline-variant rounded-lg font-body-sm text-body-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+<option value="">Trạng thái: Tất cả</option>
+<option value="pending">Chờ duyệt</option>
+<option value="approved">Đã duyệt</option>
+<option value="rejected">Từ chối</option>
+</select>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-6 py-2 bg-secondary text-on-secondary rounded-lg font-button text-button hover:opacity-90 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="rule">rule</span>
+                        Duyệt hàng loạt
+                    </button>
+</div>
+</div>
+<!-- Participants Table -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-soft">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="p-4 w-12 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+</th>
+<th class="p-4 font-label-bold text-label-bold text-on-surface-variant">MSSV</th>
+<th class="p-4 font-label-bold text-label-bold text-on-surface-variant">HỌ VÀ TÊN</th>
+<th class="p-4 font-label-bold text-label-bold text-on-surface-variant">KHOA</th>
+<th class="p-4 font-label-bold text-label-bold text-on-surface-variant">KỸ NĂNG / GHI CHÚ</th>
+<th class="p-4 font-label-bold text-label-bold text-on-surface-variant">TRẠNG THÁI</th>
+<th class="p-4 font-label-bold text-label-bold text-on-surface-variant text-right">THAO TÁC</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+</td>
+<td class="p-4 font-body-sm text-body-sm font-bold">2012456</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<img alt="Student" class="w-8 h-8 rounded-full" data-alt="A portrait of a male Vietnamese university student smiling warmly, wearing a clean white t-shirt. The background is a slightly blurred university campus greenery, shot in bright daylight to maintain a professional and optimistic academic atmosphere." src="https://lh3.googleusercontent.com/aida/AP1WRLvwp5_nOmiskcavU0yJe3ZFRFV6zN3_m8-9qdnVXethdvxhvkiOfm-e5_s18l2iBL_RWaqek5ycSaVG3K8SaDvGw752IPVhl7bgbayrg4XLoksZ1XXkV83YH6QdvJ8pLNbqeVfuYhVHlU2eWyTwkUm8eOdGiQJtC1sV_IQhAi1uW1YEY2cQ2cnClC9VuOxQfkhwHN1Q1eInO80DKxUDhKskM8UTThUb3oP0d80cqnx2obY08jM5MF4htLzb"/>
+<span class="font-body-sm text-body-sm font-semibold">Trần Minh Quân</span>
+</div>
+</td>
+<td class="p-4 font-body-sm text-body-sm">Khoa KHMT</td>
+<td class="p-4 font-body-sm text-body-sm">Lập trình, Tiếng Anh (IELTS 7.5)</td>
+<td class="p-4">
+<span class="px-3 py-1 rounded-full bg-orange-500 text-white font-label-bold text-label-bold">Chờ duyệt</span>
+</td>
+<td class="p-4 text-right space-x-2">
+<button class="p-2 text-secondary hover:bg-secondary/10 rounded-lg transition-all" title="Duyệt">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+</button>
+<button class="p-2 text-error hover:bg-error/10 rounded-lg transition-all" title="Từ chối">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+</td>
+<td class="p-4 font-body-sm text-body-sm font-bold">2012789</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<img alt="Student" class="w-8 h-8 rounded-full" data-alt="A portrait of a female Vietnamese university student with a confident smile, wearing a simple blue polo shirt. The lighting is soft and natural, emphasizing a professional yet approachable volunteer profile within a bright academic setting." src="https://lh3.googleusercontent.com/aida/AP1WRLuT_NIiORYJ-pePCnSRK5JJryw3ciEhB6yLX8dnLkwcPE7bmVx7R5RKA-p4S9AC8hDQDQRleWrm8Y-roqC6oE4aFu662ZtExErn6BFFj7zTijdWxpxuOkFebfsMykSVVm5sXXHb6Oa1z4Wvn4REYpddaI8XNIctT8zOzc9jCX71rT_So9d8PDmJ_JgZyTYuKD535MtvSNib6qhNbIS7uQQBqqoaIBhGXFoKd3ORpsWoHXuYQehGgvdzrRg"/>
+<span class="font-body-sm text-body-sm font-semibold">Lê Thị Mai Anh</span>
+</div>
+</td>
+<td class="p-4 font-body-sm text-body-sm">Khoa KT Xây dựng</td>
+<td class="p-4 font-body-sm text-body-sm">Thiết kế, Kỹ năng làm việc nhóm</td>
+<td class="p-4">
+<span class="px-3 py-1 rounded-full bg-emerald-600 text-white font-label-bold text-label-bold">Đã duyệt</span>
+</td>
+<td class="p-4 text-right space-x-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+</td>
+<td class="p-4 font-body-sm text-body-sm font-bold">2012888</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<img alt="Student" class="w-8 h-8 rounded-full" data-alt="A professional student profile picture featuring a young male student in a library setting. The lighting is diffused and warm, conveying a sense of intelligence and dedication, consistent with the Unity Academic brand's professional tone." src="https://lh3.googleusercontent.com/aida/AP1WRLu7AF6khR15H5IHLshCIsvNyRyR2pt0_NdYyZ4WDCV3Sq-Lg37Bqqn0dd0xTIuU5h57-nuYUIhutCJUe4OAgG8OdlsRt98JBbKbnNdna_eOt2yS6lkPq8CHjagM4esD8BQ3n2f9rGin_7QP-93xVNjKzuYwuCjQaCHoNe9lvf35TlWbWETdQYfgN3AXvaoTrKIkg9trxW8hBYeOtu6Md08-aDrR5r5wzeUcw8hf0Ud6RvzJ9_gh9XgTZYrp"/>
+<span class="font-body-sm text-body-sm font-semibold">Nguyễn Văn Nam</span>
+</div>
+</td>
+<td class="p-4 font-body-sm text-body-sm">Khoa Cơ khí</td>
+<td class="p-4 font-body-sm text-body-sm">Vận chuyển, Có xe máy riêng</td>
+<td class="p-4">
+<span class="px-3 py-1 rounded-full bg-primary text-white font-label-bold text-label-bold">Chờ duyệt</span>
+</td>
+<td class="p-4 text-right space-x-2">
+<button class="p-2 text-secondary hover:bg-secondary/10 rounded-lg transition-all" title="Duyệt">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+</button>
+<button class="p-2 text-error hover:bg-error/10 rounded-lg transition-all" title="Từ chối">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-4 text-center">
+<input class="rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+</td>
+<td class="p-4 font-body-sm text-body-sm font-bold">2012999</td>
+<td class="p-4">
+<div class="flex items-center gap-3">
+<img alt="Student" class="w-8 h-8 rounded-full" data-alt="A clean and bright headshot of a female university student with modern eyeglasses. She is set against a neutral, high-key studio background that emphasizes clarity and professionalism, perfectly matching the Academic Modernism UI style." src="https://lh3.googleusercontent.com/aida/AP1WRLvZw0EihpmVDX5Cfg5UTIEpFGCwEXgvnOUwa62mi1FIY6uM9wY69UPqfNx-GIr2S6MyvYkmZ1HfvxKPZaWzDupj--cVtLS8EPnSUwXKw22nu1UG86njA6AZsrNz_Afo0fnHO40bL2eFgGLRoetEf0V7hZYEqyp1OTMzdEkXSHJtqtO6s68QG0WYet6_y30Wz029Q7vos4nAqaTkkY4zWPxTy-OYvIX8h9nahkkziwGuAB1fwxnBjKWw8ZY"/>
+<span class="font-body-sm text-body-sm font-semibold">Phạm Thanh Thảo</span>
+</div>
+</td>
+<td class="p-4 font-body-sm text-body-sm">Khoa KHMT</td>
+<td class="p-4 font-body-sm text-body-sm">Hậu cần, Truyền thông</td>
+<td class="p-4">
+<span class="px-3 py-1 rounded-full bg-outline-variant text-on-surface-variant font-label-bold text-label-bold">Từ chối</span>
+</td>
+<td class="p-4 text-right space-x-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-4 bg-surface-container-low border-t border-outline-variant flex items-center justify-between">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Hiển thị 1-10 của 85 đơn đăng ký</p>
+<div class="flex gap-2">
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 bg-primary text-on-primary rounded-lg font-body-sm text-body-sm">1</button>
+<button class="w-8 h-8 hover:bg-surface-container-high rounded-lg font-body-sm text-body-sm">2</button>
+<button class="w-8 h-8 hover:bg-surface-container-high rounded-lg font-body-sm text-body-sm">3</button>
+<button class="p-2 border border-outline-variant rounded-lg hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple logic for row selection
+        const mainCheckbox = document.querySelector('thead input[type="checkbox"]');
+        const rowCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+        
+        mainCheckbox.addEventListener('change', (e) => {
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.checked = e.target.checked;
+            });
+        });
+
+        // Toggle hover states for cards
+        const cards = document.querySelectorAll('.shadow-hover');
+        cards.forEach(card => {
+            card.addEventListener('mousedown', () => {
+                card.style.transform = 'scale(0.98)';
+            });
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quản lý bảo mật | Unity Academic</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#f59561",
+                        "surface-variant": "#e1e3e4",
+                        "secondary-fixed": "#6bfe9c",
+                        "secondary-container": "#6bfe9c",
+                        "on-secondary-fixed": "#00210c",
+                        "secondary": "#006d37",
+                        "on-secondary-container": "#00743a",
+                        "on-primary-fixed-variant": "#0e4686",
+                        "background": "#f8f9fa",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#d6e3ff",
+                        "on-background": "#191c1d",
+                        "on-tertiary-fixed-variant": "#773305",
+                        "primary": "#002a58",
+                        "tertiary": "#4c1d00",
+                        "outline-variant": "#c3c6d2",
+                        "outline": "#737781",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "surface-container": "#edeeef",
+                        "primary-container": "#004080",
+                        "surface-container-high": "#e7e8e9",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#a9c7ff",
+                        "surface-container-low": "#f3f4f5",
+                        "tertiary-container": "#6f2d00",
+                        "surface-bright": "#f8f9fa",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-secondary-fixed-variant": "#005228",
+                        "surface-tint": "#305ea0",
+                        "surface": "#f8f9fa",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#83aef5",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-surface-variant": "#424750",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-dim": "#d9dadb",
+                        "secondary-fixed-dim": "#4ae183",
+                        "tertiary-fixed": "#ffdbcb",
+                        "on-primary-fixed": "#001b3d",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2e3132"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "stack-sm": "12px",
+                        "margin-mobile": "16px",
+                        "stack-lg": "48px",
+                        "container-max": "1280px",
+                        "stack-md": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "body-sm": ["Public Sans"],
+                        "label-bold": ["Public Sans"],
+                        "h2": ["Public Sans"],
+                        "h3": ["Public Sans"],
+                        "h1": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f8f9fa;
+            color: #191c1d;
+            font-family: 'Public Sans', sans-serif;
+        }
+        .security-card {
+            background: #ffffff;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        .security-card:hover {
+            box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar (Predicted Anchor) -->
+<aside class="bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline shadow-sm dark:shadow-none docked left-0 h-full w-64 flex flex-col h-screen fixed left-0 top-0 overflow-y-auto px-4 py-6 z-50">
+<div class="mb-8 px-2">
+<h1 class="font-h2 text-h2 font-bold text-primary dark:text-inverse-primary">Unity Academic</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Hệ thống quản lý tình nguyện</p>
+</div>
+<nav class="flex-grow space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-bold text-label-bold">Bảng điều khiển</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+<span class="font-label-bold text-label-bold">Chiến dịch</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-label-bold text-label-bold">Tài khoản</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="corporate_fare">corporate_fare</span>
+<span class="font-label-bold text-label-bold">Đơn vị của tôi</span>
+</a>
+<!-- Active State: Cài đặt maps to Security/Privacy flow -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary dark:text-inverse-primary font-bold border-r-4 border-primary dark:border-inverse-primary hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label-bold text-label-bold">Cài đặt</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-6 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-bold text-label-bold">Trợ giúp</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-bold text-label-bold">Đăng xuất</span>
+</a>
+</div>
+</aside>
+<!-- TopNavBar (Predicted Anchor) -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline flat no shadows docked top-0 w-full flex justify-between items-center h-16 ml-64 px-gutter w-[calc(100%-16rem)] z-40 fixed">
+<div class="flex items-center gap-4">
+<span class="font-h3 text-h3 font-bold text-primary dark:text-inverse-primary">Quản lý tài khoản</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-label-bold text-label-bold text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-inverse-primary transition-all active:opacity-80" href="#">Hồ sơ</a>
+<a class="font-label-bold text-label-bold text-primary dark:text-inverse-primary font-bold border-b-2 border-primary active:opacity-80" href="#">Bảo mật</a>
+<a class="font-label-bold text-label-bold text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-inverse-primary transition-all active:opacity-80" href="#">Đơn vị</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-body-sm focus:ring-2 focus:ring-primary/20 outline-none w-64" placeholder="Tìm kiếm cài đặt..." type="text"/>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="Hồ sơ người dùng" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLsuH7EEDMTVhv1BKb6qjtc95nkoikGpFnKc1OY6manQm0u98F70Wz_0xgkp8HUb3IgDJfelI3FtfA7INsFWd1B5oNZl58NSkVgxRx36u-Wkg-nQjSkLESFWULrBCvaPbNWAHuwyiuwUs2GrqPyp4y_O8xo7e9WsOd2dfQgXuf6slGy0VLV2eoDPEjtEA590TufU6Rg2v1okWlpUUy8Uz22Kisb-yOFC2cePtPVPq7P5rF2atLw-iX9ozp4"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-64 pt-24 px-gutter pb-12 min-h-screen">
+<div class="max-w-container-max mx-auto">
+<!-- Page Header with Contextual Info -->
+<div class="mb-stack-lg flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="font-h2 text-h2 text-primary">Bảo mật &amp; Quyền riêng tư</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Quản lý mật khẩu, xác thực hai lớp và giám sát các phiên đăng nhập để bảo vệ tài khoản Unity của bạn.</p>
+</div>
+<div class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]" data-icon="verified_user" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-label-bold text-label-bold">Tài khoản an toàn</span>
+</div>
+</div>
+<!-- Bento Layout for Security Actions -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Section: Password Change (Asymmetric Large Column) -->
+<section class="lg:col-span-7 security-card p-stack-md flex flex-col">
+<div class="flex items-center gap-3 mb-6">
+<div class="p-2 bg-primary-fixed rounded-lg text-primary">
+<span class="material-symbols-outlined" data-icon="lock_reset">lock_reset</span>
+</div>
+<h3 class="font-h3 text-h3">Thay đổi mật khẩu</h3>
+</div>
+<form class="space-y-stack-md flex-grow">
+<div class="space-y-1">
+<label class="font-label-bold text-label-bold text-on-surface-variant">MẬT KHẨU HIỆN TẠI</label>
+<div class="relative">
+<input class="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="••••••••" type="password"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="font-label-bold text-label-bold text-on-surface-variant">MẬT KHẨU MỚI</label>
+<input class="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="••••••••" type="password"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-bold text-label-bold text-on-surface-variant">XÁC NHẬN MẬT KHẨU MỚI</label>
+<input class="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<div class="bg-surface-container p-4 rounded-lg">
+<h4 class="font-label-bold text-label-bold mb-2">Yêu cầu mật khẩu:</h4>
+<ul class="text-body-sm space-y-1 text-on-surface-variant">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-[16px]" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span> Tối thiểu 8 ký tự</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-outline text-[16px]" data-icon="radio_button_unchecked">radio_button_unchecked</span> Có ít nhất 1 chữ hoa và 1 chữ số</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-outline text-[16px]" data-icon="radio_button_unchecked">radio_button_unchecked</span> Không trùng với mật khẩu cũ</li>
+</ul>
+</div>
+<div class="flex justify-end pt-4">
+<button class="bg-primary text-on-primary font-button text-button px-6 py-3 rounded-lg hover:shadow-lg active:scale-95 transition-all" type="submit">
+                                Cập nhật mật khẩu
+                            </button>
+</div>
+</form>
+</section>
+<!-- Section: 2FA (Bento Small Card) -->
+<section class="lg:col-span-5 security-card p-stack-md flex flex-col justify-between">
+<div>
+<div class="flex items-center gap-3 mb-6">
+<div class="p-2 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-lg">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+</div>
+<h3 class="font-h3 text-h3">Xác thực hai lớp (2FA)</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">Tăng cường bảo mật bằng cách yêu cầu mã xác thực gửi đến Email Đại học mỗi khi bạn đăng nhập từ thiết bị lạ.</p>
+<div class="bg-surface-container-low border border-outline-variant p-4 rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-primary border border-outline-variant">
+<span class="material-symbols-outlined" data-icon="alternate_email">alternate_email</span>
+</div>
+<div>
+<p class="font-label-bold text-label-bold">Email Đại học</p>
+<p class="text-body-sm text-on-surface-variant">v...n@university.edu.vn</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-bold text-label-bold text-secondary">Đang bật</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-outline rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+</div>
+</div>
+</div>
+<div class="mt-8 p-4 bg-primary-container/10 border border-primary-container/20 rounded-lg">
+<p class="text-body-sm text-primary flex items-start gap-2">
+<span class="material-symbols-outlined text-[18px] mt-0.5" data-icon="info">info</span>
+                            Xác thực 2FA là bắt buộc đối với các tài khoản có quyền Quản trị viên đơn vị.
+                        </p>
+</div>
+</section>
+<!-- Section: Active Sessions (Full Width List) -->
+<section class="lg:col-span-12 security-card overflow-hidden">
+<div class="p-stack-md border-b border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-on-primary-fixed-variant/10 text-on-primary-fixed-variant rounded-lg">
+<span class="material-symbols-outlined" data-icon="devices">devices</span>
+</div>
+<div>
+<h3 class="font-h3 text-h3">Quản lý phiên đăng nhập</h3>
+<p class="text-body-sm text-on-surface-variant">Các thiết bị hiện đang truy cập vào tài khoản của bạn</p>
+</div>
+</div>
+<button class="text-error font-button text-button hover:bg-error-container/50 px-4 py-2 rounded-lg transition-colors">
+                            Đăng xuất khỏi tất cả
+                        </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="px-6 py-4 font-label-bold text-label-bold text-on-surface-variant">THIẾT BỊ / TRÌNH DUYỆT</th>
+<th class="px-6 py-4 font-label-bold text-label-bold text-on-surface-variant">VỊ TRÍ</th>
+<th class="px-6 py-4 font-label-bold text-label-bold text-on-surface-variant">TRẠNG THÁI</th>
+<th class="px-6 py-4 font-label-bold text-label-bold text-on-surface-variant text-right">HÀNH ĐỘNG</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Session 1: Current -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="text-primary">
+<span class="material-symbols-outlined text-[32px]" data-icon="desktop_windows">desktop_windows</span>
+</div>
+<div>
+<p class="font-body-md font-bold">Windows 11 • Chrome 122</p>
+<p class="text-body-sm text-on-surface-variant">Lần cuối: Đang hoạt động</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-body-md">TP. Hồ Chí Minh, VN</td>
+<td class="px-6 py-5">
+<span class="bg-secondary text-white text-[11px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Phiên hiện tại</span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="p-2 text-outline cursor-not-allowed opacity-50" disabled="">
+<span class="material-symbols-outlined" data-icon="cancel">cancel</span>
+</button>
+</td>
+</tr>
+<!-- Session 2 -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="text-on-surface-variant">
+<span class="material-symbols-outlined text-[32px]" data-icon="smartphone">smartphone</span>
+</div>
+<div>
+<p class="font-body-md font-bold">iPhone 15 Pro • Safari</p>
+<p class="text-body-sm text-on-surface-variant">Lần cuối: 2 giờ trước</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-body-md">Hà Nội, VN</td>
+<td class="px-6 py-5">
+<span class="bg-outline-variant text-on-surface-variant text-[11px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Đã lưu</span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="p-2 text-error hover:bg-error-container rounded-full transition-all">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+</button>
+</td>
+</tr>
+<!-- Session 3 -->
+<tr class="hover:bg-surface-container transition-colors">
+<td class="px-6 py-5">
+<div class="flex items-center gap-4">
+<div class="text-on-surface-variant">
+<span class="material-symbols-outlined text-[32px]" data-icon="laptop_mac">laptop_mac</span>
+</div>
+<div>
+<p class="font-body-md font-bold">MacBook Pro • Firefox</p>
+<p class="text-body-sm text-on-surface-variant">Lần cuối: 15/05/2024</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-5 text-body-md">Đà Nẵng, VN</td>
+<td class="px-6 py-5">
+<span class="bg-outline-variant text-on-surface-variant text-[11px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Đã lưu</span>
+</td>
+<td class="px-6 py-5 text-right">
+<button class="p-2 text-error hover:bg-error-container rounded-full transition-all">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Privacy Policy Mini Card -->
+<section class="lg:col-span-12 security-card p-6 bg-primary text-on-primary flex flex-col md:flex-row items-center gap-6">
+<div class="flex-shrink-0 w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center">
+<span class="material-symbols-outlined text-[40px]" data-icon="policy">policy</span>
+</div>
+<div class="flex-grow text-center md:text-left">
+<h4 class="font-h3 text-h3 mb-1">Quyền riêng tư của bạn là ưu tiên hàng đầu</h4>
+<p class="font-body-md text-on-primary/80">Unity Academic cam kết bảo vệ dữ liệu cá nhân của bạn theo tiêu chuẩn bảo mật giáo dục quốc tế. Xem chi tiết các điều khoản mới nhất của chúng tôi.</p>
+</div>
+<a class="bg-white text-primary px-6 py-3 rounded-lg font-button text-button hover:bg-surface-container-lowest active:scale-95 transition-all flex-shrink-0" href="#">
+                        Xem chính sách
+                    </a>
+</section>
+</div>
+</div>
+</main>
+<!-- Floating Security Help (Contextual FAB) suppressed per rules for Details/Settings screens -->
+<script>
+        // Micro-interactions for form feedback or simple toggles
+        document.addEventListener('DOMContentLoaded', () => {
+            const passwordInputs = document.querySelectorAll('input[type="password"]');
+            const visibilityToggles = document.querySelectorAll('button[type="button"] span[data-icon="visibility"]');
+
+            visibilityToggles.forEach((btn, index) => {
+                btn.parentElement.addEventListener('click', () => {
+                    const input = btn.closest('.relative').querySelector('input');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        btn.textContent = 'visibility_off';
+                    } else {
+                        input.type = 'password';
+                        btn.textContent = 'visibility';
+                    }
+                });
+            });
+
+            // Smooth entrance animation for cards
+            const cards = document.querySelectorAll('.security-card');
+            cards.forEach((card, idx) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = `all 0.5s ease ${idx * 0.1}s`;
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 50);
+            });
+        });
+    </script>
+</body></html>

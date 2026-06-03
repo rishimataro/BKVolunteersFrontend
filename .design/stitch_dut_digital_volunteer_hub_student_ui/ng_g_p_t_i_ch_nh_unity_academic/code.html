@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Đóng góp Tài chính - VolunteerHub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#0e4686",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-primary-fixed": "#001b3d",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container-high": "#e7e8e9",
+                        "surface-tint": "#305ea0",
+                        "primary-container": "#004080",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "on-primary-container": "#83aef5",
+                        "tertiary-container": "#6f2d00",
+                        "on-tertiary-fixed-variant": "#773305",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#c3c6d2",
+                        "secondary-fixed-dim": "#4ae183",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-surface-variant": "#424750",
+                        "inverse-primary": "#a9c7ff",
+                        "inverse-surface": "#2e3132",
+                        "on-background": "#191c1d",
+                        "surface": "#f8f9fa",
+                        "on-secondary-container": "#00743a",
+                        "surface-dim": "#d9dadb",
+                        "on-tertiary-fixed": "#341100",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffdbcb",
+                        "primary": "#002a58",
+                        "tertiary": "#4c1d00",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#f59561",
+                        "primary-fixed": "#d6e3ff",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-container-low": "#f3f4f5",
+                        "surface-variant": "#e1e3e4",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#005228",
+                        "outline": "#737781",
+                        "on-error": "#ffffff",
+                        "secondary": "#006d37",
+                        "error-container": "#ffdad6",
+                        "background": "#f8f9fa",
+                        "on-secondary-fixed": "#00210c",
+                        "surface-container": "#edeeef",
+                        "secondary-container": "#6bfe9c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "stack-md": "24px",
+                        "stack-sm": "12px",
+                        "margin-mobile": "16px",
+                        "base": "8px",
+                        "container-max": "1280px",
+                        "stack-lg": "48px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "h3": ["Public Sans"],
+                        "h1": ["Public Sans"],
+                        "label-bold": ["Public Sans"],
+                        "body-sm": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}],
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        body { font-family: 'Public Sans', sans-serif; background-color: #f8f9fa; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopNavBar Component -->
+<header class="fixed top-0 w-full z-50 bg-[#F8F9FA] dark:bg-slate-950 border-b border-[#E2E8F0] dark:border-slate-800 shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<div class="flex justify-between items-center h-16 px-6 max-w-[1280px] mx-auto w-full font-['Public_Sans'] antialiased">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-[#004080] dark:text-blue-300">VolunteerHub</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#004080] font-body-sm" href="#">Dashboard</a>
+<a class="text-[#004080] dark:text-blue-300 font-semibold border-b-2 border-[#004080] font-body-sm" href="#">Campaigns</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#004080] font-body-sm" href="#">My Impact</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full cursor-pointer transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-100 rounded-full cursor-pointer transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User profile avatar" data-alt="A professional studio portrait of a university student with a friendly expression, captured with soft three-point lighting. The background is a clean, out-of-focus academic setting. The image is cropped as a circular profile avatar, emphasizing a modern, trustworthy, and organized personality suitable for a university volunteer platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2TNLbnZDoQmuZ_6Dt7WfF_2HpeRXE9n--fdwlD4-bhd0VYxBvXDjVaxcdOR8UgTkaBNimHVT39xOyCFt96xrD0My-JsjXfXwirkIbv7-Em5QhZtN-0pKJPRqPudfv-wFmO6JM2jDdXsNBKwYw-_pl7s7Ls5D2WsJ_QMcSoI0P9Hty4WsRi27SCdhWRdx7RI3dRyAcBpkM-HQtI78cJOzh3sDBm3Z-CR61edP7BuXJPO4nq-3329vVkbHRuyNtXEM_69ieVv_9XpR1"/>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-12 px-6 max-w-[1280px] mx-auto">
+<!-- Campaign Summary Header -->
+<div class="mb-8">
+<nav class="flex items-center gap-2 text-slate-500 mb-4 font-body-sm">
+<a class="hover:text-primary" href="#">Campaigns</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-on-surface font-medium">Đóng góp Tài chính</span>
+</nav>
+<h1 class="font-h1 text-h1 text-primary mb-2">Hỗ trợ sinh viên vùng lũ lụt 2024</h1>
+<p class="font-body-md text-on-surface-variant max-w-2xl">Mọi đóng góp của bạn đều được công khai minh bạch và chuyển trực tiếp đến các sinh viên có hoàn cảnh khó khăn tại khu vực miền Trung.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Payment Info & QR -->
+<div class="lg:col-span-7 space-y-gutter">
+<!-- QR Code & Account Info Card -->
+<div class="bg-white rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="p-6 border-b border-outline-variant flex items-center justify-between bg-surface-container-low">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-label-bold uppercase text-on-surface-variant">Thông tin thanh toán an toàn</span>
+</div>
+<span class="text-xs font-medium text-slate-500">Tự động cập nhật sau 30s</span>
+</div>
+<div class="p-8 flex flex-col md:flex-row gap-8 items-center">
+<!-- QR Code Area -->
+<div class="w-full md:w-1/2 flex flex-col items-center">
+<div class="bg-white p-4 rounded-xl border-2 border-primary/10 shadow-sm mb-4">
+<img alt="Bank QR Code" class="w-48 h-48" data-alt="A high-contrast, professional banking QR code displayed on a clean white background with a subtle blue border. The image is sharp and optimized for mobile scanning, representing a secure financial transaction. The aesthetic is modern and minimalist, fitting perfectly into a corporate-academic banking interface with soft ambient lighting effects." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBapcH1-GqnPEhX_CPVn1uUwhCe6AnNdZzdWkQPCFDkUtedcm1Bi6MqpMdDebeNhhRHqoMiaKSuB2y12mBihpvYUns4sQ_AABZXBZanM8cE25wh5aPajyvmmRMuxxHYDYBFKwMbomXdMQ--E2qZeg6gWLIfSsca3_l4h75hd5KhsHso8SnhC4_dk_ZSSLBl2qCjmle36AJ9D8VQy6G7M7gYfE6363i8Z_FVbFYzjvXJGw6W4LBfsDkrCVdjMe5DHXug9SegETXBstCp"/>
+</div>
+<p class="font-body-sm text-center text-slate-500 italic">Quét mã QR để chuyển khoản nhanh qua ứng dụng ngân hàng</p>
+</div>
+<!-- Account Details Area -->
+<div class="w-full md:w-1/2 space-y-4">
+<div class="space-y-1">
+<label class="font-label-bold text-slate-400">NGÂN HÀNG NHẬN</label>
+<div class="flex items-center gap-2 p-3 bg-surface-container rounded-lg border border-outline-variant">
+<span class="font-body-md font-bold text-primary">VIETINBANK (CTG)</span>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-bold text-slate-400">SỐ TÀI KHOẢN</label>
+<div class="flex items-center justify-between p-3 bg-surface-container rounded-lg border border-outline-variant">
+<span class="font-h3 text-primary tracking-wider">1028 7755 9999</span>
+<button class="material-symbols-outlined text-primary hover:bg-white p-1 rounded transition-all">content_copy</button>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-bold text-slate-400">CHỦ TÀI KHOẢN</label>
+<div class="p-3 bg-surface-container rounded-lg border border-outline-variant">
+<span class="font-body-md font-bold text-on-surface uppercase">QUY KHUYEN HOC DH QUOC GIA</span>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-bold text-slate-400">NỘI DUNG CHUYỂN KHOẢN</label>
+<div class="flex items-center justify-between p-3 bg-primary-fixed rounded-lg border border-primary/20">
+<span class="font-body-md font-bold text-primary">VHUB LULUT 5590</span>
+<button class="material-symbols-outlined text-primary hover:bg-white p-1 rounded transition-all">content_copy</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Transparency Notice -->
+<div class="bg-blue-50 border border-blue-100 rounded-xl p-6 flex gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">info</span>
+<div>
+<h4 class="font-label-bold text-primary mb-1">CAM KẾT MINH BẠCH</h4>
+<p class="font-body-sm text-on-primary-fixed-variant leading-relaxed">
+                            Mỗi khoản đóng góp sẽ được hệ thống đối soát tự động và cập nhật lên "Danh sách nhà hảo tâm" trong vòng 5-10 phút. Hóa đơn điện tử xác nhận sẽ được gửi về email của bạn ngay sau khi giao dịch thành công.
+                        </p>
+</div>
+</div>
+</div>
+<!-- Right Column: Form & Progress -->
+<div class="lg:col-span-5 space-y-gutter">
+<!-- Fundraising Progress -->
+<div class="bg-white rounded-xl border border-outline-variant p-6 shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<div class="flex justify-between items-end mb-2">
+<div>
+<span class="font-label-bold text-secondary-container bg-on-secondary-container px-2 py-0.5 rounded text-[10px]">ĐANG DIỄN RA</span>
+<div class="font-h2 text-secondary mt-1">425.000.000đ</div>
+</div>
+<div class="text-right">
+<span class="font-body-sm text-slate-500">Mục tiêu: 500.000.000đ</span>
+</div>
+</div>
+<div class="w-full h-3 bg-emerald-100 rounded-full overflow-hidden mb-4">
+<div class="h-full bg-secondary rounded-full" style="width: 85%"></div>
+</div>
+<div class="flex justify-between text-sm">
+<span class="font-medium text-on-surface">85% Hoàn thành</span>
+<span class="text-slate-500">1,240 lượt đóng góp</span>
+</div>
+</div>
+<!-- Confirmation Form -->
+<div class="bg-white rounded-xl border border-outline-variant p-8 shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<h3 class="font-h3 text-on-surface mb-6">Xác nhận Đóng góp</h3>
+<form class="space-y-6">
+<div class="space-y-2">
+<label class="font-label-bold text-on-surface-variant">SỐ TIỀN ĐÃ CHUYỂN (VND)</label>
+<div class="relative">
+<input class="w-full rounded-lg border-outline-variant focus:ring-2 focus:ring-primary/20 focus:border-primary p-4 pl-12 text-lg font-bold text-primary" placeholder="Ví dụ: 500,000" type="number"/>
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">payments</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-bold text-on-surface-variant">MÃ GIAO DỊCH (TID)</label>
+<div class="relative">
+<input class="w-full rounded-lg border-outline-variant focus:ring-2 focus:ring-primary/20 focus:border-primary p-4 pl-12" placeholder="Nhập mã từ biên lai ngân hàng" type="text"/>
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">receipt_long</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-bold text-on-surface-variant">MINH CHỨNG CHUYỂN KHOẢN</label>
+<div class="border-2 border-dashed border-outline-variant rounded-xl p-8 flex flex-col items-center justify-center bg-surface-container-lowest hover:bg-slate-50 transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-4xl text-slate-300 group-hover:text-primary mb-2">cloud_upload</span>
+<span class="font-body-sm text-on-surface-variant">Tải lên ảnh bill chuyển khoản (JPG, PNG)</span>
+<span class="text-xs text-slate-400 mt-1">Dung lượng tối đa 5MB</span>
+</div>
+</div>
+<div class="pt-4">
+<button class="w-full bg-primary text-white py-4 rounded-xl font-button text-button shadow-lg shadow-primary/20 hover:bg-on-primary-fixed-variant active:scale-[0.98] transition-all flex items-center justify-center gap-2" type="submit">
+<span class="material-symbols-outlined">verified</span>
+                                XÁC NHẬN ĐÓNG GÓP
+                            </button>
+<p class="text-center text-xs text-slate-400 mt-4 leading-relaxed">
+                                Bằng cách nhấn xác nhận, bạn đồng ý với Điều khoản &amp; Quy chế hoạt động của VolunteerHub. Chúng tôi cam kết bảo mật thông tin cá nhân của bạn.
+                            </p>
+</div>
+</form>
+</div>
+</div>
+</div>
+<!-- Recent Contributors (Social Proof) -->
+<section class="mt-stack-lg">
+<h3 class="font-h3 text-on-surface mb-6">Đóng góp gần đây</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Contributor Card -->
+<div class="bg-white p-4 rounded-xl border border-outline-variant flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-fixed flex items-center justify-center text-primary font-bold">
+                        AN
+                    </div>
+<div>
+<p class="font-label-bold text-on-surface">Nguyễn Văn An</p>
+<p class="font-body-sm text-secondary font-bold">200.000đ</p>
+<p class="text-[10px] text-slate-400">2 phút trước</p>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border border-outline-variant flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-secondary font-bold">
+                        MT
+                    </div>
+<div>
+<p class="font-label-bold text-on-surface">Mạnh Thắng</p>
+<p class="font-body-sm text-secondary font-bold">1.000.000đ</p>
+<p class="text-[10px] text-slate-400">15 phút trước</p>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border border-outline-variant flex items-center gap-4 italic text-slate-400">
+<div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
+<span class="material-symbols-outlined">person</span>
+</div>
+<div>
+<p class="font-label-bold">Nhà hảo tâm ẩn danh</p>
+<p class="font-body-sm font-bold text-secondary">500.000đ</p>
+<p class="text-[10px]">45 phút trước</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Security Badges -->
+<footer class="bg-white border-t border-outline-variant py-8 px-6">
+<div class="max-w-[1280px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all">
+<img alt="PCI DSS Logo" class="h-8" data-alt="A professional PCI DSS compliance logo, symbolizing financial security and international payment standards. The logo is rendered in a clean, corporate style with sharp edges and a blue-and-white color palette, integrated into a footer section with soft white lighting and modern academic UI elements." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMVrwLqv1WjPSkeCbUVP_XUS0BFxl3Ethemh2x_tNVTAh9UGvVQ8hcQzRKsYg1doQ-07yICqaB7Toh1d-RSrMuwEkNnJq0NINzgRpsRdd_z_7bD-4Sd1C7c76ErWz9sgVJPdplSDDE3f8e1_QDL8U50rF_A0V3PSljau_FMDIX1vWPgp9LkqA4K1brCJNOCpbIlCCoAxWmv48wl7mT54-udW2MFThTs3ZdUxocd9aRv0Ji_Q0zxsAPmrIlPWwQEd0BnsbSr3ppeDYG"/>
+<img alt="SSL Secure Logo" class="h-8" data-alt="A digital SSL secure certificate badge featuring a prominent padlock icon and the text '256-bit Encryption'. The visual style is modern and trust-inspiring, using deep blues and emerald greens to convey safety. It is displayed as a clean vector graphic on a neutral, professional background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKjJ1fyYaO9p_zUq9quXjui_bSh65jNaVbsS2UyZweauo0qE0M999YvZ0FHQ9EZPF6zL1_kSxsZolnepG2e39D9OzU9s9PLAtHLMGwqXXQsJlA5AbaaL5OebwPHK8qUZJEc_NGzLn4OPIS7pjIGImZ-S9h0efBFkecTyhmkMN3s89dN-Gr_5I_22AqImHPeutcAMuwbpvuvNJFwJCMzbTIZYtiFi2DlsWglcUqz9PvEKmbixrF0rfyFuv4norM-wpXJPDCQ50b_jw6"/>
+<img alt="Napas Logo" class="h-8" data-alt="The official Napas payment gateway logo, a symbol of domestic banking connectivity in Vietnam. The logo is clear and recognizable, presented in its original brand colors but adjusted to fit a high-end, modern university donation portal's aesthetic, with clean lines and a professional layout." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVQj6mVPeX7kqSctdzV175ABrmzadrKVj8T5cjF1jyi_toOHgpjeFe9TOg5N82_iBwgHRumX4lPB_UjTR5Hq2xnbcU-TaRNinzgTQKco-OCUYSHzRNTnxT3CHyWs2QXOSXSJmJKHe_GJ6PToK7M2ElzNy3F1SYNhchP9prKqPwyYszTj8eShrbmhOkSWnljmAKEq8dN9e5Pz6nrXgDyA39maTpQreYVg3oBVm2ZRaKbTPE5Y21niXI1cU_5_QqM1FgvXd6lKYKYTlr"/>
+</div>
+<div class="text-slate-400 font-body-sm text-center md:text-right">
+                © 2024 VolunteerHub. Powered by University Social Responsibility Department.
+            </div>
+</div>
+</footer>
+</body></html>

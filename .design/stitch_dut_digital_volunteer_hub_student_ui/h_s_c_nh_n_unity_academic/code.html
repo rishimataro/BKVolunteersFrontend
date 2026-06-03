@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quản lý tài khoản - Unity Academic</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#f59561",
+                        "surface-variant": "#e1e3e4",
+                        "secondary-fixed": "#6bfe9c",
+                        "secondary-container": "#6bfe9c",
+                        "on-secondary-fixed": "#00210c",
+                        "secondary": "#006d37",
+                        "on-secondary-container": "#00743a",
+                        "on-primary-fixed-variant": "#0e4686",
+                        "background": "#f8f9fa",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#d6e3ff",
+                        "on-background": "#191c1d",
+                        "on-tertiary-fixed-variant": "#773305",
+                        "primary": "#002a58",
+                        "tertiary": "#4c1d00",
+                        "outline-variant": "#c3c6d2",
+                        "outline": "#737781",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "surface-container": "#edeeef",
+                        "primary-container": "#004080",
+                        "surface-container-high": "#e7e8e9",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#a9c7ff",
+                        "surface-container-low": "#f3f4f5",
+                        "tertiary-container": "#6f2d00",
+                        "surface-bright": "#f8f9fa",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-secondary-fixed-variant": "#005228",
+                        "surface-tint": "#305ea0",
+                        "surface": "#f8f9fa",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#83aef5",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-surface-variant": "#424750",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-dim": "#d9dadb",
+                        "secondary-fixed-dim": "#4ae183",
+                        "tertiary-fixed": "#ffdbcb",
+                        "on-primary-fixed": "#001b3d",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2e3132"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "stack-sm": "12px",
+                        "margin-mobile": "16px",
+                        "stack-lg": "48px",
+                        "container-max": "1280px",
+                        "stack-md": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "body-sm": ["Public Sans"],
+                        "label-bold": ["Public Sans"],
+                        "h2": ["Public Sans"],
+                        "h3": ["Public Sans"],
+                        "h1": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .impact-gradient {
+            background: linear-gradient(135deg, #002a58 0%, #004080 100%);
+        }
+        .bento-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .bento-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-screen fixed left-0 top-0 overflow-y-auto px-4 py-6 bg-surface dark:bg-inverse-surface border-r border-outline-variant dark:border-outline shadow-sm dark:shadow-none w-64 z-50">
+<div class="mb-8 px-2">
+<h2 class="font-h2 text-h2 font-bold text-primary dark:text-inverse-primary">Unity Academic</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Hệ thống quản lý tình nguyện</p>
+</div>
+<nav class="flex-grow space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant group" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-bold text-label-bold">Bảng điều khiển</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant group" href="#">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+<span class="font-label-bold text-label-bold">Chiến dịch</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-primary transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+<span class="font-label-bold text-label-bold">Tài khoản</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant group" href="#">
+<span class="material-symbols-outlined" data-icon="corporate_fare">corporate_fare</span>
+<span class="font-label-bold text-label-bold">Đơn vị của tôi</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-surface-container-high transition-colors text-on-surface-variant group" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-bold text-label-bold">Cài đặt</span>
+</a>
+</nav>
+<div class="mt-auto space-y-2 pt-6 border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary py-3 rounded-xl font-button text-button hover:opacity-90 transition-all mb-4">
+                Quyên góp ngay
+            </button>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-bold text-label-bold">Trợ giúp</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-bold text-label-bold">Đăng xuất</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center h-16 px-gutter bg-surface dark:bg-inverse-surface border-b border-outline-variant sticky top-0 z-40">
+<div class="flex items-center gap-8">
+<h1 class="font-h3 text-h3 font-bold text-primary dark:text-inverse-primary">Quản lý tài khoản</h1>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-primary font-bold border-b-2 border-primary py-5" href="#">Hồ sơ</a>
+<a class="text-on-surface-variant hover:text-primary transition-all py-5" href="#">Bảo mật</a>
+<a class="text-on-surface-variant hover:text-primary transition-all py-5" href="#">Đơn vị</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="bg-surface-container-low border-none rounded-full pl-10 pr-4 py-2 focus:ring-2 focus:ring-primary/20 w-64 text-body-sm" placeholder="Tìm kiếm..." type="text"/>
+</div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-outline-variant overflow-hidden border border-outline-variant">
+<img alt="Hồ sơ người dùng" data-alt="A professional headshot of a young male academic student with a friendly and confident expression. He is wearing a clean white shirt and dark blazer, set against a blurred university campus background with soft sunlight filtering through autumn trees. The lighting is warm and natural, creating an atmosphere of approachability and academic prestige." src="https://lh3.googleusercontent.com/aida/AP1WRLubUKxrmy80Ab8KXKJBFYrfIriEpMCWP4Mwnm73HMxXaDjySjYSFXxZGuu4-WVOXqTQDJpRU3-nF2O2H3uBGk9eTyL5XN5hdla6jfZxG6Fhh8yYiz2ifHHHotZGAv2s8FimhIaucluYkvx1M0PFa8hAqiHz2WF-194w2wTysEBuDj0rBGvXs8xoXKcrGnrophU4ctYPnfcOYJYdLuDWlZLm_Wxrd2frXDn9f60P7ckbWXVn-N9k8Ch9jQE"/>
+</div>
+</div>
+</header>
+<!-- Profile Content -->
+<div class="p-stack-md max-w-container-max mx-auto">
+<div class="grid grid-cols-12 gap-6">
+<!-- Left Column: Identity & Badge -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<!-- Profile Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 text-center bento-card shadow-sm">
+<div class="relative inline-block group mb-4">
+<div class="w-32 h-32 rounded-full overflow-hidden border-4 border-surface shadow-md mx-auto relative">
+<img alt="Avatar" data-alt="Close-up portrait of a young Vietnamese male student in his early 20s, with short neat black hair and clear spectacles. He is smiling warmly, conveying a sense of leadership and community involvement. The photo is high-resolution with a soft-focus library background, using a color palette of navy blue and crisp whites to match the corporate academic brand." id="profile-preview" src="https://lh3.googleusercontent.com/aida/AP1WRLsCs6vrriBKzA4SyDgclbfxMu6zyyYMXvJaCU75pj_W3Sntb7P5UcFAWam4GU2Fps2d6WyqmL94clNYLsN7GIVgdJmVBZ1xAuPly4W7x_BRuexBtkFhCl4ky1S8rn16PXtg_4YLqCNxvfXDWe5pnYQ60FcE0-d_I9DxyezydURBPFqUTFfRgdM3VtpiCIx9gW9FOWgGnpwNCFMUBLf2VEBmfWe5mmSBRlVVfgFqYNZwKFPU8vzEJ8aYEoa9"/>
+<div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+<span class="material-symbols-outlined text-white" data-icon="photo_camera">photo_camera</span>
+</div>
+</div>
+<button class="absolute bottom-0 right-0 bg-primary text-on-primary p-2 rounded-full shadow-lg border-2 border-surface">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+</div>
+<h2 class="font-h3 text-h3 text-on-surface mb-1">Nguyễn Văn An</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-6">MSSV: 20216042 • Khoa CNTT</p>
+<div class="impact-gradient rounded-xl p-4 text-white text-left overflow-hidden relative">
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-white/10 text-[100px]" data-icon="military_tech">military_tech</span>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined" data-icon="workspace_premium" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+<span class="font-label-bold text-label-bold">Cấp độ tác động</span>
+</div>
+<div class="font-h3 text-h3 font-bold mb-1">Đại sứ Vàng</div>
+<p class="text-[12px] opacity-80 mb-3">Bạn đã hoàn thành 45 giờ tình nguyện trong học kỳ này.</p>
+<div class="w-full bg-white/20 h-1.5 rounded-full">
+<div class="bg-secondary-fixed w-[85%] h-full rounded-full shadow-[0_0_8px_rgba(107,254,156,0.6)]"></div>
+</div>
+<div class="flex justify-between mt-1 text-[10px] font-bold">
+<span>850 / 1000 Điểm</span>
+<span>Cấp kế: Bạch Kim</span>
+</div>
+</div>
+</div>
+<!-- Statistics Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 bento-card shadow-sm">
+<h3 class="font-label-bold text-label-bold text-on-surface-variant mb-4 uppercase">Thống kê hoạt động</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-primary-fixed/30 rounded-lg">
+<span class="material-symbols-outlined text-primary" data-icon="volunteer_activism">volunteer_activism</span>
+</div>
+<span class="font-body-md text-body-md">Chiến dịch đã tham gia</span>
+</div>
+<span class="font-h3 text-h3 text-primary">12</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-secondary-container/20 rounded-lg">
+<span class="material-symbols-outlined text-secondary" data-icon="payments" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<span class="font-body-md text-body-md">Tổng quyên góp</span>
+</div>
+<span class="font-h3 text-h3 text-secondary">2.5Mđ</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Form Sections -->
+<div class="col-span-12 lg:col-span-8 space-y-6">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-8 bento-card shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="font-h3 text-h3 text-primary">Thông tin cá nhân</h3>
+<p class="text-body-sm text-on-surface-variant">Cập nhật thông tin cơ bản để mọi người có thể nhận diện bạn.</p>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-lg font-button text-button hover:opacity-90 active:scale-95 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="save">save</span>
+                                Lưu thay đổi
+                            </button>
+</div>
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label-bold text-label-bold text-on-surface-variant flex items-center gap-1">
+                                        Họ và tên <span class="text-error">*</span>
+</label>
+<input class="w-full bg-surface border-outline-variant rounded-lg p-3 text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" type="text" value="Nguyễn Văn An"/>
+</div>
+<div class="space-y-2">
+<label class="font-label-bold text-label-bold text-on-surface-variant flex items-center gap-1">
+                                        MSSV / Mã nhân viên <span class="text-error">*</span>
+</label>
+<input class="w-full bg-surface-container-low border-outline-variant rounded-lg p-3 text-body-md text-on-surface-variant cursor-not-allowed" disabled="" type="text" value="20216042"/>
+</div>
+<div class="space-y-2">
+<label class="font-label-bold text-label-bold text-on-surface-variant flex items-center gap-1">
+                                        Đơn vị đào tạo / Khoa <span class="text-error">*</span>
+</label>
+<select class="w-full bg-surface border-outline-variant rounded-lg p-3 text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+<option>Khoa Công nghệ thông tin</option>
+<option>Khoa Điện tử viễn thông</option>
+<option>Khoa Kinh tế &amp; Quản trị</option>
+<option>Phòng Công tác sinh viên</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="font-label-bold text-label-bold text-on-surface-variant flex items-center gap-1">
+                                        Email liên hệ <span class="text-error">*</span>
+</label>
+<input class="w-full bg-surface border-outline-variant rounded-lg p-3 text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" type="email" value="an.nv216042@sis.hust.edu.vn"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-bold text-label-bold text-on-surface-variant">Giới thiệu bản thân (Bio)</label>
+<textarea class="w-full bg-surface border-outline-variant rounded-lg p-3 text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Chia sẻ đôi chút về mục tiêu tình nguyện của bạn..." rows="4">Sinh viên năm 3 Khoa CNTT, đam mê các hoạt động cộng đồng và giảng dạy kỹ năng số cho trẻ em vùng cao. Đã tham gia 3 mùa Mùa Hè Xanh.</textarea>
+<div class="text-right text-[12px] text-on-surface-variant">128 / 500 ký tự</div>
+</div>
+<div class="pt-6 border-t border-outline-variant">
+<h4 class="font-label-bold text-label-bold text-on-surface-variant mb-4 uppercase">Thông tin liên lạc mở rộng</h4>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label-bold text-label-bold text-on-surface-variant">Số điện thoại</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="call">call</span>
+<input class="w-full bg-surface border-outline-variant rounded-lg pl-10 p-3 text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" type="tel" value="0987 654 321"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-bold text-label-bold text-on-surface-variant">Facebook / LinkedIn</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="link">link</span>
+<input class="w-full bg-surface border-outline-variant rounded-lg pl-10 p-3 text-body-md focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" type="text" value="fb.com/annv.student"/>
+</div>
+</div>
+</div>
+</div>
+</form>
+</div>
+<!-- Account Settings / Security Preview -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 bento-card shadow-sm flex items-start gap-4">
+<div class="p-3 bg-error-container rounded-lg">
+<span class="material-symbols-outlined text-error" data-icon="lock_reset">lock_reset</span>
+</div>
+<div>
+<h4 class="font-label-bold text-label-bold text-on-surface mb-1">Đổi mật khẩu</h4>
+<p class="text-[12px] text-on-surface-variant mb-3">Lần cuối đổi 3 tháng trước.</p>
+<button class="text-primary font-button text-button hover:underline">Thay đổi ngay</button>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 bento-card shadow-sm flex items-start gap-4">
+<div class="p-3 bg-primary-fixed/30 rounded-lg">
+<span class="material-symbols-outlined text-primary" data-icon="verified_user">verified_user</span>
+</div>
+<div>
+<h4 class="font-label-bold text-label-bold text-on-surface mb-1">Xác thực 2 yếu tố</h4>
+<p class="text-[12px] text-on-surface-variant mb-3">Tăng cường bảo mật tài khoản.</p>
+<button class="text-secondary font-button text-button hover:underline">Đang kích hoạt</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Decoration -->
+<footer class="mt-stack-lg p-10 text-center opacity-30 pointer-events-none">
+<div class="font-h1 text-primary mb-2 opacity-20">UNITY</div>
+<p class="font-label-bold text-label-bold">Dẫn đầu tác động - Kiến tạo tương lai</p>
+</footer>
+</main>
+<script>
+        // Simple micro-interactions
+        document.querySelectorAll('button, a').forEach(el => {
+            el.addEventListener('mousedown', () => {
+                el.classList.add('scale-95');
+            });
+            el.addEventListener('mouseup', () => {
+                el.classList.remove('scale-95');
+            });
+            el.addEventListener('mouseleave', () => {
+                el.classList.remove('scale-95');
+            });
+        });
+
+        // Theme Toggle Logic Placeholder
+        const themeBtn = document.querySelector('[data-icon="dark_mode"]');
+        themeBtn?.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            const icon = themeBtn.querySelector('.material-symbols-outlined');
+            if (icon.innerText === 'dark_mode') {
+                icon.innerText = 'light_mode';
+            } else {
+                icon.innerText = 'dark_mode';
+            }
+        });
+    </script>
+</body></html>

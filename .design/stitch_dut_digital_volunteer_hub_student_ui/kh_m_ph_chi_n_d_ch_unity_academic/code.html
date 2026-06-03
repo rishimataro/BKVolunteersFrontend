@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Khám phá Chiến dịch | VolunteerHub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#0e4686",
+                      "inverse-on-surface": "#f0f1f2",
+                      "primary-fixed-dim": "#a9c7ff",
+                      "on-primary-fixed": "#001b3d",
+                      "surface-bright": "#f8f9fa",
+                      "surface-container-high": "#e7e8e9",
+                      "surface-tint": "#305ea0",
+                      "primary-container": "#004080",
+                      "on-secondary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "on-surface": "#191c1d",
+                      "on-primary-container": "#83aef5",
+                      "tertiary-container": "#6f2d00",
+                      "on-tertiary-fixed-variant": "#773305",
+                      "error": "#ba1a1a",
+                      "outline-variant": "#c3c6d2",
+                      "secondary-fixed-dim": "#4ae183",
+                      "secondary-fixed": "#6bfe9c",
+                      "on-surface-variant": "#424750",
+                      "inverse-primary": "#a9c7ff",
+                      "inverse-surface": "#2e3132",
+                      "on-background": "#191c1d",
+                      "surface": "#f8f9fa",
+                      "on-secondary-container": "#00743a",
+                      "surface-dim": "#d9dadb",
+                      "on-tertiary-fixed": "#341100",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed": "#ffdbcb",
+                      "primary": "#002a58",
+                      "tertiary": "#4c1d00",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-container": "#f59561",
+                      "primary-fixed": "#d6e3ff",
+                      "tertiary-fixed-dim": "#ffb691",
+                      "surface-container-highest": "#e1e3e4",
+                      "surface-container-low": "#f3f4f5",
+                      "surface-variant": "#e1e3e4",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed-variant": "#005228",
+                      "outline": "#737781",
+                      "on-error": "#ffffff",
+                      "secondary": "#006d37",
+                      "error-container": "#ffdad6",
+                      "background": "#f8f9fa",
+                      "on-secondary-fixed": "#00210c",
+                      "surface-container": "#edeeef",
+                      "secondary-container": "#6bfe9c"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "stack-md": "24px",
+                      "stack-sm": "12px",
+                      "margin-mobile": "16px",
+                      "base": "8px",
+                      "container-max": "1280px",
+                      "stack-lg": "48px"
+              },
+              "fontFamily": {
+                      "h2": ["Public Sans"],
+                      "button": ["Public Sans"],
+                      "body-md": ["Public Sans"],
+                      "body-lg": ["Public Sans"],
+                      "h3": ["Public Sans"],
+                      "h1": ["Public Sans"],
+                      "label-bold": ["Public Sans"],
+                      "body-sm": ["Public Sans"]
+              },
+              "fontSize": {
+                      "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                      "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}],
+                      "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        body { font-family: 'Public Sans', sans-serif; background-color: #f8f9fa; }
+    </style>
+</head>
+<body class="bg-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-[#F8F9FA] dark:bg-slate-950 border-b border-[#E2E8F0] dark:border-slate-800 shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<div class="flex justify-between items-center h-16 px-6 max-w-[1280px] mx-auto w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-[#004080] dark:text-blue-300">VolunteerHub</span>
+<nav class="hidden md:flex gap-6 items-center h-full">
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#004080] transition-colors duration-200" href="#">Home</a>
+<a class="text-[#004080] dark:text-blue-300 font-semibold border-b-2 border-[#004080] h-full flex items-center" href="#">Campaigns</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#004080] transition-colors duration-200" href="#">About</a>
+</nav>
+</div>
+<div class="flex items-center gap-4 flex-1 max-w-md mx-8">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary/20 text-body-sm outline-none" placeholder="Tìm kiếm chiến dịch..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User profile avatar" data-alt="A clean, professional studio portrait of a friendly university student with a bright smile, set against a soft-focus academic background. The lighting is warm and natural, creating an inviting and trustworthy persona. The image is rendered in high definition with a shallow depth of field, emphasizing the modern and energetic spirit of a young volunteer leader." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKhVavyHBfeXqfDnH0vA2tzLf9Gu3-zh4YLLh8smHZn75bL01XmIDNEijuO515E4ZtmLxb02O_m_Oy0Ml8ECrutgpt50TTAMAayFhWXO_utYPGsEAW1Oml-hyToisEUO_EV2QGSO1HEq4cus1a6JVYnCH1Zk-ov9aYEaVf1i_I_AMF2WuhvUYUPVGPbP84en0Y5wOKd24s_6dR-mH5j3CHgMrI3KiRPZ8q404l_LTmo0PbWfho3tTFF31_j_v5biSg_oKb2Ac52zmL"/>
+</div>
+</div>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="h-screen w-64 border-r border-[#E2E8F0] dark:border-slate-800 fixed left-0 top-0 bg-white dark:bg-slate-900 z-40 hidden lg:block">
+<div class="flex flex-col pt-20 pb-6 h-full font-['Public_Sans'] text-sm font-medium">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">school</span>
+</div>
+<div>
+<h2 class="text-lg font-black text-[#004080] dark:text-blue-300">UniVolunteer</h2>
+<p class="text-[10px] uppercase tracking-widest text-slate-400">Empowering Impact</p>
+</div>
+</div>
+</div>
+<nav class="flex-1">
+<a class="text-slate-500 dark:text-slate-400 px-6 py-3 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="bg-blue-50 dark:bg-blue-900/30 text-[#004080] dark:text-blue-200 border-r-4 border-[#004080] px-6 py-3 flex items-center gap-3 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="explore" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span>Campaigns</span>
+</a>
+<a class="text-slate-500 dark:text-slate-400 px-6 py-3 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="volunteer_activism">volunteer_activism</span>
+<span>My Impact</span>
+</a>
+<a class="text-slate-500 dark:text-slate-400 px-6 py-3 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Fundraising</span>
+</a>
+<a class="text-slate-500 dark:text-slate-400 px-6 py-3 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span>Administration</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full bg-primary py-3 rounded-xl text-on-primary font-button flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined">add_circle</span>
+                    Start a Campaign
+                </button>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="lg:pl-64 pt-16 min-h-screen">
+<div class="max-w-[1280px] mx-auto p-6 lg:p-gutter">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-stack-md gap-4">
+<div>
+<h1 class="font-h1 text-h1 text-primary">Khám phá Chiến dịch</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Tìm kiếm và tham gia vào những hoạt động ý nghĩa từ cộng đồng sinh viên.</p>
+</div>
+<div class="flex items-center gap-2 text-body-sm text-on-surface-variant bg-white p-1 rounded-lg border border-outline-variant">
+<button class="px-4 py-1.5 rounded-md bg-primary-fixed text-primary font-medium">Lưới</button>
+<button class="px-4 py-1.5 rounded-md hover:bg-surface-container">Danh sách</button>
+</div>
+</div>
+<!-- Filters & Content Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Filter Panel -->
+<aside class="lg:col-span-3 space-y-stack-md">
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-label-bold text-label-bold text-on-surface-variant uppercase">Bộ lọc tìm kiếm</h3>
+<button class="text-primary text-xs font-semibold hover:underline">Xóa tất cả</button>
+</div>
+<!-- Status Filter -->
+<div class="mb-6">
+<label class="block font-label-bold text-[11px] text-outline uppercase mb-3">Trạng thái</label>
+<div class="space-y-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-body-sm text-on-surface group-hover:text-primary transition-colors">Đang diễn ra</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-body-sm text-on-surface group-hover:text-primary transition-colors">Sắp diễn ra</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="text-body-sm text-on-surface group-hover:text-primary transition-colors">Đã kết thúc</span>
+</label>
+</div>
+</div>
+<!-- Organizer Filter -->
+<div class="mb-6">
+<label class="block font-label-bold text-[11px] text-outline uppercase mb-3">Đơn vị tổ chức</label>
+<select class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 text-body-sm focus:ring-2 focus:ring-primary/20 outline-none">
+<option>Tất cả đơn vị</option>
+<option>LCĐ Khoa CNTT</option>
+<option>CLB Tình nguyện Xanh</option>
+<option>Đoàn Thanh niên Trường</option>
+<option>CLB Kỹ năng sinh viên</option>
+</select>
+</div>
+<!-- Category Filter -->
+<div>
+<label class="block font-label-bold text-[11px] text-outline uppercase mb-3">Loại hình</label>
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1 rounded-full border border-outline-variant text-xs font-medium hover:border-primary hover:text-primary transition-all">Môi trường</button>
+<button class="px-3 py-1 rounded-full border border-outline-variant text-xs font-medium hover:border-primary hover:text-primary transition-all">Giáo dục</button>
+<button class="px-3 py-1 rounded-full border border-primary bg-primary-fixed text-primary text-xs font-medium">Gây quỹ</button>
+<button class="px-3 py-1 rounded-full border border-outline-variant text-xs font-medium hover:border-primary hover:text-primary transition-all">Y tế</button>
+<button class="px-3 py-1 rounded-full border border-outline-variant text-xs font-medium hover:border-primary hover:text-primary transition-all">Xã hội</button>
+</div>
+</div>
+</div>
+<!-- Newsletter/Promo Card -->
+<div class="bg-primary-container p-6 rounded-xl text-white overflow-hidden relative">
+<div class="relative z-10">
+<h4 class="font-h3 text-lg mb-2">Trở thành Đại sứ?</h4>
+<p class="text-xs opacity-80 mb-4 leading-relaxed">Lan tỏa giá trị cộng đồng và nhận những phần quà hấp dẫn từ UniVolunteer.</p>
+<button class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-lg text-xs font-bold hover:brightness-110 transition-all">Tìm hiểu thêm</button>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-7xl opacity-10 rotate-12">auto_awesome</span>
+</div>
+</aside>
+<!-- Grid Content -->
+<div class="lg:col-span-9">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+<!-- Campaign Card 1 -->
+<div class="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden flex flex-col group hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300">
+<div class="relative aspect-video overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A group of diverse, enthusiastic university students in matching volunteer t-shirts cleaning up a lush urban park. They are smiling and working together under bright, midday sunlight that filters through the leaves of large oak trees. The scene is full of energy and purpose, captured with professional photography techniques like high contrast and vibrant color saturation that highlights the greens of the park and the blues of their shirts." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDT3ama5yYENyT7O9znrY7p3KJDqfcK4s5mYMe-i6tjpFjQ4O2vEvs1NddtTz5NrAzyDy0344Bc421XEGp3VYDmVyV9WUT1iZNGM07xr8NHdhXTdtK1p5INN2mMepPAKP5jlzz_DIHdDyHhFikI360GMb3ik92JGikcQB6PHJnVHpcRoA6tQ5BX56bT2qQhxgaXOJaUWJyqFkP1VNmt4SlCF37uNg27TwS2xhaCE8f6ydLP1tf1RilRVjn68LedXkFhPgx3nasLup_v"/>
+<span class="absolute top-3 right-3 px-3 py-1 bg-secondary text-white text-[10px] font-bold uppercase rounded-full tracking-wider">Đang diễn ra</span>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">corporate_fare</span>
+<span class="text-[11px] font-semibold text-outline uppercase tracking-tight">CLB Tình nguyện Xanh</span>
+</div>
+<h3 class="font-h3 text-lg text-primary mb-1 leading-tight group-hover:text-primary-container transition-colors">Chiến dịch Xanh 2024</h3>
+<p class="text-body-sm text-on-surface-variant mb-4 line-clamp-2 italic">"Chung tay vì một môi trường học đường không rác thải nhựa."</p>
+<div class="mt-auto pt-4 border-t border-slate-50">
+<div class="flex justify-between items-end mb-1">
+<span class="text-[11px] font-bold text-on-surface">Tình nguyện viên</span>
+<span class="text-xs font-medium text-secondary">42/50</span>
+</div>
+<div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 84%"></div>
+</div>
+</div>
+<button class="mt-4 w-full py-2.5 rounded-lg border border-primary text-primary font-button text-sm hover:bg-primary-fixed transition-colors">Xem chi tiết</button>
+</div>
+</div>
+<!-- Campaign Card 2 (Fundraising) -->
+<div class="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden flex flex-col group hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300">
+<div class="relative aspect-video overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A cozy, sun-drenched library classroom in a rural village where a young female volunteer is reading an illustrated book to a small circle of attentive children. The light is soft and golden, creating a warm, hopeful atmosphere. The background is filled with colorful posters and modest bookshelves. The aesthetic is documentary-style, emphasizing emotional connection and the impact of literacy through a natural, high-key lighting palette." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXQj-xTeVlKiCh0oKjBAOAuJuUMbIBDG081BtC3dEEFSMHK1gE9yVcivT3vU1HOxlNIcilluZOCyTqvY63DfnUNvm9VT8XutTDA-SE2Zff7izfiw_q27xk_S6-Zsh7dBJr8Cu9_m574S1LZU5YF9IOK7HMOKha_8CC3vjBylHjfLbMsSFQ33pK7_KcwO8DiM9YWKIF8kxtCdE8MpVsOcknYcnKA5guHd6Yhv1gCf4i4rrCIhuasv_m8sAR6v_Yq3LHsnxWRzD_7VNM"/>
+<span class="absolute top-3 right-3 px-3 py-1 bg-primary text-white text-[10px] font-bold uppercase rounded-full tracking-wider">Đang gây quỹ</span>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">school</span>
+<span class="text-[11px] font-semibold text-outline uppercase tracking-tight">LCĐ Khoa CNTT</span>
+</div>
+<h3 class="font-h3 text-lg text-primary mb-1 leading-tight group-hover:text-primary-container transition-colors">Tặng sách cho em</h3>
+<p class="text-body-sm text-on-surface-variant mb-4 line-clamp-2 italic">"Thắp sáng tương lai bằng những trang sách tri thức."</p>
+<div class="mt-auto pt-4 border-t border-slate-50">
+<div class="flex justify-between items-end mb-1">
+<span class="text-[11px] font-bold text-on-surface">5,200,000 / 10,000,000 đ</span>
+<span class="text-xs font-bold text-primary">52%</span>
+</div>
+<div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 52%"></div>
+</div>
+</div>
+<button class="mt-4 w-full py-2.5 rounded-lg border border-primary text-primary font-button text-sm hover:bg-primary-fixed transition-colors">Xem chi tiết</button>
+</div>
+</div>
+<!-- Campaign Card 3 -->
+<div class="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden flex flex-col group hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300">
+<div class="relative aspect-video overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A high-tech university laboratory setting where students are gathered around computer monitors, collaborating on a coding project. The lighting is cool-toned with blue and white accents, suggesting a focused, intellectual environment. The shot is captured from a low angle, giving the scene a dynamic and professional feel, highlighting the modern infrastructure of the university and the innovative spirit of the participants." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOsKdvfYO6Ee49JQwXfuH6hHmCNfbUGv3S3laXZWd0Byn-KxvtKnUrevBvTZZmAmw_tWr246oONwP_KwF93oArrBx2cIXH35URzV7O450e0LukV5TQpQJ-PWls8EMv9GXGJ0kejYzLTgntCvyP6-3hRmWkaoRJFvZJBOteQlEHjcrCuk1okdYt4TTWPSTdGD-MYV-IEdvpNobsa0tV7ZmjgWL5ceW1omJfAHsBowiqMUWH711Gby4YClVc53HMTy-WhXcLJV9RYpOC"/>
+<span class="absolute top-3 right-3 px-3 py-1 bg-amber-500 text-white text-[10px] font-bold uppercase rounded-full tracking-wider">Sắp diễn ra</span>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">hub</span>
+<span class="text-[11px] font-semibold text-outline uppercase tracking-tight">CLB Kỹ năng sinh viên</span>
+</div>
+<h3 class="font-h3 text-lg text-primary mb-1 leading-tight group-hover:text-primary-container transition-colors">Hội thảo Kỹ năng 4.0</h3>
+<p class="text-body-sm text-on-surface-variant mb-4 line-clamp-2 italic">"Trang bị hành trang công nghệ cho thế kỷ mới."</p>
+<div class="mt-auto pt-4 border-t border-slate-50">
+<div class="flex items-center gap-2 text-on-surface-variant text-xs">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span>Bắt đầu: 25/11/2024</span>
+</div>
+</div>
+<button class="mt-4 w-full py-2.5 rounded-lg border border-primary text-primary font-button text-sm hover:bg-primary-fixed transition-colors">Xem chi tiết</button>
+</div>
+</div>
+<!-- Campaign Card 4 -->
+<div class="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden flex flex-col group hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300">
+<div class="relative aspect-video overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A clean, sterile medical hall within a university, organized for a blood donation event. Several volunteers in white coats are assisting students. The atmosphere is calm, bright, and clinical yet warm, with soft daylight and organized rows of medical equipment. The visual style is crisp and clear, focusing on the humanitarian aspect of the event with a clean, medical-modern color palette dominated by whites and soft blues." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3GNFjYMrH5lmL18m1snisXETnxOT39vVunBbanfkNBgN56rSui3D6e8nJPR1ETlb0kPPe6uAukZe9qEnpdSVXWeQWWxa2udFmbFrkhMkCOOFXJZsC1UJVIUGtvcpdWPJUz9jtaZ5NrJ_PMT9nzJ4pHypvyJfB0W5KNiCcKShpvqGx0fDabcY5DbzseJQ2fUTQJHeMVkfHyHgg-g08YrAVOAzKY6oPF8489bUuHcBO7acoeIiSfIf0NhSFPfsN7Mvx5Yh_kPRpLZWg"/>
+<span class="absolute top-3 right-3 px-3 py-1 bg-secondary text-white text-[10px] font-bold uppercase rounded-full tracking-wider">Đang diễn ra</span>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">medical_services</span>
+<span class="text-[11px] font-semibold text-outline uppercase tracking-tight">Hội Sinh viên Trường</span>
+</div>
+<h3 class="font-h3 text-lg text-primary mb-1 leading-tight group-hover:text-primary-container transition-colors">Hiến máu Nhân đạo</h3>
+<p class="text-body-sm text-on-surface-variant mb-4 line-clamp-2 italic">"Mỗi giọt máu cho đi, một cuộc đời ở lại."</p>
+<div class="mt-auto pt-4 border-t border-slate-50">
+<div class="flex justify-between items-end mb-1">
+<span class="text-[11px] font-bold text-on-surface">Đã đăng ký</span>
+<span class="text-xs font-medium text-secondary">156/200</span>
+</div>
+<div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 78%"></div>
+</div>
+</div>
+<button class="mt-4 w-full py-2.5 rounded-lg border border-primary text-primary font-button text-sm hover:bg-primary-fixed transition-colors">Xem chi tiết</button>
+</div>
+</div>
+<!-- Campaign Card 5 -->
+<div class="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden flex flex-col group hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300">
+<div class="relative aspect-video overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A scenic, misty mountain village landscape in Northern Vietnam where volunteers are unloading boxes of winter clothes and food from a truck. The atmosphere is cool and atmospheric, with soft, diffused lighting from an overcast sky. The contrast between the colorful jackets of the volunteers and the earthy, muted tones of the village creates a powerful visual narrative of aid and community support, rendered in high cinematic detail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuChk8OWFIE1eoN9VsUG3Dw0_40RvG_7IeR9eMRBc-YG8kgw5d0vDosEvQaCcEIROpQTUReAcM3oU0Z5JsK43U4AUTS77FWow3xU-wu_Q5ZYWKS_Lttv7_t_eHGPbSvJC7knYRCNJxrx6isQc3egRvf4NJ2JN60-uow86ssjNc09cRH79locK8Hr1-A5hJs965kSbewRE2bVKSeNViNHy_ZvgIQD_A9xC3EpaH6ygQ6sMqLCEXdifl6bMcnjAA4R15VKocQbvkEiOa70"/>
+<span class="absolute top-3 right-3 px-3 py-1 bg-amber-500 text-white text-[10px] font-bold uppercase rounded-full tracking-wider">Sắp diễn ra</span>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">home_repair_service</span>
+<span class="text-[11px] font-semibold text-outline uppercase tracking-tight">Đội Công tác xã hội</span>
+</div>
+<h3 class="font-h3 text-lg text-primary mb-1 leading-tight group-hover:text-primary-container transition-colors">Mùa đông Ấm áp 2024</h3>
+<p class="text-body-sm text-on-surface-variant mb-4 line-clamp-2 italic">"Mang hơi ấm tới vùng cao qua những phần quà ý nghĩa."</p>
+<div class="mt-auto pt-4 border-t border-slate-50">
+<div class="flex items-center gap-2 text-on-surface-variant text-xs">
+<span class="material-symbols-outlined text-sm">event</span>
+<span>Dự kiến: 15/12/2024</span>
+</div>
+</div>
+<button class="mt-4 w-full py-2.5 rounded-lg border border-primary text-primary font-button text-sm hover:bg-primary-fixed transition-colors">Xem chi tiết</button>
+</div>
+</div>
+<!-- Campaign Card 6 -->
+<div class="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden flex flex-col group hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300">
+<div class="relative aspect-video overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A bright, modern university classroom with large windows where students are participating in a peer-to-peer English speaking workshop. The lighting is vibrant and natural, filling the room with clarity. The participants are engaged in lively discussion, with whiteboard sketches visible in the background. The aesthetic is clean, academic, and highly professional, utilizing a primary blue and white color scheme typical of elite educational branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBb7ikPz1Vc77RxlELuNZrJmdplYxZIJjBD2i-Qntxb9hCeFeJ_P0aK_PuJtbFXUymZQGDO290r0vloquuDoIiUVoajj39CFUs0u-4d4rw4yiJMhzTskBRViyflqvUwqIVCybzA2YR9bRDDQNNccRaLLqREzEIx3A-nusN5A53nJWjOs_YU9lAoFRNygzBXjMQA-CJi9OV1VZCDlr8PRHK6EcBNuTT-dXoojq9OhRMpQK3Z6cUY_kCTNMVGF5H-WIxACG4lUM9CeWLt"/>
+<span class="absolute top-3 right-3 px-3 py-1 bg-secondary text-white text-[10px] font-bold uppercase rounded-full tracking-wider">Đang diễn ra</span>
+</div>
+<div class="p-5 flex-1 flex flex-col">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">translate</span>
+<span class="text-[11px] font-semibold text-outline uppercase tracking-tight">CLB Tiếng Anh (ESC)</span>
+</div>
+<h3 class="font-h3 text-lg text-primary mb-1 leading-tight group-hover:text-primary-container transition-colors">Lớp học Ngoại ngữ Miễn phí</h3>
+<p class="text-body-sm text-on-surface-variant mb-4 line-clamp-2 italic">"Cùng nhau chinh phục ngôn ngữ mới mỗi ngày."</p>
+<div class="mt-auto pt-4 border-t border-slate-50">
+<div class="flex justify-between items-end mb-1">
+<span class="text-[11px] font-bold text-on-surface">Người tham gia</span>
+<span class="text-xs font-medium text-secondary">28/30</span>
+</div>
+<div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 93%"></div>
+</div>
+</div>
+<button class="mt-4 w-full py-2.5 rounded-lg border border-primary text-primary font-button text-sm hover:bg-primary-fixed transition-colors">Xem chi tiết</button>
+</div>
+</div>
+</div>
+<!-- Pagination -->
+<div class="mt-12 flex justify-center items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-slate-100 disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-white font-bold">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-slate-100 font-medium">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-slate-100 font-medium">3</button>
+<span class="px-2 text-outline">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-slate-100 font-medium">12</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-lg border border-outline-variant hover:bg-slate-100 transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-outline-variant flex justify-around items-center h-16 z-50">
+<a class="flex flex-col items-center gap-1 text-outline" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-medium">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="text-[10px] font-bold">Khám phá</span>
+</a>
+<div class="relative -top-6">
+<button class="w-12 h-12 bg-primary rounded-full shadow-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<a class="flex flex-col items-center gap-1 text-outline" href="#">
+<span class="material-symbols-outlined">volunteer_activism</span>
+<span class="text-[10px] font-medium">Impact</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-outline" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="text-[10px] font-medium">Profile</span>
+</a>
+</nav>
+</body></html>

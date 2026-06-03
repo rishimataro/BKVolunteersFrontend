@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Public Sans', sans-serif;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#0e4686",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-primary-fixed": "#001b3d",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container-high": "#e7e8e9",
+                        "surface-tint": "#305ea0",
+                        "primary-container": "#004080",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "on-primary-container": "#83aef5",
+                        "tertiary-container": "#6f2d00",
+                        "on-tertiary-fixed-variant": "#773305",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#c3c6d2",
+                        "secondary-fixed-dim": "#4ae183",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-surface-variant": "#424750",
+                        "inverse-primary": "#a9c7ff",
+                        "inverse-surface": "#2e3132",
+                        "on-background": "#191c1d",
+                        "surface": "#f8f9fa",
+                        "on-secondary-container": "#00743a",
+                        "surface-dim": "#d9dadb",
+                        "on-tertiary-fixed": "#341100",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffdbcb",
+                        "primary": "#002a58",
+                        "tertiary": "#4c1d00",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#f59561",
+                        "primary-fixed": "#d6e3ff",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-container-low": "#f3f4f5",
+                        "surface-variant": "#e1e3e4",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#005228",
+                        "outline": "#737781",
+                        "on-error": "#ffffff",
+                        "secondary": "#006d37",
+                        "error-container": "#ffdad6",
+                        "background": "#f8f9fa",
+                        "on-secondary-fixed": "#00210c",
+                        "surface-container": "#edeeef",
+                        "secondary-container": "#6bfe9c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "stack-md": "24px",
+                        "stack-sm": "12px",
+                        "margin-mobile": "16px",
+                        "base": "8px",
+                        "container-max": "1280px",
+                        "stack-lg": "48px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "h3": ["Public Sans"],
+                        "h1": ["Public Sans"],
+                        "label-bold": ["Public Sans"],
+                        "body-sm": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}],
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-[#F8F9FA] dark:bg-slate-950 border-b border-[#E2E8F0] dark:border-slate-800 shadow-[0px_4px_12px_rgba(0,0,0,0.05)] font-['Public_Sans'] antialiased">
+<div class="flex justify-between items-center h-16 px-6 max-w-[1280px] mx-auto w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-[#004080] dark:text-blue-300 cursor-pointer active:opacity-80">VolunteerHub</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#004080] transition-colors duration-200" href="#">Dashboard</a>
+<a class="text-slate-600 dark:text-slate-400 hover:text-[#004080] transition-colors duration-200" href="#">Campaigns</a>
+<a class="text-[#004080] dark:text-blue-300 font-semibold border-b-2 border-[#004080] py-1" href="#">My Impact</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center bg-surface-container rounded-full px-4 py-1.5 border border-outline-variant">
+<span class="material-symbols-outlined text-outline text-[20px]">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm w-48" placeholder="Search certifications..." type="text"/>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant cursor-pointer">
+<img alt="User profile avatar" data-alt="A professional studio portrait of a university student with a friendly expression, wearing academic casual attire. The lighting is soft and natural, emphasizing a clean and bright academic environment. The background is a softly blurred modern university library with hints of books and wooden textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUaQWOikRTI1HJvMwy4D8-9l3Lr_pjUaSBt1YF7fWuv0b6atXeiV69N1Co8aIDcGSpBKOaAtPrdSqGMyt6eM_KsKXzeuX0FFj_2ZoHctHLo_SL4kKhhOoZVuZOMU8INBajsTGY0bXl6V7DWwYi5w0RTPlTWdKIAD48En7Rx31TFdscTIIL9QTTp8Mv3n5ZHw_R51Wjyzs8Yf3Qii4NbWzFQM5VIPtDmPQsWbmn-tsggGOs5nsDaIGVmfxlEspwzeA9sk4f5GTDSjeh"/>
+</div>
+</div>
+</div>
+</div>
+</header>
+<div class="flex pt-16 min-h-screen">
+<!-- SideNavBar -->
+<aside class="hidden md:flex h-screen w-64 border-r border-[#E2E8F0] dark:border-slate-800 bg-white dark:bg-slate-900 fixed left-0 top-0 flex-col pt-20 pb-6 z-40">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-2">
+<img alt="University Crest" class="w-8 h-8" data-alt="A dignified and formal university crest logo featuring an open book and a laurel wreath. The design is rendered in a deep academic blue and metallic gold, set against a clean white background. The style is classic yet refined, symbolizing institutional authority and educational excellence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVhMCqkuhye6jEcasJZrzfXU7MVB4pXinCdLRcwa6D2K3wAetNM45AN-N_B8b9MtuW73KGc8jmRAEwA1u4WKk1RjI1ynVCrPzvnonAJpn4hM4yqHE_ZPfZC9qK-oYaeu5v78L_RG2pXw1YkTk1hfh_2uDVuIeRnaICjQKke2xle3w8CT-VPaR7B4tC3smKedBdTnMTnLBFtDVFg8s1pe3iJqbYSt7dKhOx_LjhRdNZFjTSLQ4q5kCF1lt2nP_hXknsn_kWun-sFxtL"/>
+<div>
+<p class="text-lg font-black text-[#004080] dark:text-blue-300 leading-tight">UniVolunteer</p>
+<p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Empowering Impact</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-3 space-y-1">
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium text-sm">Dashboard</span>
+</a>
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">explore</span>
+<span class="font-medium text-sm">Campaigns</span>
+</a>
+<a class="bg-blue-50 dark:bg-blue-900/30 text-[#004080] dark:text-blue-200 border-r-4 border-[#004080] px-4 py-3 flex items-center gap-3 transition-all" href="#">
+<span class="material-symbols-outlined" data-weight="fill">volunteer_activism</span>
+<span class="font-medium text-sm">My Impact</span>
+</a>
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-medium text-sm">Fundraising</span>
+</a>
+<a class="text-slate-500 dark:text-slate-400 px-4 py-3 flex items-center gap-3 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">admin_panel_settings</span>
+<span class="font-medium text-sm">Administration</span>
+</a>
+</nav>
+<div class="px-4 mt-auto">
+<button class="w-full bg-[#004080] text-white py-3 rounded-xl font-bold text-sm shadow-md active:scale-95 transition-transform">
+                    Start a Campaign
+                </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 bg-surface p-6 md:p-gutter">
+<div class="max-w-[1280px] mx-auto">
+<!-- Header & Filters -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-stack-lg gap-gutter">
+<div>
+<h1 class="font-h1 text-h1 text-primary mb-2">Giấy chứng nhận</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Quản lý và lưu trữ các thành tích tình nguyện điện tử của bạn.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant bg-white rounded-lg font-button text-button text-on-surface hover:bg-slate-50 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+                            Lọc theo năm
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant bg-white rounded-lg font-button text-button text-on-surface hover:bg-slate-50 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">sort</span>
+                            Mới nhất
+                        </button>
+</div>
+</div>
+<!-- Certificate Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Certificate Card 1 -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden shadow-[0px_4px_12px_rgba(0,0,0,0.05)] group hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300">
+<div class="relative aspect-[1.414/1] bg-slate-100 overflow-hidden border-b border-outline-variant">
+<img alt="Certificate Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A formal academic certificate design displayed on a high-quality textured paper background. The certificate features elegant typography, a gold-pressed official seal at the bottom right, and decorative border patterns in deep blue. The lighting is bright and even, highlighting the professional and prestigious nature of the award." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSIOwZtUsmxLfcRWJi0EpuHB6vI5jnHoWKSIr5EZX45jlEoq1FogR24KGl-Uwx1DKs4oquMyLhZ71OZhtW6hxB4Bbpziw6ciY6fhEGUItqv5NUxdssxvTat47RrqUA8eJp5MGDGDF6UESzNC59dzDEIpdVXAujV9WvB6rA8vK9-I7WCdUzEa_QDRnxJ6g2E3L-HnBzO4OD32g-Nuyk0FxDc6srNy6BJUeqCRhZePGRUy8mofdiOSnuxWRBuWYcI0Oo55cM_30deWzc"/>
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+<button class="bg-white text-primary px-6 py-2 rounded-full font-bold shadow-lg flex items-center gap-2">
+<span class="material-symbols-outlined">visibility</span>
+                                    Xem chi tiết
+                                </button>
+</div>
+</div>
+<div class="p-5">
+<div class="mb-4">
+<h3 class="font-h3 text-body-lg text-primary line-clamp-1 mb-1">Chiến dịch Mùa Hè Xanh 2023</h3>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span>Ngày cấp: 15/08/2023</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30 mb-6 flex justify-between items-center">
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Mã chứng chỉ</p>
+<p class="font-mono font-bold text-on-primary-fixed-variant">VH-2023-MHX-00124</p>
+</div>
+<span class="material-symbols-outlined text-secondary" data-weight="fill">verified</span>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-white py-2.5 rounded-lg font-button text-button flex items-center justify-center gap-2 hover:bg-on-primary-fixed-variant transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                                    Tải PDF
+                                </button>
+<button class="p-2.5 border border-outline-variant rounded-lg text-on-surface-variant hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Certificate Card 2 -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden shadow-[0px_4px_12px_rgba(0,0,0,0.05)] group hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300">
+<div class="relative aspect-[1.414/1] bg-slate-100 overflow-hidden border-b border-outline-variant">
+<img alt="Certificate Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="An elegant digital certificate with a modern layout, featuring sharp geometric accents in emerald green and navy blue. The certificate includes placeholders for recipient names and official signatures, set against a crisp white background with a subtle watermark pattern. The scene is lit with bright, clear gallery-style lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJzY8OX8VfFTVs3vDGhXWErMNyxfJLupL2qArxDMnNvPz1pnnkMi5xH5IApgAlk6Cn9cIsYI8ZAsi99FN0tIGTdBnP703Kp5zuwZ9xABnd8PUzFknuqULlzQfYpWjzCOgJxi148o-AHhM3_PwvuY3s6GrysxCLL4vRzwNSHURRaf862DGfLL6U_TAVohFNF8JSvLqHkkkEwpH0bMFNnc7gqfssYSqggePyHrh7sHdDrkkztlgEn9rzr1Bznm6QoWg2Z98XxfW9yXGk"/>
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+<button class="bg-white text-primary px-6 py-2 rounded-full font-bold shadow-lg flex items-center gap-2">
+<span class="material-symbols-outlined">visibility</span>
+                                    Xem chi tiết
+                                </button>
+</div>
+</div>
+<div class="p-5">
+<div class="mb-4">
+<h3 class="font-h3 text-body-lg text-primary line-clamp-1 mb-1">Dự án Quyên góp Sách Giáo khoa</h3>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span>Ngày cấp: 10/12/2023</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30 mb-6 flex justify-between items-center">
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Mã chứng chỉ</p>
+<p class="font-mono font-bold text-on-primary-fixed-variant">VH-2023-BKD-09882</p>
+</div>
+<span class="material-symbols-outlined text-secondary" data-weight="fill">verified</span>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-white py-2.5 rounded-lg font-button text-button flex items-center justify-center gap-2 hover:bg-on-primary-fixed-variant transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                                    Tải PDF
+                                </button>
+<button class="p-2.5 border border-outline-variant rounded-lg text-on-surface-variant hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Certificate Card 3 -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden shadow-[0px_4px_12px_rgba(0,0,0,0.05)] group hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300">
+<div class="relative aspect-[1.414/1] bg-slate-100 overflow-hidden border-b border-outline-variant">
+<img alt="Certificate Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A sophisticated academic award document presented in a virtual frame. The design uses traditional serif fonts and formal layouts with a deep burgundy and gold color palette. The lighting mimics a professional office setting with soft directional shadows that give depth to the paper texture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxQxMX-lXs2fyr0vuZ1or3ffhmAZcSmD2-LK4mKXDVMb3HVjEMyBbiAQh6PckIUG4_dpkF3ey6sglUX2OzXmrEqiKa2jKSA_nM_CxW2Pi4L1khofOr9BcB-kjTpbJqcsKWcjh3hMCaqUWQrL7CxzW8Uahw1bSu4rQ5iCkBs2XH3QpB-hMU2WbktTdc-TGSFJr0Ub0JYGWc3SVbFdknf9s1LLXK9Jgox4Rib7Dl-0bJdh-CElPcI7Yatz4TANg0gYmcx0etCDZtOMWZ"/>
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+<button class="bg-white text-primary px-6 py-2 rounded-full font-bold shadow-lg flex items-center gap-2">
+<span class="material-symbols-outlined">visibility</span>
+                                    Xem chi tiết
+                                </button>
+</div>
+</div>
+<div class="p-5">
+<div class="mb-4">
+<h3 class="font-h3 text-body-lg text-primary line-clamp-1 mb-1">Hiến máu Nhân đạo Đợt I</h3>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span>Ngày cấp: 22/02/2024</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30 mb-6 flex justify-between items-center">
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Mã chứng chỉ</p>
+<p class="font-mono font-bold text-on-primary-fixed-variant">VH-2024-BLD-02231</p>
+</div>
+<span class="material-symbols-outlined text-secondary" data-weight="fill">verified</span>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-white py-2.5 rounded-lg font-button text-button flex items-center justify-center gap-2 hover:bg-on-primary-fixed-variant transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                                    Tải PDF
+                                </button>
+<button class="p-2.5 border border-outline-variant rounded-lg text-on-surface-variant hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Certificate Card 4 -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden shadow-[0px_4px_12px_rgba(0,0,0,0.05)] group hover:shadow-[0px_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300">
+<div class="relative aspect-[1.414/1] bg-slate-100 overflow-hidden border-b border-outline-variant">
+<img alt="Certificate Thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A clean, minimalist certificate for environmental volunteering. The design features soft earth tones and subtle nature-inspired vector icons in the background. The text is clear and modern, using professional sans-serif typography. The overall atmosphere is calming and prestigious, rendered in a bright light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAze22Jgb7bKj1kPI9RGlPGW_PC_KulK2qTVHayyZTwHO7O36xwxUv9S2ElTDGGBNSGup_jQTgNAMY89BgfMfZxgxhu6PEbjI6gRnEwvKcrBnrFvPUeCOx7AsCZsPcQvOpH_XoSSdw8TnzfQQ54m4hnI0dHftdTu7WIgBndqMCRoUt6fPXnsjqKYuc7y_ZX5gxEWXtjXbNsATjFBoAJ-nMvsXqqRxJOEwyBlrj2v4XdYsvB7dGagcTxFu_935WEMLQ1gWxIwCU70ZCi"/>
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+<button class="bg-white text-primary px-6 py-2 rounded-full font-bold shadow-lg flex items-center gap-2">
+<span class="material-symbols-outlined">visibility</span>
+                                    Xem chi tiết
+                                </button>
+</div>
+</div>
+<div class="p-5">
+<div class="mb-4">
+<h3 class="font-h3 text-body-lg text-primary line-clamp-1 mb-1">Ngày hội Trồng cây vì Cộng đồng</h3>
+<div class="flex items-center gap-2 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span>Ngày cấp: 05/03/2024</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant/30 mb-6 flex justify-between items-center">
+<div>
+<p class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Mã chứng chỉ</p>
+<p class="font-mono font-bold text-on-primary-fixed-variant">VH-2024-GRN-04429</p>
+</div>
+<span class="material-symbols-outlined text-secondary" data-weight="fill">verified</span>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 bg-primary text-white py-2.5 rounded-lg font-button text-button flex items-center justify-center gap-2 hover:bg-on-primary-fixed-variant transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">download</span>
+                                    Tải PDF
+                                </button>
+<button class="p-2.5 border border-outline-variant rounded-lg text-on-surface-variant hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Empty State Card (Placeholder for asymmetry) -->
+<div class="bg-surface-container-low rounded-xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center p-gutter min-h-[350px] text-center opacity-70">
+<div class="w-16 h-16 bg-surface rounded-full flex items-center justify-center mb-4 text-outline border border-outline-variant shadow-inner">
+<span class="material-symbols-outlined text-[32px]">school</span>
+</div>
+<h4 class="font-h3 text-body-md text-on-surface mb-2">Đang chờ cấp mới</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-[200px]">Hoàn thành các chiến dịch hiện tại để nhận chứng chỉ điện tử.</p>
+</div>
+</div>
+<!-- Bottom Navigation (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-outline-variant flex justify-around py-3 px-6 z-50">
+<button class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px] font-bold uppercase">Home</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-[#004080]">
+<span class="material-symbols-outlined" data-weight="fill">volunteer_activism</span>
+<span class="text-[10px] font-bold uppercase">Impact</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined">explore</span>
+<span class="text-[10px] font-bold uppercase">Explore</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-slate-500">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold uppercase">Profile</span>
+</button>
+</nav>
+<!-- Floating Stats Card -->
+<div class="mt-stack-lg bg-primary-container text-white p-gutter rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-gutter overflow-hidden relative">
+<div class="absolute right-0 top-0 w-1/3 h-full opacity-10">
+<span class="material-symbols-outlined text-[240px] translate-x-20 -translate-y-10">workspace_premium</span>
+</div>
+<div class="relative z-10 text-center md:text-left">
+<p class="text-on-primary-container font-bold uppercase tracking-widest text-[12px] mb-2">Tổng kết thành tích</p>
+<h2 class="text-h2 font-h2 mb-4">Chứng chỉ của bạn có giá trị tương đương 120 giờ tình nguyện.</h2>
+<button class="bg-secondary-container text-on-secondary-fixed font-button text-button py-3 px-8 rounded-full hover:shadow-lg transition-shadow">
+                            Yêu cầu chứng nhận bảng điểm
+                        </button>
+</div>
+<div class="grid grid-cols-2 gap-stack-md relative z-10 w-full md:w-auto">
+<div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 text-center">
+<p class="text-h3 font-h3 leading-none">08</p>
+<p class="text-[10px] uppercase font-bold opacity-70 mt-1">Chứng chỉ</p>
+</div>
+<div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/20 text-center">
+<p class="text-h3 font-h3 leading-none">12</p>
+<p class="text-[10px] uppercase font-bold opacity-70 mt-1">Chiến dịch</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

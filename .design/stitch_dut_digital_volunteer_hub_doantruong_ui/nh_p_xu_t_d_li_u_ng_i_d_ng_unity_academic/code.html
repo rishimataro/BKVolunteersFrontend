@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bulk Import/Export | Unity Academic Digital Platform</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-primary-container": "#83aef5",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "surface-container-low": "#f3f4f5",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8f9fa",
+                        "on-primary-fixed": "#001b3d",
+                        "inverse-primary": "#a9c7ff",
+                        "on-secondary-fixed-variant": "#005228",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#2e3132",
+                        "on-secondary-fixed": "#00210c",
+                        "surface-tint": "#305ea0",
+                        "secondary-container": "#6bfe9c",
+                        "surface-container-high": "#e7e8e9",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "surface-container": "#edeeef",
+                        "on-tertiary-fixed": "#341100",
+                        "tertiary-fixed": "#ffdbcb",
+                        "surface-bright": "#f8f9fa",
+                        "primary": "#002a58",
+                        "surface": "#f8f9fa",
+                        "on-secondary-container": "#00743a",
+                        "tertiary-container": "#6f2d00",
+                        "outline": "#737781",
+                        "secondary-fixed": "#6bfe9c",
+                        "outline-variant": "#c3c6d2",
+                        "primary-container": "#004080",
+                        "tertiary": "#4c1d00",
+                        "on-tertiary-container": "#f59561",
+                        "secondary-fixed-dim": "#4ae183",
+                        "on-primary-fixed-variant": "#0e4686",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#773305",
+                        "on-surface": "#191c1d",
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-dim": "#d9dadb",
+                        "surface-variant": "#e1e3e4",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#d6e3ff",
+                        "secondary": "#006d37",
+                        "on-background": "#191c1d",
+                        "on-surface-variant": "#424750"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "12px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "stack-md": "24px",
+                        "base": "8px",
+                        "stack-lg": "48px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "h3": ["Public Sans"],
+                        "h1": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "label-bold": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "h2": ["Public Sans"],
+                        "body-sm": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; background-color: #f8f9fa; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px); border: 1px solid #E2E8F0; }
+        .step-connector { height: 2px; flex-grow: 1; background-color: #e1e3e4; margin: 0 16px; }
+        .step-connector.active { background-color: #004080; }
+        .tab-active { border-bottom: 2px solid #002a58; color: #002a58; font-weight: 600; }
+        .transition-all { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="text-on-surface">
+<div class="flex min-h-screen">
+<!-- SideNavBar -->
+<aside class="flex flex-col h-screen sticky left-0 top-0 py-stack-md px-4 gap-base bg-surface-container-low dark:bg-surface-container-lowest border-r border-outline-variant dark:border-outline w-64 shrink-0 hidden md:flex">
+<div class="flex items-center gap-3 px-2 mb-6">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">school</span>
+</div>
+<div>
+<h2 class="font-h3 text-h3 font-bold text-primary leading-tight">Admin Portal</h2>
+<p class="text-body-sm text-on-surface-variant">University Central</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container font-bold rounded-lg transition-transform active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-body-md text-body-md">User Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+<span class="font-body-md text-body-md">Campaigns</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-body-md text-body-md">Fundraising</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high transition-colors rounded-lg group" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-body-md text-body-md">Reports</span>
+</a>
+</nav>
+<button class="mt-4 mx-2 bg-primary text-white py-2.5 px-4 rounded-lg font-button flex items-center justify-center gap-2 hover:bg-primary-container transition-all">
+<span class="material-symbols-outlined">add</span>
+                New Import
+            </button>
+<div class="mt-auto border-t border-outline-variant pt-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="contact_support">contact_support</span>
+<span class="font-body-md text-body-md">Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-body-md text-body-md">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col min-w-0 bg-background overflow-y-auto">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-gutter h-16 sticky top-0 z-50 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-body-sm focus:ring-2 focus:ring-primary/20 focus:outline-none" placeholder="Search system records..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<button class="p-2 hover:bg-surface-container-low transition-colors rounded-full"><span class="material-symbols-outlined">notifications</span></button>
+<button class="p-2 hover:bg-surface-container-low transition-colors rounded-full"><span class="material-symbols-outlined">help</span></button>
+<button class="p-2 hover:bg-surface-container-low transition-colors rounded-full"><span class="material-symbols-outlined">settings</span></button>
+</div>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<p class="font-label-bold text-primary">Admin User</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Super Administrator</p>
+</div>
+<img alt="Admin Profile Avatar" class="w-10 h-10 rounded-full border border-outline-variant" data-alt="A professional headshot of a middle-aged university administrator with a kind and focused expression. He is wearing a dark navy suit and white shirt, reflecting a formal academic environment. The background is a soft-focus library with rows of leather-bound books, conveying authority and knowledge. The lighting is soft and professional." src="https://lh3.googleusercontent.com/aida/AP1WRLuZwCSunkN0KpYCBDMvdV3sFlb9dkW3vOd-LjNIfuNbhWYn54BZn0jE5AmMwvv7uIv95zlk7Gg2RGntRxS1cxyA4RkM0HzPSrDKvIjecZeoSLHDXnMPUzY36mPoRxpt2twMRepk072s7en94PUQiAWjFr_qAju624I7QdM9sEWufRoO0Uk1t6KYzXWQn-LWZ2mutWHgDN3EP2QOYtFRKbgaTreKzAOUbBTj3Af4gDDYidmbJqVHYMpbg5cH"/>
+</div>
+</div>
+</header>
+<!-- Page Header & Tabs -->
+<div class="px-gutter pt-8">
+<div class="mb-8">
+<h1 class="font-h1 text-h1 text-primary">User Management</h1>
+<p class="text-body-lg text-on-surface-variant">Manage bulk operations for student and faculty records.</p>
+</div>
+<div class="flex border-b border-outline-variant mb-8">
+<button class="px-8 py-4 font-button transition-all tab-active" id="tab-import" onclick="switchMainTab('import')">
+                        Import User Data
+                    </button>
+<button class="px-8 py-4 font-button transition-all text-on-surface-variant hover:text-primary" id="tab-export" onclick="switchMainTab('export')">
+                        Export User Data
+                    </button>
+</div>
+</div>
+<!-- Import Content Canvas -->
+<div class="px-gutter pb-16" id="content-import">
+<!-- Progress Wizard -->
+<div class="flex items-center justify-between mb-10 max-w-4xl mx-auto">
+<div class="flex flex-col items-center gap-2 group cursor-pointer" onclick="goToStep(1)">
+<div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold transition-all shadow-md" id="step-1-circle">1</div>
+<span class="font-label-bold text-primary" id="step-1-label">Upload File</span>
+</div>
+<div class="step-connector" id="line-1"></div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer" onclick="goToStep(2)">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-bold transition-all" id="step-2-circle">2</div>
+<span class="font-label-bold text-on-surface-variant" id="step-2-label">Map Columns</span>
+</div>
+<div class="step-connector" id="line-2"></div>
+<div class="flex flex-col items-center gap-2 group cursor-pointer" onclick="goToStep(3)">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center font-bold transition-all" id="step-3-circle">3</div>
+<span class="font-label-bold text-on-surface-variant" id="step-3-label">Finalize</span>
+</div>
+</div>
+<!-- Step 1: Upload -->
+<div class="max-w-4xl mx-auto" id="view-step-1">
+<div class="bg-surface-container-lowest p-10 border-2 border-dashed border-outline-variant rounded-xl flex flex-col items-center justify-center text-center transition-all hover:border-primary/50 group bg-white shadow-sm">
+<div class="w-20 h-20 bg-primary-fixed rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-4xl">upload_file</span>
+</div>
+<h3 class="font-h3 text-h3 text-primary mb-2">Drag and drop your file here</h3>
+<p class="text-body-md text-on-surface-variant mb-8 max-w-md">Supported formats: .CSV, .XLSX. Maximum file size: 25MB. Ensure your file follows the standard institutional template.</p>
+<div class="flex gap-4">
+<button class="bg-primary text-white px-8 py-3 rounded-lg font-button flex items-center gap-2 hover:bg-primary-container transition-all active:scale-95">
+<span class="material-symbols-outlined">attach_file</span>
+                                Browse Files
+                            </button>
+<button class="border border-primary text-primary px-8 py-3 rounded-lg font-button flex items-center gap-2 hover:bg-primary-fixed transition-all active:scale-95">
+<span class="material-symbols-outlined">download</span>
+                                Download Template
+                            </button>
+</div>
+</div>
+<div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-6 bg-white border border-outline-variant rounded-xl shadow-sm">
+<span class="material-symbols-outlined text-primary mb-3">check_circle</span>
+<h4 class="font-label-bold text-on-surface mb-1">Standard Headers</h4>
+<p class="text-body-sm text-on-surface-variant">Use 'Student ID', 'Full Name', 'Department' as headers.</p>
+</div>
+<div class="p-6 bg-white border border-outline-variant rounded-xl shadow-sm">
+<span class="material-symbols-outlined text-primary mb-3">verified</span>
+<h4 class="font-label-bold text-on-surface mb-1">Validation</h4>
+<p class="text-body-sm text-on-surface-variant">Rows with missing mandatory data will be flagged in Step 2.</p>
+</div>
+<div class="p-6 bg-white border border-outline-variant rounded-xl shadow-sm">
+<span class="material-symbols-outlined text-primary mb-3">history</span>
+<h4 class="font-label-bold text-on-surface mb-1">Backup</h4>
+<p class="text-body-sm text-on-surface-variant">Previous data state is backed up before every import.</p>
+</div>
+</div>
+</div>
+<!-- Step 2: Mapping (Hidden by default) -->
+<div class="max-w-4xl mx-auto hidden" id="view-step-2">
+<div class="bg-white border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="p-6 border-b border-outline-variant bg-surface-container-low flex justify-between items-center">
+<h3 class="font-h3 text-h3 text-primary">Map CSV Columns to System Fields</h3>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-bold">12 Columns Detected</span>
+</div>
+<table class="w-full text-left">
+<thead class="bg-surface-container-low text-on-surface-variant font-label-bold text-xs uppercase tracking-wider">
+<tr>
+<th class="px-6 py-4">CSV Column Header</th>
+<th class="px-6 py-4">System Field (Map To)</th>
+<th class="px-6 py-4">Sample Data</th>
+<th class="px-6 py-4">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-medium">Full Name</td>
+<td class="px-6 py-4">
+<select class="w-full bg-white border border-outline-variant rounded-lg px-3 py-2 text-body-sm focus:ring-primary focus:ring-2 outline-none">
+<option selected="">Họ Tên</option>
+<option>Tên đăng nhập</option>
+</select>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant">Nguyen Van A</td>
+<td class="px-6 py-4"><span class="text-secondary material-symbols-outlined">check_circle</span></td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-medium">Student ID</td>
+<td class="px-6 py-4">
+<select class="w-full bg-white border border-outline-variant rounded-lg px-3 py-2 text-body-sm focus:ring-primary focus:ring-2 outline-none">
+<option selected="">MSSV</option>
+<option>Mã số cán bộ</option>
+</select>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant">20241029</td>
+<td class="px-6 py-4"><span class="text-secondary material-symbols-outlined">check_circle</span></td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-medium">Email Address</td>
+<td class="px-6 py-4">
+<select class="w-full bg-white border border-outline-variant rounded-lg px-3 py-2 text-body-sm focus:ring-primary focus:ring-2 outline-none">
+<option selected="">Email</option>
+</select>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant">a.nv@unity.edu.vn</td>
+<td class="px-6 py-4"><span class="text-secondary material-symbols-outlined">check_circle</span></td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="px-6 py-4 font-medium">DOB</td>
+<td class="px-6 py-4">
+<select class="w-full border-error border rounded-lg px-3 py-2 text-body-sm focus:ring-error focus:ring-2 outline-none bg-error-container/10">
+<option disabled="" selected="">-- Select Field --</option>
+<option>Ngày sinh</option>
+</select>
+</td>
+<td class="px-6 py-4 text-body-sm text-on-surface-variant">15/05/2002</td>
+<td class="px-6 py-4"><span class="text-error material-symbols-outlined">warning</span></td>
+</tr>
+</tbody>
+</table>
+<div class="p-6 bg-surface-container-low flex justify-between items-center">
+<button class="text-on-surface-variant font-button px-6 py-2 hover:text-primary transition-all flex items-center gap-2" onclick="goToStep(1)">
+<span class="material-symbols-outlined">arrow_back</span> Back
+                            </button>
+<button class="bg-primary text-white px-8 py-3 rounded-lg font-button flex items-center gap-2 hover:bg-primary-container transition-all" onclick="goToStep(3)">
+                                Next Step <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Step 3: Finalize (Hidden by default) -->
+<div class="max-w-2xl mx-auto hidden" id="view-step-3">
+<div class="bg-white border border-outline-variant rounded-xl shadow-sm p-10 text-center">
+<div class="w-20 h-20 bg-secondary-container text-on-secondary-container rounded-full flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-4xl">inventory_2</span>
+</div>
+<h3 class="font-h3 text-h3 text-primary mb-2">Review Import Summary</h3>
+<p class="text-body-md text-on-surface-variant mb-8">All columns have been successfully mapped. Here is what we found in your file:</p>
+<div class="grid grid-cols-2 gap-4 mb-10">
+<div class="p-4 bg-surface-container-low rounded-lg">
+<p class="text-h3 font-bold text-primary">1,240</p>
+<p class="text-body-sm font-label-bold uppercase">Total Records</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg">
+<p class="text-h3 font-bold text-secondary">1,232</p>
+<p class="text-body-sm font-label-bold uppercase">Valid Records</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg">
+<p class="text-h3 font-bold text-error">8</p>
+<p class="text-body-sm font-label-bold uppercase">Errors Detected</p>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg">
+<p class="text-h3 font-bold text-on-surface-variant">0</p>
+<p class="text-body-sm font-label-bold uppercase">Duplicates</p>
+</div>
+</div>
+<div class="flex gap-4 justify-center">
+<button class="border border-outline-variant text-on-surface-variant px-8 py-3 rounded-lg font-button hover:bg-surface-container-low transition-all" onclick="goToStep(2)">
+                                Review Errors
+                            </button>
+<button class="bg-secondary text-white px-8 py-3 rounded-lg font-button shadow-lg shadow-secondary/20 hover:scale-105 transition-all">
+                                Start Final Import
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Export Content Canvas (Hidden by default) -->
+<div class="px-gutter pb-16 hidden" id="content-export">
+<div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Sidebar Filters -->
+<div class="md:col-span-1 space-y-6">
+<div class="bg-white border border-outline-variant rounded-xl p-6 shadow-sm">
+<h3 class="font-label-bold text-primary mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">filter_list</span> FILTER DATA
+                            </h3>
+<div class="space-y-4">
+<div>
+<label class="block text-body-sm font-medium mb-1">User Role</label>
+<select class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 text-body-sm">
+<option>All Roles</option>
+<option>Student</option>
+<option>Faculty</option>
+<option>Staff</option>
+<option>Alumni</option>
+</select>
+</div>
+<div>
+<label class="block text-body-sm font-medium mb-1">Academic Unit</label>
+<select class="w-full bg-surface-container-low border border-outline-variant rounded-lg px-3 py-2 text-body-sm">
+<option>All Units</option>
+<option>School of IT</option>
+<option>School of Business</option>
+<option>Faculty of Design</option>
+</select>
+</div>
+<div>
+<label class="block text-body-sm font-medium mb-1">Academic Year</label>
+<div class="grid grid-cols-2 gap-2">
+<select class="bg-surface-container-low border border-outline-variant rounded-lg px-2 py-2 text-body-sm">
+<option>2022</option>
+<option>2023</option>
+<option selected="">2024</option>
+</select>
+<select class="bg-surface-container-low border border-outline-variant rounded-lg px-2 py-2 text-body-sm">
+<option>Sem 1</option>
+<option>Sem 2</option>
+<option>Summer</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-primary-container text-on-primary-container p-6 rounded-xl shadow-sm">
+<h4 class="font-label-bold mb-2">Pro Tip</h4>
+<p class="text-body-sm opacity-90">Frequent exports? Save your current filter configuration as a template for future use.</p>
+<button class="mt-4 text-white text-xs font-bold underline flex items-center gap-1 hover:opacity-80">
+<span class="material-symbols-outlined text-xs">save</span> SAVE TEMPLATE
+                            </button>
+</div>
+</div>
+<!-- Export Configuration -->
+<div class="md:col-span-2 space-y-6">
+<div class="bg-white border border-outline-variant rounded-xl p-8 shadow-sm">
+<h3 class="font-h3 text-h3 text-primary mb-6">Select Export Format &amp; Fields</h3>
+<div class="mb-8">
+<p class="font-label-bold text-on-surface-variant mb-3 uppercase tracking-tighter">File Format</p>
+<div class="flex gap-4">
+<label class="flex-1 cursor-pointer">
+<input checked="" class="sr-only peer" name="format" type="radio" value="csv"/>
+<div class="p-4 border-2 border-outline-variant rounded-xl peer-checked:border-primary peer-checked:bg-primary-container/10 flex items-center gap-3 transition-all">
+<div class="w-10 h-10 bg-surface-container-high rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">description</span>
+</div>
+<div>
+<p class="font-bold text-primary">CSV File</p>
+<p class="text-[10px] text-on-surface-variant">Plain text format</p>
+</div>
+</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only peer" name="format" type="radio" value="xlsx"/>
+<div class="p-4 border-2 border-outline-variant rounded-xl peer-checked:border-primary peer-checked:bg-primary-container/10 flex items-center gap-3 transition-all">
+<div class="w-10 h-10 bg-surface-container-high rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant">table_chart</span>
+</div>
+<div>
+<p class="font-bold text-primary">Excel XLSX</p>
+<p class="text-[10px] text-on-surface-variant">Formatted spreadsheet</p>
+</div>
+</div>
+</label>
+</div>
+</div>
+<div class="mb-10">
+<div class="flex justify-between items-center mb-4">
+<p class="font-label-bold text-on-surface-variant uppercase tracking-tighter">Selected Fields</p>
+<button class="text-primary text-xs font-bold hover:underline">Select All</button>
+</div>
+<div class="grid grid-cols-2 gap-y-3">
+<label class="flex items-center gap-3 text-body-sm cursor-pointer">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/> Full Name
+                                    </label>
+<label class="flex items-center gap-3 text-body-sm cursor-pointer">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/> Student ID
+                                    </label>
+<label class="flex items-center gap-3 text-body-sm cursor-pointer">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/> Academic Email
+                                    </label>
+<label class="flex items-center gap-3 text-body-sm cursor-pointer">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/> Personal Email
+                                    </label>
+<label class="flex items-center gap-3 text-body-sm cursor-pointer">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/> Phone Number
+                                    </label>
+<label class="flex items-center gap-3 text-body-sm cursor-pointer">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/> Home Address
+                                    </label>
+<label class="flex items-center gap-3 text-body-sm cursor-pointer">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/> GPA / CGPA
+                                    </label>
+<label class="flex items-center gap-3 text-body-sm cursor-pointer">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/> Credit Balance
+                                    </label>
+</div>
+</div>
+<button class="w-full bg-primary text-white py-4 rounded-xl font-button text-lg flex items-center justify-center gap-3 hover:bg-primary-container shadow-xl shadow-primary/20 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined">download_for_offline</span>
+                                Generate Export File
+                            </button>
+<p class="text-center text-[11px] text-on-surface-variant mt-4">Generation might take a few moments depending on the data volume. You will receive a notification when it's ready.</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        function switchMainTab(tab) {
+            const importTab = document.getElementById('tab-import');
+            const exportTab = document.getElementById('tab-export');
+            const importContent = document.getElementById('content-import');
+            const exportContent = document.getElementById('content-export');
+
+            if (tab === 'import') {
+                importTab.classList.add('tab-active');
+                importTab.classList.remove('text-on-surface-variant');
+                exportTab.classList.remove('tab-active');
+                exportTab.classList.add('text-on-surface-variant');
+                importContent.classList.remove('hidden');
+                exportContent.classList.add('hidden');
+            } else {
+                exportTab.classList.add('tab-active');
+                exportTab.classList.remove('text-on-surface-variant');
+                importTab.classList.remove('tab-active');
+                importTab.classList.add('text-on-surface-variant');
+                exportContent.classList.remove('hidden');
+                importContent.classList.add('hidden');
+            }
+        }
+
+        function goToStep(step) {
+            // Update UI indicators
+            const circles = [
+                document.getElementById('step-1-circle'),
+                document.getElementById('step-2-circle'),
+                document.getElementById('step-3-circle')
+            ];
+            const labels = [
+                document.getElementById('step-1-label'),
+                document.getElementById('step-2-label'),
+                document.getElementById('step-3-label')
+            ];
+            const lines = [
+                document.getElementById('line-1'),
+                document.getElementById('line-2')
+            ];
+            const views = [
+                document.getElementById('view-step-1'),
+                document.getElementById('view-step-2'),
+                document.getElementById('view-step-3')
+            ];
+
+            // Reset all
+            circles.forEach((c, idx) => {
+                c.classList.remove('bg-primary', 'text-white', 'bg-secondary', 'bg-surface-container-highest');
+                c.classList.add('bg-surface-container-highest', 'text-on-surface-variant');
+                labels[idx].classList.remove('text-primary', 'text-secondary', 'text-on-surface-variant');
+                labels[idx].classList.add('text-on-surface-variant');
+            });
+            lines.forEach(l => l.classList.remove('active', 'bg-secondary'));
+            views.forEach(v => v.classList.add('hidden'));
+
+            // Set current
+            for (let i = 0; i < step; i++) {
+                if (i < step - 1) {
+                    circles[i].classList.add('bg-secondary', 'text-white');
+                    labels[i].classList.add('text-secondary');
+                    if (lines[i]) lines[i].classList.add('bg-secondary');
+                } else {
+                    circles[i].classList.add('bg-primary', 'text-white');
+                    labels[i].classList.add('text-primary');
+                }
+            }
+            views[step - 1].classList.remove('hidden');
+        }
+
+        // Initialize tooltips/interactions if needed
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                // Micro-interaction for field selection
+                const label = e.target.parentElement;
+                if(e.target.checked) {
+                    label.classList.add('text-primary', 'font-bold');
+                } else {
+                    label.classList.remove('text-primary', 'font-bold');
+                }
+            });
+        });
+    </script>
+</body></html>

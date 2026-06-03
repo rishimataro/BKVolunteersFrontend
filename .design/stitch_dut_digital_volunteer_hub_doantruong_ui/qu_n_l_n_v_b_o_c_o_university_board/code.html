@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quản lý đơn vị &amp; Báo cáo tác động</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Public Sans', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid #E2E8F0;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#d6e3ff",
+                        "background": "#f8f9fa",
+                        "inverse-on-surface": "#f0f1f2",
+                        "secondary": "#006d37",
+                        "on-secondary-fixed": "#00210c",
+                        "inverse-primary": "#a9c7ff",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#001b3d",
+                        "outline": "#737781",
+                        "on-surface-variant": "#424750",
+                        "on-tertiary-container": "#f59561",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "tertiary-fixed": "#ffdbcb",
+                        "tertiary-container": "#6f2d00",
+                        "surface-tint": "#305ea0",
+                        "secondary-fixed-dim": "#4ae183",
+                        "surface-container": "#edeeef",
+                        "primary-container": "#004080",
+                        "on-tertiary-fixed": "#341100",
+                        "on-tertiary-fixed-variant": "#773305",
+                        "on-error-container": "#93000a",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "error-container": "#ffdad6",
+                        "primary": "#002a58",
+                        "on-primary-fixed-variant": "#0e4686",
+                        "on-surface": "#191c1d",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-variant": "#e1e3e4",
+                        "on-secondary-container": "#00743a",
+                        "surface-container-low": "#f3f4f5",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#005228",
+                        "surface": "#f8f9fa",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#4c1d00",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2e3132",
+                        "surface-bright": "#f8f9fa",
+                        "secondary-container": "#6bfe9c",
+                        "surface-dim": "#d9dadb",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#83aef5",
+                        "on-background": "#191c1d",
+                        "surface-container-high": "#e7e8e9",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#c3c6d2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "stack-sm": "12px",
+                        "base": "8px",
+                        "stack-md": "24px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "stack-lg": "48px"
+                    },
+                    "fontFamily": {
+                        "label-bold": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "body-sm": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "h2": ["Public Sans"],
+                        "h3": ["Public Sans"],
+                        "h1": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface">
+<div class="flex h-screen overflow-hidden">
+<!-- Side Navigation (Shared Component) -->
+<aside class="bg-surface border-r border-outline-variant h-screen w-72 flex-shrink-0 flex flex-col p-stack-sm">
+<div class="flex items-center gap-3 px-4 py-6">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h1 class="font-h3 text-h3 text-primary">Đại học Chính quy</h1>
+<p class="text-body-sm text-on-surface-variant">Cổng quản trị tình nguyện</p>
+</div>
+</div>
+<nav class="flex-1 mt-6 space-y-1 overflow-y-auto custom-scrollbar">
+<a class="flex items-center gap-3 px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Bảng điều khiển</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">fact_check</span>
+<span class="font-body-md text-body-md">Duyệt chiến dịch</span>
+</a>
+<!-- Active Item -->
+<a class="flex items-center gap-3 px-4 py-3 mx-2 bg-primary-container text-on-primary-container font-label-bold rounded-lg active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+<span class="font-body-md text-body-md">Quản lý đơn vị</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md text-body-md">Báo cáo &amp; Kiểm toán</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Cài đặt hệ thống</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-outline-variant pt-4 pb-2">
+<button class="w-full mb-4 px-4 py-3 bg-primary text-on-primary font-button text-button rounded-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined">description</span>
+                    Xuất báo cáo năm
+                </button>
+<a class="flex items-center gap-3 px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+<span class="font-body-md text-body-md">Trợ giúp</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 mx-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="font-body-md text-body-md">Đăng xuất</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-hidden">
+<!-- Top App Bar (Shared Component) -->
+<header class="bg-surface-bright border-b border-outline-variant h-16 flex justify-between items-center px-gutter w-full shadow-sm z-10">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full text-body-sm focus:ring-2 focus:ring-primary-container outline-none transition-all" placeholder="Tìm kiếm đơn vị, câu lạc bộ..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-label-bold text-label-bold text-on-surface-variant hover:text-primary" href="#">Tổng quan</a>
+<a class="font-label-bold text-label-bold text-primary border-b-2 border-primary pb-1" href="#">Phê duyệt</a>
+<a class="font-label-bold text-label-bold text-on-surface-variant hover:text-primary" href="#">Thống kê</a>
+</nav>
+<div class="flex items-center gap-2 border-l border-outline-variant pl-6">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="flex items-center gap-3 ml-2 cursor-pointer hover:bg-surface-container-high p-1 rounded-lg transition-colors">
+<img alt="Administrator Profile" class="w-8 h-8 rounded-full bg-primary-fixed" src="https://lh3.googleusercontent.com/aida/AP1WRLti71o9wL90wdrTdB_fekfNYoZ6EBP8FHR5zlfJk57vD6X_jR7m4vpUgKziIR9mIyzch5-shPu985haPIuW6ed6wA6gDaWtZwWof7qIGyejmhp1kAIWINdZExPOZyf3AQTpUzxcFzSjg397C1mWDhyPsfrDSyxTna4CbKMUgy6eyivHTa_2xWEAtf3SsIEgi2ZugFC2F4x2FNzwpSoFLQQ70wL3BMtzD8QmnS-3Mh6nsTXkrTkRDxFp26OE"/>
+<div class="hidden lg:block text-right">
+<p class="font-label-bold text-label-bold leading-none">Quản trị viên</p>
+<p class="text-[10px] text-on-surface-variant">Admin Level 1</p>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-stack-md custom-scrollbar">
+<div class="max-w-container-max mx-auto space-y-stack-md">
+<!-- Header & Quick Stats -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="font-h2 text-h2 text-primary">Danh mục đơn vị</h2>
+<p class="text-body-lg text-on-surface-variant">Quản lý các Câu lạc bộ và Hội sinh viên trong hệ thống</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 border border-outline-variant rounded-lg font-button text-button flex items-center gap-2 hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+                                Bộ lọc
+                            </button>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-lg font-button text-button flex items-center gap-2 shadow-sm hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined">add</span>
+                                Đăng ký đơn vị mới
+                            </button>
+</div>
+</div>
+<!-- Metrics Overview (Bento Grid Style) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="w-10 h-10 bg-primary-fixed text-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined">groups</span>
+</div>
+<span class="text-secondary font-label-bold">+12%</span>
+</div>
+<p class="text-on-surface-variant font-label-bold text-label-bold uppercase">Tổng đơn vị</p>
+<h3 class="text-h3 font-h3 mt-1">124</h3>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="w-10 h-10 bg-secondary-container text-on-secondary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined">bolt</span>
+</div>
+<span class="text-secondary font-label-bold">+5.4</span>
+</div>
+<p class="text-on-surface-variant font-label-bold text-label-bold uppercase">Impact Score Avg</p>
+<h3 class="text-h3 font-h3 mt-1">82.5</h3>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="w-10 h-10 bg-tertiary-fixed text-tertiary-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="text-on-tertiary-container font-label-bold">↑ 2.1 tỷ</span>
+</div>
+<p class="text-on-surface-variant font-label-bold text-label-bold uppercase">Quỹ đang quản lý</p>
+<h3 class="text-h3 font-h3 mt-1">15.8 tỷ VNĐ</h3>
+</div>
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<div class="w-10 h-10 bg-error-container text-on-error-container rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined">history_edu</span>
+</div>
+<span class="text-error font-label-bold">8 Cần duyệt</span>
+</div>
+<p class="text-on-surface-variant font-label-bold text-label-bold uppercase">Báo cáo tài chính</p>
+<h3 class="text-h3 font-h3 mt-1">426</h3>
+</div>
+</div>
+<!-- Main Directory Table Card -->
+<div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="px-6 py-4 border-b border-outline-variant bg-surface-container-low flex items-center justify-between">
+<h3 class="font-h3 text-h3 text-primary">Danh sách Đơn vị &amp; Câu lạc bộ</h3>
+<div class="flex gap-2">
+<div class="inline-flex rounded-lg border border-outline-variant p-1 bg-white">
+<button class="px-3 py-1 bg-primary-container text-on-primary-container rounded-md text-label-bold">Tất cả</button>
+<button class="px-3 py-1 hover:bg-surface-container rounded-md text-label-bold text-on-surface-variant">Câu lạc bộ</button>
+<button class="px-3 py-1 hover:bg-surface-container rounded-md text-label-bold text-on-surface-variant">Hội sinh viên</button>
+</div>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-bold text-label-bold border-b border-outline-variant">
+<th class="px-6 py-4">Tên đơn vị</th>
+<th class="px-6 py-4">Loại hình</th>
+<th class="px-6 py-4">Thành viên</th>
+<th class="px-6 py-4">Impact Score</th>
+<th class="px-6 py-4">Tổng quỹ managed</th>
+<th class="px-6 py-4 text-right">Thao tác</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed overflow-hidden flex-shrink-0 border border-outline-variant">
+<img alt="Green Tech Club" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLuYWK9hcgq_T0VKxpCmLxD96JV8U8yWW-Ti072EiNvLvqM8C_rR2K8s5-zETPYH9LEWT5XfPWJQLDgifI7Bb3fk8p1vp0sxa8czMC0EIw9DHihwzDAEUtcb06dFfqRV_AkCrSyNx2TAqY9nBeDV_vtYyvK_ayF1Q8sQ4CQbVQS3snyYC4wJXCGDkWiCSXtDLlsTy553Y0-QfG4PdvOvhNAI6UnVq90vpsvqsvMdmtUoUQsasoDQmFSBGsp1"/>
+</div>
+<div>
+<p class="font-label-bold text-body-md text-primary">CLB Công nghệ Xanh (GreenTech)</p>
+<p class="text-body-sm text-on-surface-variant">Thành lập: 2021</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface text-body-sm">Câu lạc bộ</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="font-label-bold">156</span>
+<span class="text-[10px] text-secondary">↑ 4</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-24 bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 92%"></div>
+</div>
+<span class="font-label-bold text-secondary">92</span>
+</div>
+</td>
+<td class="px-6 py-4 font-label-bold">
+                                            450.000.000 đ
+                                        </td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:bg-primary-fixed p-2 rounded-lg transition-colors" onclick="toggleDetail('unit-1')">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed overflow-hidden flex-shrink-0 border border-outline-variant">
+<img alt="Hội sinh viên" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0uiWLGtHUbSuELyVmy4e5i9HjPcrSEGRooPbI1hepGQVjmEbuO2fRtkjrjwWnZxkLKcaIqCkYtQaPceotBcqPTdKuUsVvZiXjR7Ps8f81rVSTB_lN5wBvxgxhrCFN2V2y5e57VSc1ob2CBHhEyCJd1QQepHqMyLh_pwzmQGG0S6aj5sjIKr_bVTlHQnG6gadAa6fhvtrOTaEC_eLx6ub4clSE09-xUf0UXXmnGlIIwqjXOzhRNj0Iho6KeBZ"/>
+</div>
+<div>
+<p class="font-label-bold text-body-md text-primary">Liên chi Hội Sinh viên Khoa Kinh tế</p>
+<p class="text-body-sm text-on-surface-variant">Thành lập: 2015</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-primary-fixed text-primary text-body-sm">Hội sinh viên</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="font-label-bold">1,240</span>
+<span class="text-[10px] text-on-surface-variant">→ 0</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-24 bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 85%"></div>
+</div>
+<span class="font-label-bold text-secondary">85</span>
+</div>
+</td>
+<td class="px-6 py-4 font-label-bold">
+                                            1.250.000.000 đ
+                                        </td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:bg-primary-fixed p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed overflow-hidden flex-shrink-0 border border-outline-variant">
+<img alt="Music Team" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLuA_Z-b86X4jDwrl4bgdAR7Z7nvwKSHyAHWp4MBC_tKd4iN5Tu48G3lIdytRJ3lsiXBE4LxuAzuu9ltIFPiTmwHacCArqfCzurjUS_iD2BN6mgP9vaJjRqx3l4fgHYdKHgIyUzXYdPHUzOnT25vfmR18eN5ZEOCD6crOIwwUP8OtV-3e1s_HDSdZXS68twnB77Y-BPIclsM_ANaEEX8njlWuSuVLSxhdJ-MLwB5owiex4K4NgXD1fKFvmo"/>
+</div>
+<div>
+<p class="font-label-bold text-body-md text-primary">Câu lạc bộ Văn nghệ - Music Team</p>
+<p class="text-body-sm text-on-surface-variant">Thành lập: 2018</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface text-body-sm">Câu lạc bộ</span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="font-label-bold">85</span>
+<span class="text-[10px] text-error">↓ 2</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-24 bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 65%"></div>
+</div>
+<span class="font-label-bold text-secondary">65</span>
+</div>
+</td>
+<td class="px-6 py-4 font-label-bold">
+                                            120.000.000 đ
+                                        </td>
+<td class="px-6 py-4 text-right">
+<button class="text-primary hover:bg-primary-fixed p-2 rounded-lg transition-colors">
+<span class="material-symbols-outlined">visibility</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="px-6 py-4 border-t border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+<p class="text-body-sm text-on-surface-variant">Hiển thị 1-10 trên 124 đơn vị</p>
+<div class="flex gap-2">
+<button class="w-8 h-8 flex items-center justify-center border border-outline-variant rounded hover:bg-surface-container transition-colors disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center bg-primary text-on-primary rounded font-label-bold">1</button>
+<button class="w-8 h-8 flex items-center justify-center border border-outline-variant rounded hover:bg-surface-container transition-colors font-label-bold">2</button>
+<button class="w-8 h-8 flex items-center justify-center border border-outline-variant rounded hover:bg-surface-container transition-colors font-label-bold">3</button>
+<button class="w-8 h-8 flex items-center justify-center border border-outline-variant rounded hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Right Drawer Detail View (Hidden by default) -->
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 transition-opacity duration-300 opacity-0 pointer-events-none" id="unit-detail-overlay" onclick="toggleDetail()"></div>
+<div class="fixed top-0 right-0 h-full w-full max-w-2xl bg-background shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col" id="unit-detail-drawer">
+<div class="p-6 border-b border-outline-variant flex items-center justify-between bg-white">
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container rounded-full transition-colors" onclick="toggleDetail()">
+<span class="material-symbols-outlined">close</span>
+</button>
+<h3 class="font-h3 text-h3 text-primary">Chi tiết Đơn vị</h3>
+</div>
+<button class="px-4 py-2 border border-primary text-primary rounded-lg font-button text-button flex items-center gap-2 hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined">download</span>
+                Tải báo cáo chi tiết
+            </button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
+<!-- Header Section -->
+<div class="flex items-start gap-6">
+<div class="w-24 h-24 rounded-2xl bg-primary-fixed overflow-hidden border-2 border-white shadow-md flex-shrink-0">
+<img alt="Green Tech Club Large" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0uhigNq7Z-0Jf_ND7GSJmLHBmt2-9sGgbLO0dsMpxZ7cqHZMVPAyFjzk6WpEqToGZ63m7wl6XYgVySlIUlX428rlJQraMun7-DgxTtfQaqOyvDLZyA9tNUHCmSiAUWsrZc1og7zGJQktIhULJ0SSq-dP55AKE2VOiu2SV-37iMpGzTZC_FRKtmeVFsEY4aJxjTiWrokl3pfBjzV4riYjc6keyjSRI7GXPvqVV95f8WPfmvCF1rYnnluRruh1"/>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-1">
+<h2 class="font-h2 text-h3 text-primary leading-tight">CLB Công nghệ Xanh (GreenTech)</h2>
+<span class="px-3 py-1 rounded-full bg-secondary-container text-on-secondary-container text-body-sm font-label-bold">Đang hoạt động</span>
+</div>
+<p class="text-body-md text-on-surface-variant mb-4">Sứ mệnh: Thúc đẩy các giải pháp công nghệ bền vững cho cộng đồng sinh viên và bảo vệ môi trường.</p>
+<div class="flex gap-4">
+<div class="text-center px-4 py-2 bg-surface-container rounded-lg">
+<p class="text-[10px] text-on-surface-variant font-label-bold uppercase">Impact Score</p>
+<p class="font-h3 text-secondary">92/100</p>
+</div>
+<div class="text-center px-4 py-2 bg-surface-container rounded-lg">
+<p class="text-[10px] text-on-surface-variant font-label-bold uppercase">Xếp hạng</p>
+<p class="font-h3 text-primary">#04</p>
+</div>
+<div class="text-center px-4 py-2 bg-surface-container rounded-lg">
+<p class="text-[10px] text-on-surface-variant font-label-bold uppercase">Campaigns</p>
+<p class="font-h3 text-primary">24</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Financial Transparency Section -->
+<section class="space-y-4">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<h4 class="font-label-bold text-label-bold text-primary uppercase flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">account_balance_wallet</span>
+                        Minh bạch Tài chính (2023-2024)
+                    </h4>
+<span class="text-body-sm text-secondary font-label-bold">Đã kiểm toán</span>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 bg-white border border-outline-variant rounded-xl">
+<p class="text-body-sm text-on-surface-variant">Tổng thu từ tài trợ</p>
+<p class="text-h3 font-h3 text-primary">312.000.000 đ</p>
+</div>
+<div class="p-4 bg-white border border-outline-variant rounded-xl">
+<p class="text-body-sm text-on-surface-variant">Tổng chi hoạt động</p>
+<p class="text-h3 font-h3 text-error">215.400.000 đ</p>
+</div>
+</div>
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden">
+<div class="p-4 bg-surface-container-low font-label-bold text-label-bold text-on-surface-variant">Lịch sử giao dịch gần nhất</div>
+<table class="w-full text-left text-body-sm">
+<tbody><tr class="border-t border-outline-variant">
+<td class="p-3">05/10/2023</td>
+<td class="p-3">Chi tổ chức "Hội thảo Công nghệ Xanh"</td>
+<td class="p-3 text-right text-error font-label-bold">-12.500k</td>
+</tr>
+<tr class="border-t border-outline-variant">
+<td class="p-3">28/09/2023</td>
+<td class="p-3">Tài trợ từ VNPT cho chiến dịch thu gom pin</td>
+<td class="p-3 text-right text-secondary font-label-bold">+50.000k</td>
+</tr>
+</tbody></table>
+</div>
+</section>
+<!-- Campaign History Timeline -->
+<section class="space-y-4">
+<h4 class="font-label-bold text-label-bold text-primary uppercase flex items-center gap-2 border-b border-outline-variant pb-2">
+<span class="material-symbols-outlined text-sm">history</span>
+                    Lịch sử chiến dịch &amp; Tác động
+                </h4>
+<div class="space-y-4 relative before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-outline-variant">
+<div class="relative pl-8">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-secondary flex items-center justify-center text-on-secondary z-10 border-4 border-background">
+<span class="material-symbols-outlined text-[12px]" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<div class="bg-white p-4 border border-outline-variant rounded-xl shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<h5 class="font-label-bold text-primary">Chiến dịch "Sạch trường - Sáng tương lai"</h5>
+<span class="text-[10px] bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full uppercase">Đã kết thúc</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mb-2">Thu gom được 1.2 tấn rác thải nhựa, phủ xanh 12 khu vực sảnh chính.</p>
+<div class="flex gap-4 text-[11px] text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">person</span> 120 TNV</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">favorite</span> 4.5k lượt thích</span>
+</div>
+</div>
+</div>
+<div class="relative pl-8">
+<div class="absolute left-0 top-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center text-on-primary z-10 border-4 border-background">
+<span class="material-symbols-outlined text-[12px]">sync</span>
+</div>
+<div class="bg-white p-4 border border-outline-variant rounded-xl shadow-sm">
+<div class="flex justify-between items-start mb-2">
+<h5 class="font-label-bold text-primary">Dự án "Đổi pin lấy cây" định kỳ</h5>
+<span class="text-[10px] bg-primary-fixed text-primary px-2 py-0.5 rounded-full uppercase">Đang diễn ra</span>
+</div>
+<p class="text-body-sm text-on-surface-variant mb-2">Chương trình thu gom pin cũ đổi sen đá trang trí cho sinh viên.</p>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full mt-3">
+<div class="bg-primary h-full rounded-full" style="width: 68%"></div>
+</div>
+<div class="flex justify-between mt-1 text-[10px] font-label-bold text-on-surface-variant">
+<span>68% Mục tiêu năm</span>
+<span>1,250 / 2,000 pin</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<div class="p-6 border-t border-outline-variant bg-white flex gap-3">
+<button class="flex-1 px-4 py-3 bg-primary text-on-primary rounded-lg font-button text-button flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined">edit</span>
+                Cập nhật thông tin đơn vị
+            </button>
+<button class="px-4 py-3 border border-error text-error rounded-lg font-button text-button hover:bg-error-container transition-colors">
+<span class="material-symbols-outlined">lock</span>
+</button>
+</div>
+</div>
+<script>
+        function toggleDetail(id) {
+            const drawer = document.getElementById('unit-detail-drawer');
+            const overlay = document.getElementById('unit-detail-overlay');
+            
+            if (drawer.classList.contains('translate-x-full')) {
+                drawer.classList.remove('translate-x-full');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                drawer.classList.add('translate-x-full');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        // Add some micro-interactions
+        document.querySelectorAll('tr').forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.classList.add('scale-[1.002]', 'z-20');
+            });
+            row.addEventListener('mouseleave', () => {
+                row.classList.remove('scale-[1.002]', 'z-20');
+            });
+        });
+    </script>
+</body></html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Notification Center - Volunteer Impact</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#d9dadb",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "tertiary-fixed": "#ffdbcb",
+                        "on-tertiary-container": "#f59561",
+                        "surface-variant": "#e1e3e4",
+                        "secondary": "#006d37",
+                        "outline-variant": "#c3c6d2",
+                        "on-secondary-fixed": "#00210c",
+                        "secondary-container": "#6bfe9c",
+                        "on-primary": "#ffffff",
+                        "surface-tint": "#305ea0",
+                        "on-primary-fixed": "#001b3d",
+                        "on-tertiary-fixed": "#341100",
+                        "tertiary-container": "#6f2d00",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#424750",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#737781",
+                        "surface": "#f8f9fa",
+                        "on-background": "#191c1d",
+                        "surface-bright": "#f8f9fa",
+                        "inverse-primary": "#a9c7ff",
+                        "tertiary": "#4c1d00",
+                        "on-tertiary-fixed-variant": "#773305",
+                        "on-secondary-container": "#00743a",
+                        "primary-container": "#004080",
+                        "on-surface": "#191c1d",
+                        "on-primary-container": "#83aef5",
+                        "surface-container-high": "#e7e8e9",
+                        "primary-fixed": "#d6e3ff",
+                        "on-primary-fixed-variant": "#0e4686",
+                        "background": "#f8f9fa",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "primary": "#002a58",
+                        "inverse-surface": "#2e3132",
+                        "surface-container-low": "#f3f4f5",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#4ae183",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#edeeef",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-secondary-fixed-variant": "#005228"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "12px",
+                        "stack-lg": "48px",
+                        "container-max": "1280px",
+                        "margin-mobile": "16px",
+                        "base": "8px",
+                        "stack-md": "24px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "h3": ["Public Sans"],
+                        "label-bold": ["Public Sans"],
+                        "h2": ["Public Sans"],
+                        "h1": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "body-sm": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "body-md": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}],
+                        "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .notification-card:hover .action-btn {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm dark:shadow-none docked full-width top-0 z-50 sticky">
+<div class="flex justify-between items-center w-full px-6 py-3 max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<span class="font-h3 text-h3 font-bold text-primary dark:text-primary-fixed-dim">Volunteer Impact</span>
+<nav class="hidden md:flex gap-6">
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-variant transition-colors" href="#">Dashboard</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-variant transition-colors" href="#">Chiến dịch</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-low dark:hover:bg-surface-variant transition-colors" href="#">Báo cáo</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<img alt="Ảnh đại diện người dùng" class="w-10 h-10 rounded-full border border-outline-variant" data-alt="A professional headshot of a young university administrator in a clean-cut suit, set against a blurred academic building backdrop. The lighting is soft and natural, emphasizing a bright and welcoming modern atmosphere. The image is crisp with high resolution, following a prestigious corporate visual language." src="https://lh3.googleusercontent.com/aida/AP1WRLviWIOJmls1BGEPwi9cWrcpb2A52fKCSTv-dGq-0quRpEPU79cc9B7IpeWhQ3TrnVhStxpbJVm4h0uQpWRRSRzUT5YenpM0k3ipOUOQNpLshtx2W9wR5AKHjwrPWNuIs0q5419CPfLCT2YU6VQ03qQCvWI4tmLYU1CR5zou1PI-eZOau0kXF5TogGDdXSOr49CZ90lm7Rq7UgsEqTnx9bE59XNYzPodghFP-ydO4IPRqB7osj1tsXFs0PJW"/>
+</div>
+</div>
+</header>
+<div class="max-w-container-max mx-auto flex">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-64px)] w-64 sticky top-[64px] bg-surface-container-low border-r border-outline-variant p-4 space-y-stack-sm">
+<div class="mb-6 px-2">
+<h2 class="font-h3 text-h3 font-bold text-primary">Impact Admin</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Hệ thống tình nguyện</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-bold text-label-bold">Tổng quan</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-primary-container text-on-primary-container rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="notifications" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="font-label-bold text-label-bold">Thông báo</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-bold text-label-bold">Quản lý tình nguyện</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-bold text-label-bold">Tài chính</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-bold text-label-bold">Cài đặt</span>
+</a>
+</nav>
+<button class="w-full mt-auto bg-primary text-on-primary py-3 px-4 rounded-lg font-button text-button flex items-center justify-center gap-2 active:translate-x-1 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                Tạo chiến dịch mới
+            </button>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 min-h-screen p-stack-md lg:p-stack-lg">
+<div class="max-w-4xl mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+<div>
+<h1 class="font-h1 text-h1 text-primary mb-1">Trung tâm Thông báo</h1>
+<p class="font-body-md text-on-surface-variant">Theo dõi và quản lý các hoạt động mới nhất từ hệ thống Unity Academic.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline-variant text-primary rounded-lg font-button text-button hover:bg-surface-container-low transition-colors" onclick="markAllAsRead()">
+<span class="material-symbols-outlined text-[20px]" data-icon="done_all">done_all</span>
+                            Đánh dấu đã đọc
+                        </button>
+<button class="p-2 border border-outline-variant text-on-surface-variant rounded-lg hover:bg-surface-container-low transition-colors" title="Cài đặt thông báo">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+</button>
+</div>
+</div>
+<!-- Filters Bento Layout -->
+<div class="flex flex-wrap gap-2 mb-8 bg-surface-container-low p-1 rounded-xl">
+<button class="px-6 py-2 rounded-lg font-button text-button bg-primary text-on-primary shadow-sm" data-filter="all">Tất cả</button>
+<button class="px-6 py-2 rounded-lg font-button text-button text-on-surface-variant hover:bg-surface-container transition-colors" data-filter="campaigns">Chiến dịch</button>
+<button class="px-6 py-2 rounded-lg font-button text-button text-on-surface-variant hover:bg-surface-container transition-colors" data-filter="approvals">Phê duyệt</button>
+<button class="px-6 py-2 rounded-lg font-button text-button text-on-surface-variant hover:bg-surface-container transition-colors" data-filter="system">Hệ thống</button>
+</div>
+<!-- Notifications List -->
+<div class="space-y-4">
+<!-- Notification Card 1 (Unread) -->
+<div class="notification-card group flex items-start gap-4 p-5 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm relative overflow-hidden transition-all hover:shadow-md hover:border-primary-fixed-dim">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined" data-icon="volunteer_activism">volunteer_activism</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-2 mb-1">
+<h3 class="font-body-md font-bold text-on-surface truncate">Chiến dịch "Mùa hè xanh 2024" đã được duyệt</h3>
+<span class="font-label-bold text-label-bold text-outline">10 phút trước</span>
+</div>
+<p class="font-body-sm text-on-surface-variant line-clamp-2">Dự án của bạn đã vượt qua vòng thẩm định sơ bộ. Vui lòng cập nhật danh sách tình nguyện viên để bắt đầu triển khai.</p>
+<div class="mt-3 flex items-center gap-4">
+<button class="font-button text-button text-primary hover:underline flex items-center gap-1">
+                                    Xem chi tiết
+                                    <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-bold text-[10px] uppercase">Chiến dịch</span>
+</div>
+</div>
+<button class="action-btn opacity-0 translate-x-4 transition-all p-2 rounded-lg text-outline hover:text-primary hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+<!-- Notification Card 2 -->
+<div class="notification-card group flex items-start gap-4 p-5 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm relative transition-all hover:shadow-md">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" data-icon="task_alt">task_alt</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-2 mb-1">
+<h3 class="font-body-md font-bold text-on-surface truncate">Yêu cầu rút vốn ngân quỹ thành công</h3>
+<span class="font-label-bold text-label-bold text-outline">2 giờ trước</span>
+</div>
+<p class="font-body-sm text-on-surface-variant line-clamp-2">Giao dịch mã số #VOL-7892 đã được bộ phận tài chính xử lý. Số tiền 5.000.000đ đã được chuyển tới tài khoản dự án.</p>
+<div class="mt-3 flex items-center gap-4">
+<button class="font-button text-button text-primary hover:underline flex items-center gap-1">
+                                    Xem chi tiết
+                                    <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed-variant font-label-bold text-[10px] uppercase">Phê duyệt</span>
+</div>
+</div>
+<button class="action-btn opacity-0 translate-x-4 transition-all p-2 rounded-lg text-outline hover:text-primary">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+<!-- Notification Card 3 -->
+<div class="notification-card group flex items-start gap-4 p-5 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm relative transition-all hover:shadow-md">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-error-container flex items-center justify-center text-on-error-container">
+<span class="material-symbols-outlined" data-icon="warning">warning</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-2 mb-1">
+<h3 class="font-body-md font-bold text-on-surface truncate">Cảnh báo: Bảo trì hệ thống định kỳ</h3>
+<span class="font-label-bold text-label-bold text-outline">5 giờ trước</span>
+</div>
+<p class="font-body-sm text-on-surface-variant line-clamp-2">Hệ thống sẽ tạm ngưng hoạt động từ 23:00 tối nay để nâng cấp máy chủ. Vui lòng lưu lại mọi thay đổi trước thời gian này.</p>
+<div class="mt-3 flex items-center gap-4">
+<button class="font-button text-button text-primary hover:underline flex items-center gap-1">
+                                    Xem chi tiết
+                                    <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<span class="px-2 py-0.5 rounded bg-surface-variant text-on-surface-variant font-label-bold text-[10px] uppercase">Hệ thống</span>
+</div>
+</div>
+<button class="action-btn opacity-0 translate-x-4 transition-all p-2 rounded-lg text-outline hover:text-primary">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+<!-- Notification Card 4 -->
+<div class="notification-card group flex items-start gap-4 p-5 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm relative transition-all hover:shadow-md">
+<div class="flex-shrink-0 w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined" data-icon="diversity_3">diversity_3</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between gap-2 mb-1">
+<h3 class="font-body-md font-bold text-on-surface truncate">15 tình nguyện viên mới đăng ký</h3>
+<span class="font-label-bold text-label-bold text-outline">Hôm qua</span>
+</div>
+<p class="font-body-sm text-on-surface-variant line-clamp-2">Chiến dịch "Dạy học cho em" nhận được sự quan tâm lớn. Vui lòng xem danh sách hồ sơ để bắt đầu phỏng vấn.</p>
+<div class="mt-3 flex items-center gap-4">
+<button class="font-button text-button text-primary hover:underline flex items-center gap-1">
+                                    Xem danh sách
+                                    <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-label-bold text-[10px] uppercase">Chiến dịch</span>
+</div>
+</div>
+<button class="action-btn opacity-0 translate-x-4 transition-all p-2 rounded-lg text-outline hover:text-primary">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Load More Section -->
+<div class="mt-12 flex justify-center">
+<button class="px-8 py-3 bg-surface-container-high text-primary font-button text-button rounded-xl hover:bg-surface-dim transition-colors flex items-center gap-2">
+                        Tải thêm thông báo
+                        <span class="material-symbols-outlined" data-icon="expand_more">expand_more</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant w-full py-base mt-24">
+<div class="max-w-container-max mx-auto px-6 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<div class="flex flex-col items-center md:items-start gap-1">
+<span class="font-label-bold text-label-bold text-primary">Volunteer Impact</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 Nền tảng Tình nguyện Học thuật. Đã đăng ký bản quyền.</p>
+</div>
+<div class="flex gap-6">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary hover:underline decoration-primary transition-opacity duration-200" href="#">Chính sách bảo mật</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary hover:underline decoration-primary transition-opacity duration-200" href="#">Điều khoản sử dụng</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary hover:underline decoration-primary transition-opacity duration-200" href="#">Liên hệ hỗ trợ</a>
+</div>
+</div>
+</footer>
+<script>
+        function markAllAsRead() {
+            const blueBars = document.querySelectorAll('.bg-primary.w-1');
+            blueBars.forEach(bar => {
+                bar.classList.remove('bg-primary');
+                bar.classList.add('bg-transparent');
+            });
+            alert('Tất cả thông báo đã được đánh dấu là đã đọc.');
+        }
+
+        // Micro-interactions for filters
+        const filterButtons = document.querySelectorAll('[data-filter]');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterButtons.forEach(b => {
+                    b.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+                    b.classList.add('text-on-surface-variant', 'hover:bg-surface-container');
+                });
+                btn.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+                btn.classList.remove('text-on-surface-variant', 'hover:bg-surface-container');
+            });
+        });
+    </script>
+</body></html>

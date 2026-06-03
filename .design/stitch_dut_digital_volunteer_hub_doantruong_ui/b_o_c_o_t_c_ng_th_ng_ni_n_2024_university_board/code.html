@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Báo cáo Tác động Thường niên 2024 - Unity Academic Digital Platform</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary": "#002a58",
+                    "on-error": "#ffffff",
+                    "tertiary-container": "#6f2d00",
+                    "surface": "#f8f9fa",
+                    "on-tertiary-container": "#f59561",
+                    "secondary-container": "#6bfe9c",
+                    "on-secondary-container": "#00743a",
+                    "error-container": "#ffdad6",
+                    "surface-container": "#edeeef",
+                    "on-error-container": "#93000a",
+                    "surface-dim": "#d9dadb",
+                    "on-surface": "#191c1d",
+                    "primary-fixed": "#d6e3ff",
+                    "on-primary-fixed": "#001b3d",
+                    "tertiary-fixed": "#ffdbcb",
+                    "tertiary": "#4c1d00",
+                    "secondary": "#006d37",
+                    "on-primary-fixed-variant": "#0e4686",
+                    "surface-tint": "#305ea0",
+                    "secondary-fixed-dim": "#4ae183",
+                    "inverse-primary": "#a9c7ff",
+                    "surface-container-lowest": "#ffffff",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed-dim": "#ffb691",
+                    "on-secondary-fixed-variant": "#005228",
+                    "on-secondary": "#ffffff",
+                    "on-primary-container": "#83aef5",
+                    "inverse-surface": "#2e3132",
+                    "secondary-fixed": "#6bfe9c",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed-dim": "#a9c7ff",
+                    "surface-bright": "#f8f9fa",
+                    "on-secondary-fixed": "#00210c",
+                    "on-primary": "#ffffff",
+                    "inverse-on-surface": "#f0f1f2",
+                    "surface-container-highest": "#e1e3e4",
+                    "primary-container": "#004080",
+                    "on-surface-variant": "#424750",
+                    "on-tertiary-fixed": "#341100",
+                    "surface-container-low": "#f3f4f5",
+                    "surface-container-high": "#e7e8e9",
+                    "outline-variant": "#c3c6d2",
+                    "background": "#f8f9fa",
+                    "surface-variant": "#e1e3e4",
+                    "outline": "#737781",
+                    "on-tertiary-fixed-variant": "#773305",
+                    "on-background": "#191c1d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "stack-md": "24px",
+                    "gutter": "24px",
+                    "container-max": "1280px",
+                    "stack-lg": "48px",
+                    "stack-sm": "12px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "button": ["Public Sans"],
+                    "body-md": ["Public Sans"],
+                    "body-sm": ["Public Sans"],
+                    "body-lg": ["Public Sans"],
+                    "h1": ["Public Sans"],
+                    "label-bold": ["Public Sans"],
+                    "h2": ["Public Sans"],
+                    "h3": ["Public Sans"]
+            },
+            "fontSize": {
+                    "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}],
+                    "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                    "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .impact-card-hover:hover {
+            box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+        .chart-bar-grow {
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background-color: white !important; }
+            .report-container { box-shadow: none !important; border: none !important; width: 100% !important; max-width: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface">
+<div class="flex min-h-screen">
+<!-- SideNavBar (Predicted & Structured from JSON) -->
+<aside class="no-print bg-surface-container-low dark:bg-surface-container-lowest text-primary dark:text-primary-fixed-dim border-r border-outline-variant dark:border-outline flex flex-col h-screen sticky left-0 top-0 py-stack-md px-4 gap-base w-64">
+<div class="flex items-center gap-3 mb-8 px-2">
+<img class="w-10 h-10 object-contain" data-alt="The official circular seal of a prestigious academic institution, rendered in high-resolution vector style. The seal features intricate classical iconography of an open book and a torch of knowledge, surrounded by formal Latin text. The color scheme is a professional academic blue and gold, conveying authority, tradition, and intellectual excellence in a modern university setting." src="https://lh3.googleusercontent.com/aida/AP1WRLuTVA94yzOIERsYaplsmVsxt-iWkiX2N1AFuztv2bXGzj3PR-pIYr-FnrnG0XeEzCWuyt0L_jEoC_ZuJvKXwQFhaoWLdg9X5PKSVP1WZvWy-QIFsAN7uGo4oTxSlMsEbiTtD3lprONnkw45VUT-aMEg6htfkEn8SddyV4Voct1SR9ieIPWU-fJa44N1Mb-IoRTt0VqHVcq91Z0nZwYZlsl6kRPaYBmbVymTHeqyL5w8tG4zAD_XoE1fsBEL"/>
+<div>
+<h1 class="font-h3 text-h3 font-bold text-primary">Admin Portal</h1>
+<p class="text-xs opacity-70">University Central</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined">group</span>
+<span>User Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined">campaign</span>
+<span>Campaigns</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-surface hover:bg-surface-container-high transition-all rounded-lg active:scale-95" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Fundraising</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container font-bold rounded-lg transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Reports</span>
+</a>
+</nav>
+<button class="no-print mt-4 mb-8 bg-primary text-on-primary py-2 px-4 rounded-lg font-button text-button hover:opacity-90 transition-opacity">
+                New Import
+            </button>
+<div class="border-t border-outline-variant pt-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+<span>Support</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors text-error" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col min-w-0">
+<!-- TopAppBar (Predicted & Structured from JSON) -->
+<header class="no-print bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm flex justify-between items-center w-full px-gutter h-16 sticky top-0 z-50">
+<div class="flex items-center gap-base flex-1">
+<div class="max-w-md w-full relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 focus:ring-2 focus:ring-primary/20 text-body-sm" placeholder="Search reports or data..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">help</span></button>
+<button class="p-2 rounded-full hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined">settings</span></button>
+</div>
+<div class="h-8 w-px bg-outline-variant mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right hidden sm:block">
+<p class="font-label-bold text-primary">Dr. Julian Thorne</p>
+<p class="text-[10px] uppercase tracking-wider text-on-surface-variant">Board Director</p>
+</div>
+<img alt="Admin Profile Avatar" class="w-10 h-10 rounded-full border border-outline-variant object-cover" data-alt="A professional headshot of a middle-aged university administrator with a confident and kind expression. He is wearing a sharp charcoal suit with a crisp white shirt, representing academic authority and modern leadership. The background is a soft-focus library with leather-bound books, maintaining a bright, professional light-mode aesthetic." src="https://lh3.googleusercontent.com/aida/AP1WRLuX6SynGK8ZGRQUQyIWQI9S4ic6cOqTaSpmLfVmErKWo8CJAwJ2hW2GkEJj619MWuhYg7yxJ5JlWRuBKRiBap2FbpkZGZ6OL89z-XNJz5Yufot7sxzvZwJuhMBrs_YI9jax-WKyRHJFLLxdn7Cpw6SRSCP-fePbdSTy9UBzkD3h5P4OACzuY_uSk_E8GiwbV9--Xi3H_k-I_yfxaokdBdZo_9tVFAqgxh96OwqyFwetYMu1Cwpl3nEQ8-vJ"/>
+</div>
+</div>
+</header>
+<!-- Report Content Area -->
+<div class="p-stack-md sm:p-gutter lg:p-stack-lg max-w-container-max mx-auto w-full">
+<!-- Action Bar (Sticky beneath Top Bar) -->
+<div class="no-print flex flex-wrap justify-between items-end gap-4 mb-base border-b border-outline-variant pb-base">
+<div>
+<nav class="flex text-body-sm gap-2 text-on-surface-variant mb-2">
+<span>Reports</span>
+<span>/</span>
+<span class="text-primary font-medium">Impact Report 2024</span>
+</nav>
+<h2 class="font-h2 text-h2 text-primary">Annual Impact Report 2024</h2>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 border border-outline rounded-lg font-button text-button hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">download</span> Download PDF
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 border border-outline rounded-lg font-button text-button hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">file_export</span> Export Data
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg font-button text-button hover:opacity-90 shadow-md">
+<span class="material-symbols-outlined">ink_pen</span> Sign &amp; Approve
+                        </button>
+</div>
+</div>
+<!-- Formal Document Container -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden report-container">
+<!-- Official Header Section -->
+<div class="p-stack-md lg:p-gutter bg-primary-container/5 border-b border-outline-variant flex flex-col md:flex-row justify-between items-start md:items-center gap-gutter">
+<div class="flex items-center gap-6">
+<img class="w-24 h-24 object-contain" data-alt="An official large-scale University Crest featured in a formal document header. The design is traditional yet modern, with high-contrast sharp lines, featuring a shield, an eagle, and classical scrollwork. The palette is dominated by deep academic blue and metallic silver, rendered with a slight embossing effect to imply prestige and official documentation quality." src="https://lh3.googleusercontent.com/aida/AP1WRLvBmtN2X7KK0m9A-mKHMENeJuBH7uJ9mv8frHnioPMThLTMb7RVvY1eD_GioGnCbCjfrRDAVq5yLj-55uXU7lGgCRKbIKHmQFpsG_RfC3-_cjeQvwl34sd-Y_smCf-uKLtasmbuFtxDnjZ-p5sQoMTs27FrQR8AVUIGIGFiyoqgslBjjyKFxmd-yXiDs3gHR5sgD811zsrQPeRaYDj_4Ctzf7iCCQ4htVCoJhSrCwdI0wE-4rJ9Q8K1pfu2"/>
+<div>
+<h3 class="font-h3 text-h3 text-primary mb-1">Báo cáo Tác động Thường niên 2024</h3>
+<p class="text-body-sm text-on-surface-variant uppercase tracking-widest font-medium">Unity Academic Digital Platform • Document ID: UADP-2024-IR-001</p>
+</div>
+</div>
+<div class="bg-white p-4 rounded-lg border border-outline-variant text-right">
+<p class="text-body-sm text-on-surface-variant">Date of Issue: <span class="font-semibold text-on-surface">Oct 24, 2024</span></p>
+<p class="text-body-sm text-on-surface-variant">External Auditor: <span class="font-semibold text-on-surface">Everest Audit Group</span></p>
+<p class="text-body-sm text-on-surface-variant">Status: <span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-bold text-[10px]">VERIFIED</span></p>
+</div>
+</div>
+<!-- 1. Executive Summary & Highlight Grid -->
+<section class="p-gutter">
+<div class="mb-gutter">
+<h4 class="font-label-bold text-primary uppercase border-b-2 border-primary w-fit pb-1 mb-4">I. Executive Summary</h4>
+<p class="text-body-md text-on-surface-variant leading-relaxed max-w-4xl">
+                                The 2024 academic cycle saw a record-breaking expansion in student-led volunteerism and social impact. Through the Unity platform, participation increased by 22% compared to the previous year, with primary growth in environmental sustainability and digital literacy outreach programs. Financial transparency remains a cornerstone of our operations, with 94% of funds reaching frontline project activities.
+                            </p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<div class="p-stack-md bg-surface-container-low border border-outline-variant rounded-xl impact-card-hover transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">schedule</span>
+<span class="text-secondary font-label-bold flex items-center gap-1 text-xs">
+<span class="material-symbols-outlined text-xs">trending_up</span> +12%
+                                    </span>
+</div>
+<h5 class="text-on-surface-variant text-body-sm font-medium">Total Volunteer Hours</h5>
+<p class="text-h2 font-h2 text-primary">142,500</p>
+<p class="text-[10px] text-on-surface-variant mt-1 italic">Equivalent to 68 FTE positions</p>
+</div>
+<div class="p-stack-md bg-surface-container-low border border-outline-variant rounded-xl impact-card-hover transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">savings</span>
+<span class="text-secondary font-label-bold flex items-center gap-1 text-xs">
+<span class="material-symbols-outlined text-xs">trending_up</span> +18.5%
+                                    </span>
+</div>
+<h5 class="text-on-surface-variant text-body-sm font-medium">Total Funds Raised</h5>
+<p class="text-h2 font-h2 text-primary">$1.84M</p>
+<p class="text-[10px] text-on-surface-variant mt-1 italic">94% allocation efficiency</p>
+</div>
+<div class="p-stack-md bg-surface-container-low border border-outline-variant rounded-xl impact-card-hover transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">group</span>
+<span class="text-secondary font-label-bold flex items-center gap-1 text-xs">
+<span class="material-symbols-outlined text-xs">trending_up</span> +7%
+                                    </span>
+</div>
+<h5 class="text-on-surface-variant text-body-sm font-medium">Active Students</h5>
+<p class="text-h2 font-h2 text-primary">8,920</p>
+<p class="text-[10px] text-on-surface-variant mt-1 italic">Across 14 Departments</p>
+</div>
+<div class="p-stack-md bg-surface-container-low border border-outline-variant rounded-xl impact-card-hover transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+<span class="text-on-surface-variant font-label-bold flex items-center gap-1 text-xs">
+                                        Stable
+                                    </span>
+</div>
+<h5 class="text-on-surface-variant text-body-sm font-medium">Completed Projects</h5>
+<p class="text-h2 font-h2 text-primary">312</p>
+<p class="text-[10px] text-on-surface-variant mt-1 italic">98% success rating</p>
+</div>
+</div>
+</section>
+<!-- 2. Financial Transparency -->
+<section class="p-gutter border-t border-outline-variant">
+<h4 class="font-label-bold text-primary uppercase border-b-2 border-primary w-fit pb-1 mb-6">II. Financial Transparency</h4>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-stack-lg items-center">
+<div class="relative flex justify-center">
+<!-- Doughnut Chart Simulation -->
+<div class="relative w-64 h-64">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<circle cx="18" cy="18" fill="transparent" r="15.915" stroke="#e2e8f0" stroke-width="4"></circle>
+<circle cx="18" cy="18" fill="transparent" r="15.915" stroke="#004080" stroke-dasharray="65 100" stroke-dashoffset="0" stroke-width="4"></circle>
+<circle cx="18" cy="18" fill="transparent" r="15.915" stroke="#2ECC71" stroke-dasharray="20 100" stroke-dashoffset="-65" stroke-width="4"></circle>
+<circle cx="18" cy="18" fill="transparent" r="15.915" stroke="#f59561" stroke-dasharray="15 100" stroke-dashoffset="-85" stroke-width="4"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="text-h2 font-h2 text-primary">$1.84M</span>
+<span class="text-[10px] font-label-bold text-on-surface-variant uppercase">Total Net</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-6">
+<div class="space-y-2">
+<div class="flex justify-between items-center text-body-sm">
+<span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-primary"></span> Frontline Impact Projects</span>
+<span class="font-bold">65%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full chart-bar-grow" style="width: 65%;"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-body-sm">
+<span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-secondary"></span> Community Scholarships</span>
+<span class="font-bold">20%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full chart-bar-grow" style="width: 20%;"></div>
+</div>
+</div>
+<div class="space-y-2">
+<div class="flex justify-between items-center text-body-sm">
+<span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-tertiary-container"></span> Operational Costs</span>
+<span class="font-bold">15%</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-tertiary-container h-full chart-bar-grow" style="width: 15%;"></div>
+</div>
+</div>
+<p class="bg-surface-container-low p-4 rounded-lg text-body-sm text-on-surface-variant italic border-l-4 border-secondary">
+                                    Note: Efficiency ratio has improved by 4.2% since the implementation of the Unity Automated Ledger system in Q1.
+                                </p>
+</div>
+</div>
+</section>
+<!-- 3. Top Units Leaderboard -->
+<section class="p-gutter border-t border-outline-variant">
+<h4 class="font-label-bold text-primary uppercase border-b-2 border-primary w-fit pb-1 mb-6">III. Top Performing Units</h4>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-bold text-[11px] uppercase tracking-wider">
+<th class="p-4 rounded-tl-lg">Rank</th>
+<th class="p-4">Department / Club</th>
+<th class="p-4">Contribution</th>
+<th class="p-4">Student Reach</th>
+<th class="p-4 rounded-tr-lg text-right">Impact Score</th>
+</tr>
+</thead>
+<tbody class="text-body-sm divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-4 font-bold text-primary">#01</td>
+<td class="p-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">MED</div>
+<span>Faculty of Medicine Volunteer Corp</span>
+</td>
+<td class="p-4">$420,500</td>
+<td class="p-4">1,240 Students</td>
+<td class="p-4 text-right">
+<span class="bg-secondary text-on-secondary px-3 py-1 rounded-full text-[12px] font-bold">98.4</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-4 font-bold text-primary">#02</td>
+<td class="p-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">ENG</div>
+<span>Engineers Without Borders (Unit A)</span>
+</td>
+<td class="p-4">$315,200</td>
+<td class="p-4">860 Students</td>
+<td class="p-4 text-right">
+<span class="bg-secondary text-on-secondary px-3 py-1 rounded-full text-[12px] font-bold">96.1</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-4 font-bold text-primary">#03</td>
+<td class="p-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">BUS</div>
+<span>Student Business Council - Social Ent.</span>
+</td>
+<td class="p-4">$288,000</td>
+<td class="p-4">1,100 Students</td>
+<td class="p-4 text-right">
+<span class="bg-secondary text-on-secondary px-3 py-1 rounded-full text-[12px] font-bold">92.8</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="p-4 font-bold text-primary">#04</td>
+<td class="p-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container text-on-primary-container flex items-center justify-center font-bold text-xs">ENV</div>
+<span>Green Campus Alliance</span>
+</td>
+<td class="p-4">$154,300</td>
+<td class="p-4">2,300 Students</td>
+<td class="p-4 text-right">
+<span class="bg-secondary text-on-secondary px-3 py-1 rounded-full text-[12px] font-bold">91.5</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- 4. Strategic Outlook -->
+<section class="p-gutter border-t border-outline-variant bg-surface-container-low/30">
+<h4 class="font-label-bold text-primary uppercase border-b-2 border-primary w-fit pb-1 mb-4">IV. Strategic Outlook 2025</h4>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="prose prose-sm text-on-surface-variant max-w-none">
+<p class="mb-4">Moving into the 2025 cycle, the platform will prioritize <strong>Cross-Border Academic Exchange</strong>. Our data indicates that hybrid volunteering models—combining physical on-site work with remote digital mentorship—generate 1.4x higher long-term impact scores for students.</p>
+<p>Key Objectives:</p>
+<ul class="list-disc pl-5 space-y-2">
+<li>Integration of AI-driven impact forecasting.</li>
+<li>Expansion of the "Global Citizen" scholarship fund.</li>
+<li>Standardization of Impact Scores across 100% of campus units.</li>
+</ul>
+</div>
+<div class="relative rounded-xl overflow-hidden shadow-inner border border-outline-variant h-full min-h-[200px]">
+<img class="w-full h-full object-cover" data-alt="A focused, professional view of a modern university board meeting. Board members in formal attire are seen from behind, looking at a large interactive digital screen displaying global impact data and colorful analytics charts. The room is filled with soft natural light from large windows, reflecting a transparent, high-stakes academic environment where data-driven decisions are made." src="https://lh3.googleusercontent.com/aida/AP1WRLu0x-nhHZjvMajFvpjw4Q3J_ZhZoOI4PqMvXDR9lqGFF3RlmDU_puB83HdhX0Vx7Cj2j1mIZz_ImyvMjC8B6DAt_v5ZlZW0KQrJKl9ZnJNQLh_wWMqKnJCRohqPV3zpVRuvQboJ3cVVDYhdJ-HZho5YJ2W_HU0AmUc9a1i9RjIlyBMQvooe8beFk_bo8OM8N2abqPjKOp1pLndPCB7l0AIyUmndZb-Xvip9ILnmUMdh_qWdqpv7ReVYlx5d"/>
+<div class="absolute inset-0 bg-primary/40 flex items-center justify-center text-center p-gutter">
+<p class="text-white font-h3 text-h3 font-light leading-snug">"Empowering the next generation of global citizens through data and dedication."</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer / Signature -->
+<footer class="p-gutter border-t border-outline-variant bg-white flex flex-col md:flex-row justify-between items-end gap-gutter">
+<div class="w-full md:w-auto">
+<div class="w-48 h-1 bg-primary mb-4 opacity-10"></div>
+<p class="text-[10px] text-on-surface-variant font-medium uppercase tracking-[0.2em] mb-8">Approval Verification</p>
+<div class="flex gap-12">
+<div>
+<div class="h-12 w-40 flex items-end justify-center border-b border-outline italic font-serif text-primary mb-2">
+<!-- Placeholder for signature -->
+                                        Julian Thorne
+                                    </div>
+<p class="font-bold text-body-sm">Dr. Julian Thorne</p>
+<p class="text-[10px] text-on-surface-variant">Director, University Board</p>
+</div>
+<div>
+<div class="h-12 w-40 flex items-end justify-center border-b border-outline mb-2">
+<span class="text-outline-variant text-[10px]">PENDING APPROVAL</span>
+</div>
+<p class="font-bold text-body-sm">Ms. Elena Rodriguez</p>
+<p class="text-[10px] text-on-surface-variant">Chief Financial Officer</p>
+</div>
+</div>
+</div>
+<div class="text-right">
+<img class="w-20 h-20 ml-auto mb-2 opacity-60" data-alt="A clean, minimalist QR code designed for document verification. The QR code is perfectly square with high contrast, set against a pristine white background. It represents a secure digital signature or a link to a verified blockchain record for this specific annual report, emphasizing the platform's commitment to technological transparency and official security." src="https://lh3.googleusercontent.com/aida/AP1WRLs3Kt8m4apcbmTpqc9QWanHCYRz1t8e84gN0xr8w4t1cYP0NT2LtBoymoMVLyX9fQBxmswffBG5W_nYAC5jEnRgHIyLquEEs_HshVc-wDDr1VlMhFnAxyQnWeD6LLsSrk_jG-VVuBIaN6f3StUGz4qkheCzsENcNCwdWnWP-sM_oomlLTnv9u22DpYQFJAA1yRsEm1V66pXqasDL5lTsgWEh1RJRCpvnVdCFCkD6GckD4Cle5mTVpBbCX3O"/>
+<p class="text-[8px] text-on-surface-variant">Scan to verify digital certificate authenticity.</p>
+</div>
+</footer>
+</div>
+<!-- Legal/Accessibility Footer -->
+<div class="mt-stack-md flex flex-col md:flex-row justify-between items-center text-[11px] text-on-surface-variant opacity-60 px-4">
+<p>© 2024 Unity Academic Digital Platform. All Rights Reserved. Confidential - For Board Eyes Only.</p>
+<div class="flex gap-4 mt-2 md:mt-0">
+<a class="hover:underline" href="#">Privacy Policy</a>
+<a class="hover:underline" href="#">Audit Documentation</a>
+<a class="hover:underline" href="#">Accessibility Standards</a>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        // Micro-interactions for the report elements
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animate progress bars on scroll
+            const bars = document.querySelectorAll('.chart-bar-grow');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const targetWidth = entry.target.style.width;
+                        entry.target.style.width = '0%';
+                        setTimeout(() => {
+                            entry.target.style.width = targetWidth;
+                        }, 100);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            bars.forEach(bar => observer.observe(bar));
+
+            // Print functionality
+            window.addEventListener('beforeprint', () => {
+                document.title = "Official_Impact_Report_2024_Unity_Academic";
+            });
+        });
+    </script>
+</body></html>

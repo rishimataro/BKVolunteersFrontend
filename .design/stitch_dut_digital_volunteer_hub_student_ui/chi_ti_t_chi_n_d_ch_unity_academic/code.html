@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#0e4686",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-primary-fixed": "#001b3d",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container-high": "#e7e8e9",
+                        "surface-tint": "#305ea0",
+                        "primary-container": "#004080",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "on-primary-container": "#83aef5",
+                        "tertiary-container": "#6f2d00",
+                        "on-tertiary-fixed-variant": "#773305",
+                        "error": "#ba1a1a",
+                        "outline-variant": "#c3c6d2",
+                        "secondary-fixed-dim": "#4ae183",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-surface-variant": "#424750",
+                        "inverse-primary": "#a9c7ff",
+                        "inverse-surface": "#2e3132",
+                        "on-background": "#191c1d",
+                        "surface": "#f8f9fa",
+                        "on-secondary-container": "#00743a",
+                        "surface-dim": "#d9dadb",
+                        "on-tertiary-fixed": "#341100",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffdbcb",
+                        "primary": "#002a58",
+                        "tertiary": "#4c1d00",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#f59561",
+                        "primary-fixed": "#d6e3ff",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface-container-low": "#f3f4f5",
+                        "surface-variant": "#e1e3e4",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#005228",
+                        "outline": "#737781",
+                        "on-error": "#ffffff",
+                        "secondary": "#006d37",
+                        "error-container": "#ffdad6",
+                        "background": "#f8f9fa",
+                        "on-secondary-fixed": "#00210c",
+                        "surface-container": "#edeeef",
+                        "secondary-container": "#6bfe9c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "stack-md": "24px",
+                        "stack-sm": "12px",
+                        "margin-mobile": "16px",
+                        "base": "8px",
+                        "container-max": "1280px",
+                        "stack-lg": "48px"
+                    },
+                    "fontFamily": {
+                        "h2": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "h3": ["Public Sans"],
+                        "h1": ["Public Sans"],
+                        "label-bold": ["Public Sans"],
+                        "body-sm": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}],
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-surface">
+<!-- Top Navigation Bar -->
+<header class="bg-[#F8F9FA] fixed top-0 w-full z-50 border-b border-[#E2E8F0] shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<div class="flex justify-between items-center h-16 px-6 max-w-[1280px] mx-auto w-full">
+<div class="flex items-center gap-8">
+<span class="text-xl font-bold tracking-tight text-[#004080]">VolunteerHub</span>
+<nav class="hidden md:flex gap-6">
+<a class="font-button text-body-sm text-[#004080] font-semibold border-b-2 border-[#004080] py-5" href="#">Campaigns</a>
+<a class="font-button text-body-sm text-slate-600 hover:text-[#004080] transition-colors py-5" href="#">Dashboard</a>
+<a class="font-button text-body-sm text-slate-600 hover:text-[#004080] transition-colors py-5" href="#">My Impact</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="pl-10 pr-4 py-2 bg-slate-100 border-none rounded-full text-sm w-64 focus:ring-2 focus:ring-primary/20" placeholder="Search campaigns..." type="text"/>
+</div>
+<button class="p-2 hover:bg-slate-100 rounded-full transition-colors">
+<span class="material-symbols-outlined text-slate-600" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-primary-fixed overflow-hidden border border-outline-variant">
+<img alt="User profile avatar" data-alt="A professional headshot of a young university student, smiling confidently at the camera. The background is a soft-focus university campus setting with academic buildings. The lighting is bright and natural, reflecting a clean and modern educational environment with a high-key aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoqpxmQqNiEAviY3x3J9ctH3Ub2WGB2EucahXuGokopfcdR_Mf-MG2VU25QJqS9mKVPX9teBXuRLpH-0ny5zImfmZq9WYiih_3WQcKiTUkMgxNcmNJrvSVngGyEnXbbPwjpJYgwrcYcNZ4mIJn09m-ztTmTucWJ4EtwJhedBzqcVaF8r-tby0YFnNJX5oJ41OXLhHby1r_Fyo3eC2fXTyBHtW6c_EvJCm2htJdBkSEgwZHpSlDEQ6fwjr7xuodYaiCzAzrTxl6R8l3"/>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-16 pb-20">
+<!-- Hero Banner -->
+<section class="relative w-full h-[500px] overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A wide-angle landscape photograph showcasing a group of diverse student volunteers working together to plant trees in a local community park. The sun is setting, casting a warm, golden glow over the scene. The image uses a professional, high-quality cinematic style with rich colors and a sense of purposeful community action, aligning with the Academic Modernism brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMGEr4YqubmML1bC9Q0F_lEn8aHJVAcw57-gTLYoLUVu7sWgxgCDbS99Z0XbGoC5Hlrg0LKQPZt3yS2AFTR3I0Lh92Rs22jtO5fAgag3YFznISkJAIwrOWR5wOO9KaxF8uSBj-A2MAPGKqfY2sumFFJvZqoj4dMOd6JCpqb-RxYBZH_JqMyIXbXUYoqd3naOaTHma57zEgnN3ZSxfqGveEbLw8v8nUpjTFmEnbrVYosslu4nu6B7a6pRnDVE4vRe896eP97tJPaYCx"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent"></div>
+<div class="absolute bottom-0 left-0 right-0 max-w-[1280px] mx-auto px-gutter pb-12">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="px-3 py-1 bg-secondary text-white text-label-bold rounded-full">ĐANG DIỄN RA</span>
+<span class="px-3 py-1 bg-white/20 backdrop-blur-md text-white text-label-bold rounded-full border border-white/30">MÔI TRƯỜNG</span>
+</div>
+<h1 class="font-h1 text-h1 text-white max-w-3xl leading-tight">Mùa Hè Xanh: Tái Tạo Hệ Sinh Thái Ven Biển 2024</h1>
+<p class="font-body-lg text-body-lg text-white/90 max-w-2xl italic">"Chung tay vì một đại dương xanh và tương lai bền vững của cộng đồng địa phương."</p>
+</div>
+</div>
+</section>
+<!-- Main Content Grid -->
+<div class="max-w-[1280px] mx-auto px-gutter mt-12 grid grid-cols-12 gap-gutter">
+<!-- Left Column: Details & Description -->
+<div class="col-span-12 lg:col-span-8 space-y-stack-lg">
+<!-- Quick Info Cards -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="bg-white p-4 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)] flex items-start gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="account_balance">account_balance</span>
+<div>
+<p class="text-label-bold text-slate-500">ĐƠN VỊ</p>
+<p class="font-body-md font-semibold text-primary">Đoàn Thanh Niên Đại Học Quốc Gia</p>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)] flex items-start gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="calendar_today">calendar_today</span>
+<div>
+<p class="text-label-bold text-slate-500">THỜI GIAN</p>
+<p class="font-body-md font-semibold text-primary">15/06 - 30/07/2024</p>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)] flex items-start gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+<div>
+<p class="text-label-bold text-slate-500">ĐỊA ĐIỂM</p>
+<p class="font-body-md font-semibold text-primary">Huyện Cần Giờ, TP. HCM</p>
+</div>
+</div>
+<div class="bg-white p-4 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)] flex items-start gap-3">
+<span class="material-symbols-outlined text-primary" data-icon="category">category</span>
+<div>
+<p class="text-label-bold text-slate-500">LOẠI HÌNH</p>
+<p class="font-body-md font-semibold text-primary">Tình nguyện Xã hội</p>
+</div>
+</div>
+</div>
+<!-- Description Section -->
+<div class="bg-white p-base md:p-stack-md rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<h2 class="font-h3 text-h3 text-primary mb-6">Mô tả chiến dịch</h2>
+<div class="space-y-4 text-slate-700 leading-relaxed">
+<p>Chiến dịch "Mùa Hè Xanh: Tái Tạo Hệ Sinh Thái Ven Biển 2024" là một sáng kiến trọng điểm nhằm khôi phục diện tích rừng ngập mặn và làm sạch bãi biển tại khu vực Cần Giờ. Đây là cơ hội để các bạn sinh viên không chỉ đóng góp sức lao động mà còn được học hỏi về bảo tồn đa dạng sinh học thông qua các buổi workshop thực tế.</p>
+<p>Trong suốt 45 ngày triển khai, chúng tôi tập trung vào 3 mục tiêu chính: Trồng 5.000 cây đước mới, tổ chức 10 buổi tuyên truyền ý thức bảo vệ môi trường cho người dân địa phương, và thu gom hơn 2 tấn rác thải nhựa tại các bãi bồi.</p>
+<div class="bg-surface-container-low p-6 rounded-lg border-l-4 border-primary mt-6">
+<h4 class="font-label-bold text-primary mb-2 uppercase">Quyền lợi tình nguyện viên:</h4>
+<ul class="list-disc list-inside space-y-2 text-body-sm">
+<li>Được cấp giấy chứng nhận tình nguyện cấp Đại học.</li>
+<li>Hỗ trợ chi phí ăn uống, di chuyển và lưu trú.</li>
+<li>Trang bị đồng phục, bảo hộ lao động đầy đủ.</li>
+<li>Trải nghiệm văn hóa địa phương đặc sắc.</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Timeline Section -->
+<div class="bg-white p-base md:p-stack-md rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<h2 class="font-h3 text-h3 text-primary mb-8">Lộ trình triển khai</h2>
+<div class="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-slate-200">
+<!-- Timeline Item 1 -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-primary text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[45%] p-4 rounded-lg bg-surface-container-low border border-outline-variant shadow-sm">
+<div class="flex items-center justify-between space-x-2 mb-1">
+<div class="font-bold text-primary">Giai đoạn 1: Chuẩn bị</div>
+<time class="text-xs font-medium text-slate-500">01/06 - 10/06</time>
+</div>
+<div class="text-slate-600 text-sm">Tập huấn kỹ năng, kiểm tra sức khỏe và chuẩn bị vật dụng cần thiết cho quân tình nguyện.</div>
+</div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-secondary text-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+<span class="material-symbols-outlined text-sm" data-icon="pending">pending</span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[45%] p-4 rounded-lg bg-white border border-outline-variant shadow-sm">
+<div class="flex items-center justify-between space-x-2 mb-1">
+<div class="font-bold text-primary">Giai đoạn 2: Thực hiện</div>
+<time class="text-xs font-medium text-slate-500">15/06 - 20/07</time>
+</div>
+<div class="text-slate-600 text-sm">Ra quân thực tế tại hiện trường, thực hiện trồng rừng và dọn dẹp bãi biển theo kế hoạch.</div>
+</div>
+</div>
+<!-- Timeline Item 3 -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-200 text-slate-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
+<span class="material-symbols-outlined text-sm" data-icon="flag">flag</span>
+</div>
+<div class="w-[calc(100%-4rem)] md:w-[45%] p-4 rounded-lg bg-white border border-outline-variant shadow-sm opacity-60">
+<div class="flex items-center justify-between space-x-2 mb-1">
+<div class="font-bold text-primary">Giai đoạn 3: Tổng kết</div>
+<time class="text-xs font-medium text-slate-500">25/07 - 30/07</time>
+</div>
+<div class="text-slate-600 text-sm">Đánh giá kết quả, tổ chức lễ bế mạc và cấp chứng nhận cho thành viên tham gia.</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Stats & Actions -->
+<div class="col-span-12 lg:col-span-4 space-y-stack-md">
+<!-- Progress Card -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)] sticky top-24">
+<h3 class="font-h3 text-h3 text-primary mb-6">Tiến độ hiện tại</h3>
+<div class="space-y-6">
+<!-- Volunteers -->
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="group">group</span>
+<span class="font-label-bold text-slate-500 uppercase">Tình nguyện viên</span>
+</div>
+<span class="text-h3 text-primary">156<span class="text-body-sm text-slate-400 font-normal"> / 200</span></span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 78%"></div>
+</div>
+</div>
+<!-- Fundraising -->
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="volunteer_activism">volunteer_activism</span>
+<span class="font-label-bold text-slate-500 uppercase">Gây quỹ</span>
+</div>
+<span class="text-h3 text-primary">45.5tr<span class="text-body-sm text-slate-400 font-normal"> / 60tr</span></span>
+</div>
+<div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 75%"></div>
+</div>
+<p class="text-xs text-slate-500 text-right italic font-medium">Đã hoàn thành 75.8% mục tiêu</p>
+</div>
+<!-- CTA Actions -->
+<div class="pt-6 space-y-3 border-t border-slate-100">
+<button class="w-full bg-primary text-white font-button text-button py-4 rounded-lg flex items-center justify-center gap-2 hover:bg-on-primary-fixed-variant transition-colors shadow-sm">
+<span class="material-symbols-outlined" data-icon="how_to_reg">how_to_reg</span>
+                                Đăng ký tham gia
+                            </button>
+<div class="grid grid-cols-2 gap-3">
+<button class="w-full bg-white border-2 border-secondary text-secondary font-button text-body-sm py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-secondary-container/20 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="payments">payments</span>
+                                    Đóng góp tài chính
+                                </button>
+<button class="w-full bg-white border-2 border-secondary text-secondary font-button text-body-sm py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-secondary-container/20 transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="inventory_2">inventory_2</span>
+                                    Quyên góp hiện vật
+                                </button>
+</div>
+</div>
+<!-- Transparency Note -->
+<div class="flex items-start gap-3 p-4 bg-surface-container rounded-lg">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="verified_user">verified_user</span>
+<p class="text-[12px] text-slate-600 leading-tight">Mọi đóng góp được quản lý minh bạch và công khai bởi Hội Sinh Viên trường. Báo cáo tài chính sẽ được cập nhật hàng tuần.</p>
+</div>
+</div>
+</div>
+<!-- Recent Supporters -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)]">
+<h4 class="font-label-bold text-slate-500 uppercase mb-4">Người đóng góp gần đây</h4>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Supporter" data-alt="A close-up portrait of a cheerful elderly woman, a university alumni, with kind eyes and silver hair. She is dressed in smart-casual attire. The background is a soft, warm domestic setting with books, evoking a sense of community support and long-term commitment to institutional values." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_56kzRvsKapFa2vGq6XFjWt4jGsdsyJZT4NhNtXT3N9ufJMiGv-eOyFijAflFpFVbqP7vD8pwBcMes9U_eCXmsfpxIn0VGHfB1zW9-wxCv-He3BezqYhTJLvlWFS3xFOHfb_tLqehQNirgy8Kpl-oAkxG6CJHBfQfURe7DxXPsrsNZ8j2BOAhf_rW5OOoUfdSxszN2BB5In0OwVApNwL6tvXuKDYPaCuz22D4ppkEPBmee_8Mka39cOdqYH1icX0s_HdAkO7qwlvC"/>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-primary">Nguyễn Văn A</p>
+<p class="text-xs text-slate-500">Đã đóng góp 500,000đ</p>
+</div>
+<span class="text-xs text-slate-400">2h trước</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden">
+<img alt="Supporter" data-alt="A portrait of a young female academic professional with glasses and a friendly smile, representing the energetic staff involvement in university programs. She has long brown hair and is wearing a professional navy blue blazer. The image style is bright, clean, and optimistic, aligned with high-end modern UI aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv9psJBgV3X0dkPWHR_iRejEScw9VyIhbCoVKeiPPn6uNRxPg-Usq3O473n-6ZtVL4hGPZAbKlxCs3LPaBbv_kjooNVxyU3eTS_F96av22Fuv-YdU60FFeEtBxd9s-nI_YuIVLG8IVLNJXGdz0KSTNz66FSOfDrmZF3qS5UzFn0TvyWQge9r7JFl2FKjKOK0Ljx7bbrH7Ynf6RliEKYvKTF3opaZ-oy5bnsUHLhI_VeqqAlxPIwoieRPjjaO0Q9oOQkzzEL-3OeIbJ"/>
+</div>
+<div class="flex-1">
+<p class="text-sm font-semibold text-primary">Trần Thị B</p>
+<p class="text-xs text-slate-500">Đã đăng ký tình nguyện</p>
+</div>
+<span class="text-xs text-slate-400">5h trước</span>
+</div>
+</div>
+<button class="w-full mt-4 py-2 text-primary font-label-bold text-xs hover:bg-slate-50 transition-colors rounded">Xem tất cả</button>
+</div>
+</div>
+</div>
+<!-- Related Campaigns Section -->
+<section class="max-w-[1280px] mx-auto px-gutter mt-20">
+<h2 class="font-h3 text-h3 text-primary mb-8">Chiến dịch tương tự</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Related Card 1 -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+<img class="w-full h-40 object-cover" data-alt="A vibrant, detailed close-up of young hands carefully placing a small green sprout into dark, rich fertile soil. The lighting is crisp and natural, highlighting the textures of the plant and the earth. This image represents hope and growth, maintaining the academic modernism aesthetic through clarity and focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASahWzu8DPT0QOV414bACQnmu6BgcdknYX-UWjn9sblaWn0QWTnExXs2wl7JHs50eZqKrbZjBf6rhyThzeZ6m3uDPxeQ9hav2U9eKIiWzIpZiwqKsoM73HeqBwDCmQw0sA2FkxbX_NyNYtA4ubxmq-eR_phThGz1ihxf7Ke5xi1IAxUCSRhy4sl3hmnEOSLsq1Acqilj5YFIE5StKtvb0Lif_LN0Edcdef1FnTEtAu6U-h4HHd7quHgMp_GBL9pGsQ974sQQkSp09L"/>
+<div class="p-4 space-y-3">
+<div class="flex justify-between">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">GIÁO DỤC</span>
+<span class="text-[10px] font-bold text-orange-500 uppercase tracking-widest">Chờ sơ duyệt</span>
+</div>
+<h4 class="font-semibold text-primary leading-tight line-clamp-1">Dạy chữ cho trẻ em vùng cao</h4>
+<p class="text-xs text-slate-600 line-clamp-2">Chương trình mang ánh sáng tri thức đến với các em nhỏ tại bản cao tỉnh Hà Giang...</p>
+<div class="pt-2">
+<div class="w-full bg-slate-100 h-1.5 rounded-full">
+<div class="bg-secondary h-full rounded-full" style="width: 45%"></div>
+</div>
+<div class="flex justify-between mt-2 text-[10px] text-slate-500">
+<span>45% mục tiêu</span>
+<span>12 ngày còn lại</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Related Card 2 -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+<img class="w-full h-40 object-cover" data-alt="A clean, clinical laboratory setting where student researchers are collaborating on a medical project. The environment is filled with modern scientific equipment, under bright, professional-grade lighting. The image conveys a sense of high-level academic research and social responsibility, fitting the university-led impact theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEQ6lUzl79QtbHXH6JzPVTq2GsGx8gJDoce6gigKiPqd0guP7VAczoTdS_aUQalQKqTzB1e8Fykum4jh6C3WUnNAOCZWljGfEgPXWcUDOcjEurhc5NkvroNqdY5WNxgWaFM3vB6dJE53r8TY6YehMjT-lFiR2YaDxcxgYq-0FakvmG57E0WpCLE-guZjfJeKGU_VTCiap2oLNkpkqhqGPcvLiimIyQarM4Nb7McDiK1UT5-Qo1vQiCIYpbNP1Z2YV3h0Qy--4XOB3L"/>
+<div class="p-4 space-y-3">
+<div class="flex justify-between">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Y TẾ</span>
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Đang diễn ra</span>
+</div>
+<h4 class="font-semibold text-primary leading-tight line-clamp-1">Khám bệnh cộng đồng 2024</h4>
+<p class="text-xs text-slate-600 line-clamp-2">Phối hợp cùng khoa Y tổ chức khám và cấp phát thuốc miễn phí cho người nghèo...</p>
+<div class="pt-2">
+<div class="w-full bg-slate-100 h-1.5 rounded-full">
+<div class="bg-secondary h-full rounded-full" style="width: 90%"></div>
+</div>
+<div class="flex justify-between mt-2 text-[10px] text-slate-500">
+<span>90% mục tiêu</span>
+<span>4 ngày còn lại</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Related Card 3 -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+<img class="w-full h-40 object-cover" data-alt="An artistic shots of university students organizing food supplies in a modern, well-lit community pantry. The focus is on the organized, systematic approach to charity, with neat stacks of goods and a clean, efficient workspace. The color palette is composed of soft neutrals with bright accents of blue and green." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjSEJbbghRE28CS9SKrYygwUlrN4RIYycXfth_1dkftdYW7-UA5QCbCr_D5IWCEanXAnhD-YuRgP23clGwBIDKvEnGeafurdTu9KkV27KQt-AENCOcmcEIx4O6VIXp2YFK6Ad10HmDct2TZ1rghRa2hagO16vXcKGliQ4gatmKJuQ6fl7LlNF0l8w9nsHGoYpLNLGBbsTF_xbLnrbvJCSzp297rCU-UZxzOjV-DHricCqp2TtHE8pRikgiBADaCSqKdxpqA1Itz-AZ"/>
+<div class="p-4 space-y-3">
+<div class="flex justify-between">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">AN SINH</span>
+<span class="text-[10px] font-bold text-secondary uppercase tracking-widest">Đang diễn ra</span>
+</div>
+<h4 class="font-semibold text-primary leading-tight line-clamp-1">Siêu thị 0 đồng sinh viên</h4>
+<p class="text-xs text-slate-600 line-clamp-2">Hỗ trợ nhu yếu phẩm cho các bạn sinh viên có hoàn cảnh khó khăn tại ký túc xá...</p>
+<div class="pt-2">
+<div class="w-full bg-slate-100 h-1.5 rounded-full">
+<div class="bg-secondary h-full rounded-full" style="width: 62%"></div>
+</div>
+<div class="flex justify-between mt-2 text-[10px] text-slate-500">
+<span>62% mục tiêu</span>
+<span>25 ngày còn lại</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary text-white pt-16 pb-8 border-t border-white/10">
+<div class="max-w-[1280px] mx-auto px-gutter grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="space-y-4">
+<span class="text-2xl font-bold tracking-tight">VolunteerHub</span>
+<p class="text-blue-100/70 text-sm leading-relaxed">Nền tảng kết nối tình nguyện và gây quỹ chuyên nghiệp cho khối Đại học và cộng đồng trẻ Việt Nam.</p>
+<div class="flex gap-4">
+<a class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="public">public</span>
+</a>
+<a class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="share">share</span>
+</a>
+</div>
+</div>
+<div>
+<h5 class="font-label-bold text-white mb-6 uppercase tracking-wider">Hỗ trợ</h5>
+<ul class="space-y-3 text-sm text-blue-100/70">
+<li><a class="hover:text-white transition-colors" href="#">Quy trình đăng ký</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Chính sách bảo mật</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Điều khoản sử dụng</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Câu hỏi thường gặp</a></li>
+</ul>
+</div>
+<div>
+<h5 class="font-label-bold text-white mb-6 uppercase tracking-wider">Đơn vị chủ quản</h5>
+<ul class="space-y-3 text-sm text-blue-100/70">
+<li>Hội Sinh viên TP. Hồ Chí Minh</li>
+<li>Ban Công tác Chính trị - Sinh viên</li>
+<li>Phòng Quan hệ Cộng đồng</li>
+</ul>
+</div>
+<div>
+<h5 class="font-label-bold text-white mb-6 uppercase tracking-wider">Bản tin</h5>
+<p class="text-xs text-blue-100/70 mb-4">Nhận thông báo về các chiến dịch mới nhất.</p>
+<div class="flex">
+<input class="bg-white/10 border-none rounded-l-lg text-sm w-full focus:ring-0" placeholder="Email của bạn" type="email"/>
+<button class="bg-secondary px-4 rounded-r-lg hover:bg-secondary/90 transition-colors">
+<span class="material-symbols-outlined text-white" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</div>
+<div class="max-w-[1280px] mx-auto px-gutter mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-blue-100/40">
+<p>© 2024 VolunteerHub. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-white transition-colors" href="#">Privacy</a>
+<a class="hover:text-white transition-colors" href="#">Terms</a>
+<a class="hover:text-white transition-colors" href="#">Cookies</a>
+</div>
+</div>
+</footer>
+</body></html>

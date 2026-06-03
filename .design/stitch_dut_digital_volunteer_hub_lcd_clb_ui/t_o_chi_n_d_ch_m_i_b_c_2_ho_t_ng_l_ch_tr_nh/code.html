@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Unity Academic - Hoạt động &amp; Lịch trình</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Public Sans', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .step-active {
+            @apply border-primary text-primary font-bold;
+        }
+        .step-inactive {
+            @apply border-outline-variant text-on-surface-variant;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(226, 232, 240, 1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#191c1d",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c3c6d2",
+                        "surface-tint": "#305ea0",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "secondary": "#006d37",
+                        "on-tertiary-fixed-variant": "#773305",
+                        "primary": "#002a58",
+                        "surface-container-high": "#e7e8e9",
+                        "primary-fixed": "#d6e3ff",
+                        "primary-container": "#004080",
+                        "inverse-surface": "#2e3132",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container": "#edeeef",
+                        "on-secondary-container": "#00743a",
+                        "tertiary-fixed": "#ffdbcb",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#a9c7ff",
+                        "surface-container-low": "#f3f4f5",
+                        "surface": "#f8f9fa",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#6bfe9c",
+                        "on-background": "#191c1d",
+                        "on-secondary-fixed": "#00210c",
+                        "tertiary-container": "#6f2d00",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "on-tertiary-container": "#f59561",
+                        "on-surface-variant": "#424750",
+                        "background": "#f8f9fa",
+                        "on-secondary-fixed-variant": "#005228",
+                        "on-primary-container": "#83aef5",
+                        "on-primary-fixed-variant": "#0e4686",
+                        "on-primary": "#ffffff",
+                        "surface-bright": "#f8f9fa",
+                        "secondary-fixed-dim": "#4ae183",
+                        "secondary-container": "#6bfe9c",
+                        "tertiary": "#4c1d00",
+                        "surface-dim": "#d9dadb",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-primary-fixed": "#001b3d",
+                        "on-tertiary-fixed": "#341100",
+                        "inverse-on-surface": "#f0f1f2",
+                        "outline": "#737781"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "container-max": "1280px",
+                        "base": "8px",
+                        "stack-md": "24px",
+                        "stack-sm": "12px",
+                        "stack-lg": "48px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "h1": ["Public Sans"],
+                        "h3": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "h2": ["Public Sans"],
+                        "body-sm": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "label-bold": ["Public Sans"],
+                        "body-md": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}],
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background">
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-0 h-full flex flex-col p-base h-screen w-64 border-r border-outline-variant bg-surface">
+<div class="flex flex-col gap-2 mb-8 px-4 py-6">
+<h1 class="font-h2 text-h2 font-bold text-primary">Unity Academic</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Organizer Portal</p>
+</div>
+<nav class="flex-grow flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 text-primary font-bold bg-secondary-container rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+<span class="font-body-md text-body-md">Chiến dịch của tôi</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-body-md text-body-md">Quản lý tình nguyện viên</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="verified">verified</span>
+<span class="font-body-md text-body-md">Xác minh đóng góp</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-body-md text-body-md">Báo cáo tổng kết</span>
+</a>
+</nav>
+<div class="mt-auto p-4 border-t border-outline-variant">
+<button class="w-full bg-primary text-on-primary font-button text-button py-3 rounded-lg hover:opacity-90 transition-all">
+                Nâng cấp tài khoản
+            </button>
+</div>
+</aside>
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 right-0 flex justify-between items-center h-16 px-gutter ml-64 w-[calc(100%-16rem)] bg-surface border-b border-outline-variant z-10">
+<div class="flex items-center gap-8">
+<span class="font-h3 text-h3 font-bold text-primary">Quản lý Chiến dịch</span>
+<nav class="flex gap-6">
+<a class="font-body-sm text-body-sm text-primary font-bold border-b-2 border-primary pb-1" href="#">Tổng quan</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Hướng dẫn</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-3 mr-4">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-lg font-button text-button active:scale-95 duration-150">
+                Tạo chiến dịch
+            </button>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img alt="Organizer Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a young university administrator in a modern office setting. The person has a friendly expression, wearing a smart casual blazer. The background is softly blurred with hints of academic bookshelves and large windows letting in natural sunlight, maintaining a high-end corporate aesthetic." src="https://lh3.googleusercontent.com/aida/AP1WRLsLpqY8ZfYSkV68Em97ZcjFiaYNg8o-XhS6Pw8UciWJeMQCMYWlwGOUcWpcxTFodSqUzW1F5K5201Z5pWtKdYBNQ6ItxVPLpBOeDw-3XOESVo1BEBc0t1M1ICo1JBS-gBzMHqeMeZW74KFCoIVzlypym17iieMBpaL-cZ-tX8j4DQ0rVI8ix_LIy4ijmCW03stsvVsJbTb7h4s3rEHlkCR8TAfw7mx8MAFMxkLOCkYs1h59CzZ-zveq9EwL"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-64 pt-16 min-h-screen bg-background">
+<div class="max-w-container-max mx-auto px-gutter py-stack-lg">
+<!-- Stepper Component -->
+<div class="mb-12">
+<div class="flex items-center justify-between max-w-4xl mx-auto">
+<!-- Step 1 Done -->
+<div class="flex flex-col items-center gap-2 group">
+<div class="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-on-secondary">
+<span class="material-symbols-outlined" data-icon="check">check</span>
+</div>
+<span class="font-label-bold text-label-bold text-secondary">Thông tin chung</span>
+</div>
+<div class="flex-grow h-px bg-secondary mx-4"></div>
+<!-- Step 2 Active -->
+<div class="flex flex-col items-center gap-2">
+<div class="w-10 h-10 rounded-full border-2 border-primary flex items-center justify-center text-primary font-bold">
+                            2
+                        </div>
+<span class="font-label-bold text-label-bold text-primary">Hoạt động &amp; Lịch trình</span>
+</div>
+<div class="flex-grow h-px bg-outline-variant mx-4"></div>
+<!-- Step 3 Pending -->
+<div class="flex flex-col items-center gap-2 opacity-50">
+<div class="w-10 h-10 rounded-full border-2 border-outline-variant flex items-center justify-center text-on-surface-variant">
+                            3
+                        </div>
+<span class="font-label-bold text-label-bold text-on-surface-variant">Tài chính &amp; Ngân sách</span>
+</div>
+<div class="flex-grow h-px bg-outline-variant mx-4"></div>
+<!-- Step 4 Pending -->
+<div class="flex flex-col items-center gap-2 opacity-50">
+<div class="w-10 h-10 rounded-full border-2 border-outline-variant flex items-center justify-center text-on-surface-variant">
+                            4
+                        </div>
+<span class="font-label-bold text-label-bold text-on-surface-variant">Xác nhận &amp; Gửi duyệt</span>
+</div>
+</div>
+</div>
+<!-- Content Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+<div class="p-8 border-b border-outline-variant bg-surface-container-low">
+<h2 class="font-h2 text-h2 text-primary">Hoạt động &amp; Lịch trình</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Xác định các mốc thời gian quan trọng và kế hoạch triển khai chi tiết cho chiến dịch của bạn.</p>
+</div>
+<div class="p-8 grid grid-cols-12 gap-gutter">
+<!-- Left Column: Date Range & Description -->
+<div class="col-span-12 lg:col-span-5 space-y-8">
+<div>
+<label class="block font-label-bold text-label-bold text-primary mb-3">THỜI GIAN CHIẾN DỊCH TỔNG THỂ</label>
+<div class="grid grid-cols-2 gap-4">
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant" data-icon="calendar_today">calendar_today</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-sm text-body-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="Ngày bắt đầu" type="text" value="20/10/2023"/>
+</div>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant" data-icon="event">event</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-sm text-body-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="Ngày kết thúc" type="text" value="20/11/2023"/>
+</div>
+</div>
+<p class="mt-2 font-body-sm text-body-sm text-on-surface-variant italic">Lưu ý: Thời gian tối thiểu là 7 ngày và tối đa là 90 ngày.</p>
+</div>
+<div>
+<label class="block font-label-bold text-label-bold text-primary mb-3">MÔ TẢ KẾ HOẠCH CHI TIẾT</label>
+<textarea class="w-full p-4 bg-surface border border-outline-variant rounded-lg font-body-sm text-body-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="Trình bày chi tiết các giai đoạn thực hiện, phương thức vận động và cách thức phối hợp..." rows="8"></textarea>
+</div>
+</div>
+<!-- Right Column: Interactive Timeline -->
+<div class="col-span-12 lg:col-span-7 space-y-6">
+<div class="flex justify-between items-end mb-2">
+<label class="block font-label-bold text-label-bold text-primary">CÁC MỐC THỜI GIAN QUAN TRỌNG</label>
+<button class="flex items-center gap-1 text-secondary font-button text-button hover:underline transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span> Thêm mốc thời gian
+                            </button>
+</div>
+<div class="space-y-4">
+<!-- Timeline Item 1 -->
+<div class="flex gap-4 p-4 bg-surface border border-outline-variant rounded-lg hover:border-primary/30 transition-all group">
+<div class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="school">school</span>
+</div>
+<div class="w-px h-full bg-outline-variant"></div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<input class="font-label-bold text-label-bold text-on-surface bg-transparent border-none p-0 focus:ring-0 w-2/3" type="text" value="BUỔI TẬP HUẤN TÌNH NGUYỆN VIÊN"/>
+<span class="font-body-sm text-body-sm text-on-surface-variant">22/10/2023</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1">Hướng dẫn kỹ năng giao tiếp và quy trình gây quỹ cho 50 sinh viên nòng cốt.</p>
+<div class="flex gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span></button>
+<button class="text-on-surface-variant hover:text-error"><span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span></button>
+</div>
+</div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="flex gap-4 p-4 bg-surface border border-outline-variant rounded-lg hover:border-primary/30 transition-all group">
+<div class="flex flex-col items-center">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-primary flex items-center justify-center mb-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<div class="w-px h-full bg-outline-variant"></div>
+</div>
+<div class="flex-grow">
+<div class="flex justify-between items-start">
+<input class="font-label-bold text-label-bold text-on-surface bg-transparent border-none p-0 focus:ring-0 w-2/3" type="text" value="LỄ RA QUÂN &amp; KICK-OFF"/>
+<span class="font-body-sm text-body-sm text-on-surface-variant">25/10/2023</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-1">Sự kiện truyền thông chính thức tại sảnh tòa nhà trung tâm.</p>
+<div class="flex gap-2 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span></button>
+<button class="text-on-surface-variant hover:text-error"><span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span></button>
+</div>
+</div>
+</div>
+<!-- Timeline Item 3 (Interactive Form) -->
+<div class="p-6 bg-primary-container/5 border-2 border-dashed border-primary/30 rounded-lg">
+<div class="grid grid-cols-2 gap-4 mb-4">
+<div class="col-span-2 sm:col-span-1">
+<label class="block text-[10px] font-bold text-primary mb-1">TÊN HOẠT ĐỘNG</label>
+<input class="w-full px-3 py-2 bg-white border border-outline-variant rounded font-body-sm text-body-sm outline-none" placeholder="Ví dụ: Ngày hội quyên góp..." type="text"/>
+</div>
+<div class="col-span-2 sm:col-span-1">
+<label class="block text-[10px] font-bold text-primary mb-1">NGÀY THỰC HIỆN</label>
+<input class="w-full px-3 py-2 bg-white border border-outline-variant rounded font-body-sm text-body-sm outline-none" type="date"/>
+</div>
+</div>
+<textarea class="w-full p-3 bg-white border border-outline-variant rounded font-body-sm text-body-sm outline-none mb-4" placeholder="Mô tả ngắn gọn về hoạt động..." rows="2"></textarea>
+<div class="flex justify-end gap-3">
+<button class="px-4 py-2 font-button text-[13px] text-on-surface-variant hover:bg-surface-container-high rounded transition-colors">Hủy</button>
+<button class="px-4 py-2 font-button text-[13px] bg-primary text-on-primary rounded shadow-sm">Lưu mốc thời gian</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="px-8 py-6 bg-surface border-t border-outline-variant flex justify-between items-center">
+<button class="flex items-center gap-2 px-6 py-3 font-button text-button text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+                        Quay lại
+                    </button>
+<div class="flex gap-4">
+<button class="px-8 py-3 font-button text-button border border-outline-variant text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all">
+                            Lưu nháp
+                        </button>
+<button class="flex items-center gap-2 px-8 py-3 font-button text-button bg-primary text-on-primary rounded-lg shadow-lg hover:shadow-primary/20 transition-all active:scale-95">
+                            Tiếp theo
+                            <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Contextual Tip -->
+<div class="mt-8 flex items-start gap-4 p-4 bg-tertiary-fixed/30 border border-tertiary-fixed rounded-xl max-w-2xl">
+<span class="material-symbols-outlined text-tertiary-container" data-icon="lightbulb">lightbulb</span>
+<div>
+<h4 class="font-label-bold text-label-bold text-tertiary-container">MẸO NHỎ</h4>
+<p class="font-body-sm text-body-sm text-on-tertiary-fixed-variant mt-1">Các chiến dịch có lịch trình rõ ràng và các sự kiện kick-off thường thu hút sự tham gia của tình nguyện viên cao hơn 40% so với các chiến dịch chỉ vận động trực tuyến.</p>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Simple micro-interaction for the timeline items
+        document.querySelectorAll('.group').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.classList.add('shadow-md');
+            });
+            item.addEventListener('mouseleave', () => {
+                item.classList.remove('shadow-md');
+            });
+        });
+
+        // Toggle focus state visual for inputs
+        const inputs = document.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('border-primary');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.classList.remove('border-primary');
+            });
+        });
+    </script>
+</body></html>

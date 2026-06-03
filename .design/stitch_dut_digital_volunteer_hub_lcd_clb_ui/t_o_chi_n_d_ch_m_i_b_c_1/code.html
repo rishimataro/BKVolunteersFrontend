@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .stepper-line {
+            height: 2px;
+            background: #c3c6d2;
+            flex-grow: 1;
+            margin: 0 16px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #c3c6d2;
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c3c6d2",
+                        "on-secondary-container": "#00743a",
+                        "tertiary": "#4c1d00",
+                        "on-primary-fixed-variant": "#0e4686",
+                        "primary-fixed": "#d6e3ff",
+                        "primary-container": "#004080",
+                        "on-surface-variant": "#424750",
+                        "secondary-fixed-dim": "#4ae183",
+                        "on-primary": "#ffffff",
+                        "background": "#f8f9fa",
+                        "on-tertiary-fixed-variant": "#773305",
+                        "primary": "#002a58",
+                        "outline": "#737781",
+                        "surface": "#f8f9fa",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#a9c7ff",
+                        "on-secondary-fixed": "#00210c",
+                        "tertiary-fixed": "#ffdbcb",
+                        "on-background": "#191c1d",
+                        "surface-container-low": "#f3f4f5",
+                        "secondary": "#006d37",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#305ea0",
+                        "surface-container": "#edeeef",
+                        "on-surface": "#191c1d",
+                        "on-primary-container": "#83aef5",
+                        "inverse-on-surface": "#f0f1f2",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#6f2d00",
+                        "surface-container-high": "#e7e8e9",
+                        "on-tertiary-fixed": "#341100",
+                        "surface-dim": "#d9dadb",
+                        "surface-bright": "#f8f9fa",
+                        "surface-variant": "#e1e3e4",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "on-primary-fixed": "#001b3d",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#6bfe9c",
+                        "secondary-fixed": "#6bfe9c",
+                        "inverse-surface": "#2e3132",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "error": "#ba1a1a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#005228",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-tertiary-container": "#f59561"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "stack-lg": "48px",
+                        "stack-md": "24px",
+                        "gutter": "24px",
+                        "stack-sm": "12px",
+                        "base": "8px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "label-bold": ["Public Sans"],
+                        "button": ["Public Sans"],
+                        "body-md": ["Public Sans"],
+                        "body-lg": ["Public Sans"],
+                        "body-sm": ["Public Sans"],
+                        "h3": ["Public Sans"],
+                        "h1": ["Public Sans"],
+                        "h2": ["Public Sans"]
+                    },
+                    "fontSize": {
+                        "label-bold": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "button": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "h3": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "h1": ["40px", {"lineHeight": "48px", "fontWeight": "700"}],
+                        "h2": ["32px", {"lineHeight": "40px", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface antialiased overflow-hidden h-screen flex">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col p-base h-screen w-64 border-r border-outline-variant bg-surface dark:bg-surface">
+<div class="mb-stack-lg px-4 pt-4">
+<h1 class="font-h2 text-h2 font-bold text-primary dark:text-primary-fixed-dim">Unity Academic</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Organizer Portal</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 text-primary font-bold bg-secondary-container rounded-lg" href="#">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+<span class="font-body-md text-body-md">Chiến dịch của tôi</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-body-md text-body-md">Quản lý tình nguyện viên</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="verified">verified</span>
+<span class="font-body-md text-body-md">Xác minh đóng góp</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-body-md text-body-md">Báo cáo tổng kết</span>
+</a>
+</nav>
+<div class="mt-auto p-4 border-t border-outline-variant">
+<button class="w-full py-3 px-4 bg-primary text-on-primary rounded-lg font-button text-button hover:opacity-90 transition-all">
+                Nâng cấp tài khoản
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 ml-64 flex flex-col h-screen">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center h-16 px-gutter bg-surface border-b border-outline-variant">
+<div class="flex items-center gap-stack-md">
+<span class="font-h3 text-h3 font-bold text-primary">Quản lý Chiến dịch</span>
+<div class="hidden md:flex gap-4 ml-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Tổng quan</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm" href="#">Hướng dẫn</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-surface-container-high overflow-hidden border border-outline-variant">
+<img alt="Organizer Profile" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLva0K8fXZTV4FB0UN_tdZtoCHq5cYvMSwMXbtPHYgxAMBoGVnuk6oVH8ZVjSCHyPmAg_LbFM3ZlmvyJoXeS1PVxDkDjA8EtLgf31g6qGdx2n-DL7r73HMrQqMSKrkOMaZ1R-BnP3Ex3C6u70hKZ1_bPjhProf-dd7WEMgJdD7pmK1RQy4ToaSem2npWljsmrGV_rq1CuCy7IjlR8X0H_OHsgLx3L9H0dU8Rc95gF8zzOVuSVQItaa_zm9yj"/>
+</div>
+</div>
+</header>
+<!-- Multi-step Wizard Container -->
+<main class="flex-1 overflow-y-auto custom-scrollbar bg-background">
+<div class="max-w-[900px] mx-auto py-stack-lg px-gutter">
+<!-- Stepper -->
+<div class="mb-stack-lg flex items-center justify-between">
+<div class="flex flex-col items-center gap-2 group cursor-pointer">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-primary text-on-primary font-bold shadow-md">1</div>
+<span class="font-label-bold text-label-bold text-primary">Thông tin chung</span>
+</div>
+<div class="stepper-line"></div>
+<div class="flex flex-col items-center gap-2 opacity-40">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-highest text-on-surface-variant font-bold border border-outline-variant">2</div>
+<span class="font-label-bold text-label-bold text-on-surface-variant">Hoạt động &amp; Lịch trình</span>
+</div>
+<div class="stepper-line"></div>
+<div class="flex flex-col items-center gap-2 opacity-40">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-highest text-on-surface-variant font-bold border border-outline-variant">3</div>
+<span class="font-label-bold text-label-bold text-on-surface-variant">Tuyển tình nguyện viên</span>
+</div>
+<div class="stepper-line"></div>
+<div class="flex flex-col items-center gap-2 opacity-40">
+<div class="w-10 h-10 rounded-full flex items-center justify-center bg-surface-container-highest text-on-surface-variant font-bold border border-outline-variant">4</div>
+<span class="font-label-bold text-label-bold text-on-surface-variant">Tài liệu &amp; Hoàn tất</span>
+</div>
+</div>
+<!-- Form Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0px_4px_12px_rgba(0,0,0,0.05)] p-stack-md">
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Header Info Section -->
+<div class="col-span-12 mb-4 border-b border-outline-variant pb-4">
+<h2 class="font-h3 text-h3 text-primary">Bước 1: Thông tin cơ bản</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Cung cấp các thông tin nền tảng để tình nguyện viên và nhà tài trợ dễ dàng nhận diện chiến dịch của bạn.</p>
+</div>
+<!-- Left Column: Image Upload -->
+<div class="col-span-12 lg:col-span-4">
+<label class="block font-label-bold text-label-bold text-on-surface mb-2">Ảnh bìa chiến dịch</label>
+<div class="relative group cursor-pointer border-2 border-dashed border-outline-variant rounded-lg aspect-[3/4] flex flex-col items-center justify-center bg-surface-container hover:bg-surface-container-high hover:border-primary transition-all overflow-hidden">
+<img class="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-40 transition-opacity" data-alt="A professional high-resolution photograph of diverse university students working together on a community service project. The lighting is bright and natural, reflecting an optimistic and academic atmosphere. The composition is clean with soft focus in the background, highlighting the unity and collaborative spirit. Academic blue and emerald green tones are subtly integrated into their clothing and surrounding elements." id="cover-preview" src="https://lh3.googleusercontent.com/aida/AP1WRLupygeGNal6GlpV2nVUSQ54HoiIBHKjk7yETkkZ3XnVHUtWm9wUkGDIuOnEkS0DemiAtaeczQTjqaeWzsJKKFcq35EyrJr-ujOQPbH4vnLwoOrtZL4aVJgTBcFFCJoLXQa0MYoMTLya5UNrtD-HuovI_tdhp1mZorHjsL1NMntw6y6RjB9KpkIDgvpxNHe6_XVzWEg8HtTpIXHGCo_oYGWVLNeyEu2JnljxarK-1giS4iJ6QkN5t_ryLMSZ"/>
+<div class="relative z-10 flex flex-col items-center p-4 text-center">
+<span class="material-symbols-outlined text-primary mb-2 text-4xl" data-icon="add_photo_alternate">add_photo_alternate</span>
+<p class="font-label-bold text-label-bold text-primary uppercase">Tải ảnh lên</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Kích thước tối ưu 1200x1600px. Định dạng JPG, PNG.</p>
+</div>
+</div>
+</div>
+<!-- Right Column: Form Fields -->
+<div class="col-span-12 lg:col-span-8 space-y-stack-sm">
+<div class="space-y-1">
+<label class="block font-label-bold text-label-bold text-on-surface" for="campaign-name">Tên chiến dịch *</label>
+<input class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md bg-surface" id="campaign-name" placeholder="Ví dụ: Mùa hè xanh 2024 - Unity Academic" type="text"/>
+</div>
+<div class="space-y-1">
+<label class="block font-label-bold text-label-bold text-on-surface" for="campaign-slogan">Slogan/Mô tả ngắn *</label>
+<input class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md bg-surface" id="campaign-slogan" placeholder="Câu khẩu hiệu truyền cảm hứng cho chiến dịch" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="block font-label-bold text-label-bold text-on-surface">Đơn vị tổ chức</label>
+<div class="w-full px-4 py-3 rounded-lg border border-outline-variant bg-surface-container-low font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="account_balance">account_balance</span>
+                                        CLB Tình nguyện Unity Academic
+                                    </div>
+</div>
+<div class="space-y-1">
+<label class="block font-label-bold text-label-bold text-on-surface" for="campaign-type">Loại hình hoạt động *</label>
+<select class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md bg-surface" id="campaign-type">
+<option value="">Chọn loại hình</option>
+<option value="education">Giáo dục &amp; Trẻ em</option>
+<option value="environment">Môi trường &amp; Xanh hóa</option>
+<option value="health">Y tế &amp; Sức khỏe</option>
+<option value="social">An sinh xã hội</option>
+</select>
+</div>
+</div>
+<div class="space-y-1">
+<label class="block font-label-bold text-label-bold text-on-surface" for="campaign-desc">Mô tả chi tiết *</label>
+<textarea class="w-full px-4 py-3 rounded-lg border border-outline-variant focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md bg-surface resize-none custom-scrollbar" id="campaign-desc" placeholder="Trình bày mục đích, ý nghĩa và những giá trị mà chiến dịch mang lại cho cộng đồng..." rows="6"></textarea>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Navigation -->
+<div class="mt-stack-lg flex items-center justify-between pt-stack-md border-t border-outline-variant">
+<button class="px-6 py-3 flex items-center gap-2 font-button text-button text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-lg transition-all">
+<span class="material-symbols-outlined" data-icon="save">save</span>
+                        Lưu nháp
+                    </button>
+<div class="flex items-center gap-4">
+<span class="text-on-surface-variant font-body-sm text-body-sm italic">* Trường bắt buộc</span>
+<button class="bg-primary text-on-primary px-10 py-3 rounded-lg font-button text-button flex items-center gap-2 shadow-md hover:opacity-90 active:scale-95 transition-all">
+                            Tiếp theo
+                            <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        // Simple micro-interaction for the next button
+        document.querySelector('button.bg-primary').addEventListener('click', function() {
+            this.innerHTML = '<span class="material-symbols-outlined animate-spin" data-icon="sync">sync</span> Đang lưu...';
+            setTimeout(() => {
+                this.innerHTML = 'Tiếp theo <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>';
+            }, 1000);
+        });
+
+        // Toggle hover effect on form fields
+        const inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.querySelector('label').classList.add('text-primary');
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.querySelector('label').classList.remove('text-primary');
+            });
+        });
+    </script>
+</body></html>
