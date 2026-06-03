@@ -13,9 +13,9 @@ export default {
         },
         extend: {
             fontFamily: {
-                sans: ['"Source Serif 4"', '"Source Serif Pro"', ...defaultTheme.fontFamily.serif],
-                heading: ['"Libre Baskerville"', ...defaultTheme.fontFamily.serif],
-                mono: ['"IBM Plex Mono"', ...defaultTheme.fontFamily.mono],
+                sans: ['Inter', 'system-ui', 'sans-serif'],
+                heading: ['Lexend', 'system-ui', 'sans-serif'],
+                mono: ['Inter', 'system-ui', 'sans-serif'],
             },
             colors: {
                 'bk-bg': '#f3f4f6',
