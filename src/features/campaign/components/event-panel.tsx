@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from 'react-router';
 import { TicketCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,6 +28,7 @@ interface EventPanelProps {
     onRejectRegistration: (registrationId: string) => void;
     onCheckInRegistration: (registrationId: string) => void;
     onCompleteRegistration: (registrationId: string) => void;
+    managementHref?: string;
 }
 
 export const EventPanel: React.FC<EventPanelProps> = ({
@@ -42,13 +44,24 @@ export const EventPanel: React.FC<EventPanelProps> = ({
     onRejectRegistration,
     onCheckInRegistration,
     onCompleteRegistration,
+    managementHref,
 }) => (
     <div className="space-y-4 border-t border-slate-200 pt-4">
-        <div className="flex items-center gap-2">
-            <TicketCheck className="size-4 text-blue-700" />
-            <h4 className="text-sm font-semibold text-slate-900">
-                Vận hành tuyển TNV
-            </h4>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+                <TicketCheck className="size-4 text-blue-700" />
+                <h4 className="text-sm font-semibold text-slate-900">
+                    Vận hành tuyển TNV
+                </h4>
+            </div>
+            {managementHref ? (
+                <Link
+                    to={managementHref}
+                    className="inline-flex h-9 items-center justify-center rounded-md border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+                >
+                    Mở trang quản lý tình nguyện viên
+                </Link>
+            ) : null}
         </div>
         <select
             value={eventModuleId}

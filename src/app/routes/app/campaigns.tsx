@@ -4708,6 +4708,13 @@ const CampaignsScreen = ({ mode }: { mode: 'manage' | 'create' }) => {
                                         onCompleteRegistration={
                                             onCompleteRegistration
                                         }
+                                        managementHref={
+                                            eventModuleId
+                                                ? paths.app.eventManagement.getHref(
+                                                      eventModuleId,
+                                                  )
+                                                : undefined
+                                        }
                                     />
                                 ) : null}
                             </section>
