@@ -9,6 +9,10 @@ const mockUseUser = vi.fn();
 const getApprovalCampaignDetail = vi.fn();
 const addApprovalComment = vi.fn();
 const approvalTransition = vi.fn();
+const getPublicCampaignDetail = vi.fn();
+const createEventRegistration = vi.fn();
+const createItemPledge = vi.fn();
+const getItemTargets = vi.fn();
 
 vi.mock('@/components/ui/notifications', () => ({
     useNotifications: () => ({
@@ -34,16 +38,18 @@ vi.mock('@/features/campaign/api/approval', () => ({
 }));
 
 vi.mock('@/features/campaign/api/public', () => ({
-    getPublicCampaignDetail: vi.fn(),
+    getPublicCampaignDetail: (...args: unknown[]) =>
+        getPublicCampaignDetail(...args),
 }));
 
 vi.mock('@/features/campaign/api/events', () => ({
-    createEventRegistration: vi.fn(),
+    createEventRegistration: (...args: unknown[]) =>
+        createEventRegistration(...args),
 }));
 
 vi.mock('@/features/campaign/api/item-donations', () => ({
-    createItemPledge: vi.fn(),
-    getItemTargets: vi.fn(),
+    createItemPledge: (...args: unknown[]) => createItemPledge(...args),
+    getItemTargets: (...args: unknown[]) => getItemTargets(...args),
 }));
 
 describe('AppCampaignDetailRoute', () => {
@@ -106,6 +112,52 @@ describe('AppCampaignDetailRoute', () => {
             ],
             cover_image_url: 'https://example.com/cover.jpg',
         });
+        getPublicCampaignDetail.mockResolvedValue({
+            id: 'cmp-public-1',
+            slug: 'mua-he-xanh-dak-lak',
+            title: 'Chiến dịch Mùa hè xanh 2024 - Đắk Lắk',
+            summary: 'Hỗ trợ cộng đồng tại địa phương.',
+            description:
+                'Triển khai hỗ trợ cộng đồng, tập huấn kỹ năng và nâng cấp hạ tầng cơ bản.',
+            beneficiary: 'Cộng đồng địa phương',
+            status: 'ONGOING',
+            scope_type: 'PUBLIC',
+            start_at: '2026-06-01T00:00:00.000Z',
+            end_at: '2026-07-15T00:00:00.000Z',
+            cover_image_url: 'https://example.com/cover.jpg',
+            organization: {
+                id: 'org-1',
+                code: 'LCD-CN',
+                name: 'Liên chi đoàn Khoa Công nghệ',
+                type: 'FACULTY',
+            },
+            modules: [
+                {
+                    id: 'm-1',
+                    type: 'event',
+                    title: 'Ra quân địa phương',
+                    description: 'Tập trung triển khai hoạt động tại địa bàn.',
+                    status: 'ACTIVE',
+                    start_at: '2026-06-01T00:00:00.000Z',
+                    end_at: '2026-06-20T00:00:00.000Z',
+                    progress: {
+                        current: 54,
+                        target: 120,
+                    },
+                    cta: {
+                        enabled: true,
+                        label: 'Đăng ký tham gia sự kiện',
+                    },
+                    cover_image_url: null,
+                    settings: { quota: 120, location: 'Tòa A1' },
+                },
+            ],
+            progress: {
+                percent: 45,
+                label: '45% tiến độ',
+            },
+        });
+        getItemTargets.mockResolvedValue([]);
     });
 
     it('renders the audit detail view for school board reviewers', async () => {
@@ -136,5 +188,44 @@ describe('AppCampaignDetailRoute', () => {
             screen.getByRole('button', { name: /phê duyệt chiến dịch/i }),
         ).toBeTruthy();
         expect(screen.getByText('Hồ sơ đính kèm')).toBeTruthy();
+    });
+    it('renders the public management detail view for Liên chi đoàn', async () => {
+        mockUseUser.mockReturnValue({
+            data: {
+                id: '2',
+                role: 'LCD',
+                organization: {
+                    id: 'org-1',
+                    name: 'Liên chi đoàn Khoa Công nghệ',
+                    type: 'FACULTY',
+                },
+            },
+        });
+
+        render(
+            <MemoryRouter
+                initialEntries={['/app/campaigns/mua-he-xanh-dak-lak']}
+            >
+                <Routes>
+                    <Route
+                        path="/app/campaigns/:slug"
+                        element={<AppCampaignDetailRoute />}
+                    />
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByText('Chiến dịch Mùa hè xanh 2024 - Đắk Lắk'),
+            ).toBeTruthy();
+        });
+
+        expect(getApprovalCampaignDetail).not.toHaveBeenCalled();
+        expect(getPublicCampaignDetail).toHaveBeenCalledWith(
+            'mua-he-xanh-dak-lak',
+        );
+        expect(screen.queryByText(/Kế hoạch chi tiết/i)).toBeNull();
+        expect(screen.getByText(/Chiến dịch công khai/i)).toBeTruthy();
     });
 });

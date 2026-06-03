@@ -47,21 +47,13 @@ export const AppCampaignDetailRoute = () => {
     const [searchParams] = useSearchParams();
     const role = user.data?.role;
 
-    if (role === ROLES.DOANTRUONG || role === ROLES.LCD) {
+    if (role === ROLES.DOANTRUONG) {
         return (
             <ApprovalCampaignDetailView
                 approvalId={searchParams.get('approvalId')}
                 role={role}
-                backHref={
-                    role === ROLES.DOANTRUONG
-                        ? paths.app.dashboard.getHref()
-                        : paths.app.campaigns.getHref()
-                }
-                backLabel={
-                    role === ROLES.DOANTRUONG
-                        ? 'Quay lại tổng quan'
-                        : 'Quay lại danh sách phê duyệt'
-                }
+                backHref={paths.app.dashboard.getHref()}
+                backLabel="Quay lại tổng quan"
             />
         );
     }
