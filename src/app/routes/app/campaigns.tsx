@@ -4633,6 +4633,13 @@ const CampaignsScreen = ({ mode }: { mode: 'manage' | 'create' }) => {
                                         onUnmatchTransaction={
                                             onUnmatchTransaction
                                         }
+                                        managementHref={
+                                            fundraisingModuleId
+                                                ? paths.app.fundraisingManagement.getHref(
+                                                      fundraisingModuleId,
+                                                  )
+                                                : undefined
+                                        }
                                     />
                                 ) : null}
 

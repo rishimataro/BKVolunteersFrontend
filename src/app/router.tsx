@@ -248,6 +248,15 @@ export const AppRouter = () => {
                         ),
                 },
                 {
+                    path: paths.app.fundraisingManagement.path,
+                    lazy: () =>
+                        import('@/app/routes/app/fundraising-management.tsx').then(
+                            (m) => ({
+                                Component: m.FundraisingManagementRoute,
+                            }),
+                        ),
+                },
+                {
                     path: paths.app.certificates.campaigns.path,
                     lazy: () =>
                         import('@/app/routes/app/campaign-certificates.tsx').then(

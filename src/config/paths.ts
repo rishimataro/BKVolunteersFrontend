@@ -124,6 +124,10 @@ export const paths = {
             path: 'events/:moduleId',
             getHref: (moduleId: string) => `/app/events/${moduleId}`,
         },
+        fundraisingManagement: {
+            path: 'fundraising/:moduleId',
+            getHref: (moduleId: string) => `/app/fundraising/${moduleId}`,
+        },
         certificates: {
             path: 'certificates',
             getHref: () => '/app/certificates',

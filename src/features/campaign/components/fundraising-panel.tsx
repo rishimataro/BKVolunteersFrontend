@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from 'react-router';
 import { CircleDollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,6 +41,7 @@ interface FundraisingPanelProps {
     onRejectDonation: (donationId: string) => void;
     onAttachTransaction: (transactionId: string, donationId: string) => void;
     onUnmatchTransaction: (transactionId: string) => void;
+    managementHref?: string;
 }
 
 export const FundraisingPanel: React.FC<FundraisingPanelProps> = ({
@@ -56,6 +58,7 @@ export const FundraisingPanel: React.FC<FundraisingPanelProps> = ({
     onRejectDonation,
     onAttachTransaction,
     onUnmatchTransaction,
+    managementHref,
 }) => {
     const [selectedDonationByTransaction, setSelectedDonationByTransaction] =
         React.useState<Record<string, string>>({});
@@ -70,11 +73,21 @@ export const FundraisingPanel: React.FC<FundraisingPanelProps> = ({
 
     return (
         <div className="space-y-4 border-t border-slate-200 pt-4">
-            <div className="flex items-center gap-2">
-                <CircleDollarSign className="size-4 text-blue-700" />
-                <h4 className="text-sm font-semibold text-slate-900">
-                    Vận hành gây quỹ
-                </h4>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                    <CircleDollarSign className="size-4 text-blue-700" />
+                    <h4 className="text-sm font-semibold text-slate-900">
+                        Vận hành gây quỹ
+                    </h4>
+                </div>
+                {managementHref ? (
+                    <Link
+                        to={managementHref}
+                        className="inline-flex h-9 items-center justify-center rounded-md border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+                    >
+                        Mở trang xác minh đóng góp
+                    </Link>
+                ) : null}
             </div>
             <select
                 value={fundraisingModuleId}
