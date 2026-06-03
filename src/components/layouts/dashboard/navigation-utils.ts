@@ -1,20 +1,20 @@
+import * as React from 'react';
 import {
-    LayoutDashboard,
-    Heart,
-    Compass,
-    Settings,
-    FileText,
     BarChart3,
-    Building2,
-    ScrollText,
-    Cpu,
     Banknote,
-    User,
+    Building2,
+    Compass,
+    Cpu,
+    FileText,
+    Heart,
     History,
+    LayoutDashboard,
+    ScrollText,
+    Settings,
+    User,
     Users,
     type LucideIcon,
 } from 'lucide-react';
-import * as React from 'react';
 
 import { paths } from '@/config/paths';
 import { ROLES, useAuthorization, useUser } from '@/features/auth';
@@ -25,99 +25,165 @@ export type SideNavigationItem = {
     icon: LucideIcon;
 };
 
+type AllowedDashboardPathMatcher = {
+    match: 'exact' | 'prefix';
+    value: string;
+};
+
+const roleAllowedDashboardPaths: Partial<
+    Record<string, AllowedDashboardPathMatcher[]>
+> = {
+    [ROLES.DOANTRUONG]: [
+        { match: 'exact', value: paths.app.dashboard.getHref() },
+        { match: 'exact', value: paths.app.adminOrganizations.getHref() },
+        { match: 'exact', value: paths.app.users.getHref() },
+        { match: 'exact', value: paths.app.users.dataTransfer.getHref() },
+        { match: 'exact', value: paths.app.changePassword.getHref() },
+        {
+            match: 'prefix',
+            value: `${paths.app.campaigns.getHref()}/`,
+        },
+    ],
+};
+
+export const isDashboardPathAllowedForRole = (
+    role: string | undefined,
+    pathname: string,
+) => {
+    if (!role) {
+        return true;
+    }
+
+    const matchers = roleAllowedDashboardPaths[role];
+    if (!matchers) {
+        return true;
+    }
+
+    return matchers.some((matcher) =>
+        matcher.match === 'exact'
+            ? pathname === matcher.value
+            : pathname.startsWith(matcher.value),
+    );
+};
+
 export const useNavigationItems = () => {
     const { checkAccess } = useAuthorization();
     const user = useUser();
     const role = user.data?.role;
     const isStudent = role === ROLES.SINHVIEN;
+    const isMinimalSchoolBoard = role === ROLES.DOANTRUONG;
 
-    return React.useMemo(
-        () =>
-            [
+    return React.useMemo(() => {
+        if (isMinimalSchoolBoard) {
+            return [
                 {
-                    name: 'Tong quan',
+                    name: 'Tổng quan',
                     to: paths.app.dashboard.getHref(),
                     icon: LayoutDashboard,
                 },
                 {
-                    name: 'Trang ca nhan',
-                    to: paths.app.profile.getHref(),
-                    icon: User,
+                    name: 'Quản lý đơn vị',
+                    to: paths.app.adminOrganizations.getHref(),
+                    icon: Building2,
                 },
                 {
-                    name: isStudent ? 'Chien dich cong khai' : 'Van hanh chien dich',
-                    to: paths.app.campaigns.getHref(),
-                    icon: isStudent ? Compass : Heart,
+                    name: 'Quản lý tài khoản',
+                    to: paths.app.users.getHref(),
+                    icon: Users,
                 },
-                checkAccess({ allowedRoles: [ROLES.SINHVIEN] })
-                    ? {
-                          name: 'Dong gop cua toi',
-                          to: paths.app.myDonations.getHref(),
-                          icon: Banknote,
-                      }
-                    : null,
-                checkAccess({ allowedRoles: [ROLES.SINHVIEN] })
-                    ? {
-                          name: 'Chung nhan',
-                          to: paths.app.certificates.getHref(),
-                          icon: FileText,
-                      }
-                    : null,
-                checkAccess({ allowedRoles: [ROLES.DOANTRUONG] })
-                    ? {
-                          name: 'Mau chung nhan',
-                          to: paths.app.certificateTemplates.getHref(),
-                          icon: ScrollText,
-                      }
-                    : null,
-                checkAccess({ allowedRoles: [ROLES.DOANTRUONG] })
-                    ? {
-                          name: 'Nhat ky hoat dong',
-                          to: paths.app.auditLogs.getHref(),
-                          icon: History,
-                      }
-                    : null,
-                checkAccess({ allowedRoles: [ROLES.DOANTRUONG] })
-                    ? {
-                          name: 'Tac vu nen',
-                          to: paths.app.backgroundJobs.getHref(),
-                          icon: Cpu,
-                      }
-                    : null,
-                checkAccess({ allowedRoles: [ROLES.DOANTRUONG, ROLES.LCD, ROLES.CLB] })
-                    ? {
-                          name: 'Bao cao',
-                          to: paths.app.reports.getHref(),
-                          icon: BarChart3,
-                      }
-                    : null,
-                checkAccess({ allowedRoles: [ROLES.DOANTRUONG] })
-                    ? {
-                          name: 'Quan ly to chuc',
-                          to: paths.app.adminOrganizations.getHref(),
-                          icon: Building2,
-                      }
-                    : null,
-                checkAccess({ allowedRoles: [ROLES.DOANTRUONG] })
-                    ? {
-                          name: 'Thanh vien',
-                          to: paths.app.users.getHref(),
-                          icon: Users,
-                      }
-                    : null,
-                checkAccess({ allowedRoles: [ROLES.CLB] })
-                    ? {
-                          name: 'Thiet lap don vi',
-                          to: paths.app.orgSettings.getHref(),
-                          icon: Settings,
-                      }
-                    : null,
-                {
-                    name: 'Cai dat',
-                    to: paths.app.settings.getHref(),
-                    icon: Settings,
-                },
-            ].filter((item): item is SideNavigationItem => item !== null),
-        [checkAccess, isStudent],
-    );
+            ];
+        }
+
+        return [
+            {
+                name: 'Tổng quan',
+                to: paths.app.dashboard.getHref(),
+                icon: LayoutDashboard,
+            },
+            {
+                name: 'Trang cá nhân',
+                to: paths.app.profile.getHref(),
+                icon: User,
+            },
+            {
+                name: isStudent
+                    ? 'Chiến dịch công khai'
+                    : role === ROLES.LCD
+                      ? 'Phê duyệt chiến dịch'
+                      : 'Vận hành chiến dịch',
+                to: paths.app.campaigns.getHref(),
+                icon: isStudent ? Compass : Heart,
+            },
+            checkAccess({ allowedRoles: [ROLES.SINHVIEN] })
+                ? {
+                      name: 'Đóng góp của tôi',
+                      to: paths.app.myDonations.getHref(),
+                      icon: Banknote,
+                  }
+                : null,
+            checkAccess({ allowedRoles: [ROLES.SINHVIEN] })
+                ? {
+                      name: 'Chứng nhận',
+                      to: paths.app.certificates.getHref(),
+                      icon: FileText,
+                  }
+                : null,
+            checkAccess({ allowedRoles: [ROLES.DOANTRUONG] })
+                ? {
+                      name: 'Mẫu chứng nhận',
+                      to: paths.app.certificateTemplates.getHref(),
+                      icon: ScrollText,
+                  }
+                : null,
+            checkAccess({ allowedRoles: [ROLES.DOANTRUONG] })
+                ? {
+                      name: 'Nhật ký hoạt động',
+                      to: paths.app.auditLogs.getHref(),
+                      icon: History,
+                  }
+                : null,
+            checkAccess({ allowedRoles: [ROLES.DOANTRUONG] })
+                ? {
+                      name: 'Tác vụ nền',
+                      to: paths.app.backgroundJobs.getHref(),
+                      icon: Cpu,
+                  }
+                : null,
+            checkAccess({
+                allowedRoles: [ROLES.DOANTRUONG, ROLES.LCD, ROLES.CLB],
+            })
+                ? {
+                      name: 'Báo cáo',
+                      to: paths.app.reports.getHref(),
+                      icon: BarChart3,
+                  }
+                : null,
+            checkAccess({ allowedRoles: [ROLES.DOANTRUONG] })
+                ? {
+                      name: 'Quản lý đơn vị',
+                      to: paths.app.adminOrganizations.getHref(),
+                      icon: Building2,
+                  }
+                : null,
+            checkAccess({ allowedRoles: [ROLES.DOANTRUONG] })
+                ? {
+                      name: 'Thành viên',
+                      to: paths.app.users.getHref(),
+                      icon: Users,
+                  }
+                : null,
+            checkAccess({ allowedRoles: [ROLES.CLB] })
+                ? {
+                      name: 'Thiết lập đơn vị',
+                      to: paths.app.orgSettings.getHref(),
+                      icon: Settings,
+                  }
+                : null,
+            {
+                name: 'Cài đặt',
+                to: paths.app.settings.getHref(),
+                icon: Settings,
+            },
+        ].filter((item): item is SideNavigationItem => item !== null);
+    }, [checkAccess, isMinimalSchoolBoard, isStudent, role]);
 };

@@ -86,6 +86,10 @@ export const paths = {
         users: {
             path: 'users',
             getHref: () => '/app/users',
+            dataTransfer: {
+                path: 'users/data-transfer',
+                getHref: () => '/app/users/data-transfer',
+            },
         },
         profile: {
             path: 'profile',
@@ -105,7 +109,8 @@ export const paths = {
         },
         donationPayment: {
             path: 'donations/:donationId/payment',
-            getHref: (donationId: string) => `/app/donations/${donationId}/payment`,
+            getHref: (donationId: string) =>
+                `/app/donations/${donationId}/payment`,
         },
         donate: {
             path: 'donate/:moduleId',

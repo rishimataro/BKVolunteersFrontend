@@ -1,4 +1,4 @@
-import { LogOut, User, Settings, Lock } from 'lucide-react';
+import { Lock, LogOut, Settings, User } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
@@ -8,9 +8,9 @@ import {
     DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
+    DropdownMenuPortal,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-    DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
 import { paths } from '@/config/paths';
 import { useLogout, useUser } from '@/features/auth';
@@ -31,6 +31,8 @@ export const UserMenu = () => {
     });
 
     if (!user.data) return null;
+
+    const isMinimalSchoolBoard = user.data.role === 'DOANTRUONG';
 
     return (
         <DropdownMenu>
@@ -59,13 +61,13 @@ export const UserMenu = () => {
                     sideOffset={8}
                     className="z-[100] w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 text-slate-900 shadow-2xl ring-1 ring-black/5"
                 >
-                    <div className="bg-muted/40 px-5 py-5 border-b border-border/50">
+                    <div className="border-b border-border/50 bg-muted/40 px-5 py-5">
                         <div className="flex items-center gap-4">
-                            <div className="flex size-12 items-center justify-center rounded-2xl bg-bk-blue text-white font-extrabold text-base shadow-lg shadow-bk-blue/20">
+                            <div className="flex size-12 items-center justify-center rounded-2xl bg-bk-blue text-base font-extrabold text-white shadow-lg shadow-bk-blue/20">
                                 {user.data.firstName?.[0]}
                                 {user.data.lastName?.[0]}
                             </div>
-                            <div className="flex flex-col min-w-0">
+                            <div className="flex min-w-0 flex-col">
                                 <p className="truncate text-sm font-extrabold leading-tight text-slate-900">
                                     {user.data.firstName} {user.data.lastName}
                                 </p>
@@ -81,28 +83,32 @@ export const UserMenu = () => {
                             <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-slate-500">
                                 Cá nhân
                             </DropdownMenuLabel>
-                            <DropdownMenuItem
-                                onClick={() =>
-                                    navigate(paths.app.profile.getHref())
-                                }
-                                className="group/item cursor-pointer rounded-xl px-3 py-2.5 text-slate-900 transition-colors focus:bg-blue-50 focus:!text-slate-900"
-                            >
-                                <User className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
-                                <span className="font-semibold text-slate-800">
-                                    Hồ sơ của tôi
-                                </span>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() =>
-                                    navigate(paths.app.settings.getHref())
-                                }
-                                className="group/item cursor-pointer rounded-xl px-3 py-2.5 text-slate-900 transition-colors focus:bg-blue-50 focus:!text-slate-900"
-                            >
-                                <Settings className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
-                                <span className="font-semibold text-slate-800">
-                                    Cài đặt hệ thống
-                                </span>
-                            </DropdownMenuItem>
+                            {!isMinimalSchoolBoard ? (
+                                <DropdownMenuItem
+                                    onClick={() =>
+                                        navigate(paths.app.profile.getHref())
+                                    }
+                                    className="group/item cursor-pointer rounded-xl px-3 py-2.5 text-slate-900 transition-colors focus:bg-blue-50 focus:!text-slate-900"
+                                >
+                                    <User className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
+                                    <span className="font-semibold text-slate-800">
+                                        Hồ sơ của tôi
+                                    </span>
+                                </DropdownMenuItem>
+                            ) : null}
+                            {!isMinimalSchoolBoard ? (
+                                <DropdownMenuItem
+                                    onClick={() =>
+                                        navigate(paths.app.settings.getHref())
+                                    }
+                                    className="group/item cursor-pointer rounded-xl px-3 py-2.5 text-slate-900 transition-colors focus:bg-blue-50 focus:!text-slate-900"
+                                >
+                                    <Settings className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
+                                    <span className="font-semibold text-slate-800">
+                                        Cài đặt hệ thống
+                                    </span>
+                                </DropdownMenuItem>
+                            ) : null}
                             <DropdownMenuItem
                                 onClick={() =>
                                     navigate(paths.app.changePassword.getHref())
@@ -120,7 +126,7 @@ export const UserMenu = () => {
 
                         <DropdownMenuItem
                             onClick={() => logout.mutate({})}
-                            className="rounded-xl px-3 py-2.5 cursor-pointer transition-colors text-destructive focus:bg-red-50 focus:text-red-700"
+                            className="cursor-pointer rounded-xl px-3 py-2.5 text-destructive transition-colors focus:bg-red-50 focus:text-red-700"
                         >
                             <LogOut className="mr-3 size-4.5" />
                             <span className="font-bold">Đăng xuất</span>
