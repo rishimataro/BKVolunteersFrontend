@@ -105,6 +105,13 @@ export const useNavigationItems = () => {
                 to: paths.app.profile.getHref(),
                 icon: User,
             },
+            checkAccess({ allowedRoles: [ROLES.SINHVIEN] })
+                ? {
+                      name: 'Lá»‹ch sá»­ hoáº¡t Ä‘á»™ng',
+                      to: paths.app.myImpact.getHref(),
+                      icon: History,
+                  }
+                : null,
             {
                 name: isStudent
                     ? 'Chiến dịch công khai'

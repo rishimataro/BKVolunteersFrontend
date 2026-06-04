@@ -104,6 +104,10 @@ export const paths = {
             path: 'profile',
             getHref: () => '/app/profile',
         },
+        myImpact: {
+            path: 'my-impact',
+            getHref: () => '/app/my-impact',
+        },
         settings: {
             path: 'settings',
             getHref: () => '/app/settings',

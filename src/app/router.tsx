@@ -155,6 +155,13 @@ export const AppRouter = () => {
                         })),
                 },
                 {
+                    path: paths.app.myImpact.path,
+                    lazy: () =>
+                        import('@/app/routes/app/my-impact.tsx').then((m) => ({
+                            Component: m.MyImpactRoute,
+                        })),
+                },
+                {
                     path: paths.app.campaigns.path,
                     lazy: () =>
                         import('@/app/routes/app/campaigns.tsx').then((m) => ({
