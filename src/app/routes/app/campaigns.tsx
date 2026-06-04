@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import {
     ArrowRight,
     Building2,
@@ -22,16 +22,12 @@ import {
 } from 'lucide-react';
 
 import { ContentLayout } from '@/components/layouts';
+import { Head } from '@/components/seo';
 import { ActionDrawer } from '@/components/ui/action-drawer';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
 import { ROLES, useUser } from '@/features/auth';
-import {
-    getPublicCampaigns,
-    type PublicCampaignFilters,
-} from '@/features/campaign/api/public';
+import { getPublicCampaigns } from '@/features/campaign/api/public';
 import {
     createCampaignModule,
     createManagedCampaign,
@@ -86,7 +82,6 @@ import {
 import { FundraisingPanel } from '@/features/campaign/components/fundraising-panel';
 import { ItemDonationPanel } from '@/features/campaign/components/item-donation-panel';
 import { EventPanel } from '@/features/campaign/components/event-panel';
-import { CampaignCard } from '@/features/campaign/components/campaign-card';
 import {
     SchoolApprovalQueue,
     type ApprovalQueueAction,
@@ -98,6 +93,10 @@ import {
     ErrorState,
     LoadingState,
 } from '@/features/campaign/components/state-blocks';
+import {
+    listOrganizations,
+    type OrganizationCard,
+} from '@/features/organizations/api/organizations';
 import { StatusBadge } from '@/features/campaign/components/status-badge';
 import type { Meta, ModuleType, PublicCampaignCard } from '@/types/api';
 import { toDisplayText, toDisplayTitle } from '@/utils/display-text';
@@ -118,12 +117,6 @@ const publicModuleOptions: Array<{ value: ModuleType | ''; label: string }> = [
     { value: 'item_donation', label: 'Hiện vật' },
     { value: 'event', label: 'Tình nguyện' },
 ];
-
-const publicStatusOptions = [
-    { value: '', label: 'Tất cả trạng thái' },
-    { value: 'ONGOING', label: 'Đang diễn ra' },
-    { value: 'PUBLISHED', label: 'Đã công khai' },
-] as const;
 
 const organizerStatusOptions = [
     { value: 'ALL', label: 'Tất cả trạng thái' },
@@ -299,13 +292,285 @@ const defaultApprovalFilters: ApprovalQueueFilterState = {
     pageSize: 8,
 };
 
+type StudentCampaignStage = 'ONGOING' | 'UPCOMING' | 'ENDED';
+type StudentDiscoveryView = 'grid' | 'list';
+
+const studentDiscoveryPageSize = 6;
+
+const studentStageOptions: Array<{
+    value: StudentCampaignStage;
+    label: string;
+}> = [
+    { value: 'ONGOING', label: 'Đang diễn ra' },
+    { value: 'UPCOMING', label: 'Sắp diễn ra' },
+    { value: 'ENDED', label: 'Đã kết thúc' },
+];
+
+const formatStudentDiscoveryDate = (value: string) =>
+    new Intl.DateTimeFormat('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+    }).format(new Date(value));
+
+const formatStudentDiscoveryMoney = (value: number) =>
+    new Intl.NumberFormat('vi-VN').format(value);
+
+const resolveStudentCampaignStage = (
+    campaign: PublicCampaignCard,
+): StudentCampaignStage => {
+    const now = Date.now();
+    const startAt = new Date(campaign.start_at).getTime();
+    const endAt = new Date(campaign.end_at).getTime();
+
+    if (Number.isFinite(endAt) && now > endAt) {
+        return 'ENDED';
+    }
+
+    if (Number.isFinite(startAt) && now < startAt) {
+        return 'UPCOMING';
+    }
+
+    return 'ONGOING';
+};
+
+const getStudentCampaignStageLabel = (stage: StudentCampaignStage) => {
+    if (stage === 'UPCOMING') {
+        return 'Sắp diễn ra';
+    }
+
+    if (stage === 'ENDED') {
+        return 'Đã kết thúc';
+    }
+
+    return 'Đang diễn ra';
+};
+
+const getStudentCampaignStageClassName = (stage: StudentCampaignStage) => {
+    if (stage === 'UPCOMING') {
+        return 'border-[#DC2626] bg-[#FEF2F2] text-[#991B1B]';
+    }
+
+    if (stage === 'ENDED') {
+        return 'border-[#D1D5DB] bg-[#F9FAFB] text-[#4B5563]';
+    }
+
+    return 'border-[#0A0A0A] bg-[#0A0A0A] text-white';
+};
+
+const getStudentCampaignMetric = (campaign: PublicCampaignCard) => {
+    const primaryModule =
+        campaign.progress.modules.find((module) =>
+            campaign.module_types.includes(module.type),
+        ) ?? campaign.progress.modules[0];
+
+    if (!primaryModule) {
+        return {
+            label: 'Tiến độ chiến dịch',
+            value: `${campaign.progress.percent}%`,
+            percent: campaign.progress.percent,
+        };
+    }
+
+    if (primaryModule.type === 'fundraising') {
+        return {
+            label: 'Mức gây quỹ',
+            value: `${formatStudentDiscoveryMoney(primaryModule.current)} / ${formatStudentDiscoveryMoney(primaryModule.target)} đ`,
+            percent: primaryModule.percent,
+        };
+    }
+
+    if (primaryModule.type === 'item_donation') {
+        return {
+            label: 'Hiện vật tiếp nhận',
+            value: `${primaryModule.current}/${primaryModule.target}`,
+            percent: primaryModule.percent,
+        };
+    }
+
+    return {
+        label: 'Tình nguyện viên',
+        value: `${primaryModule.current}/${primaryModule.target}`,
+        percent: primaryModule.percent,
+    };
+};
+
+const getStudentCampaignPageItems = (
+    page: number,
+    totalPages: number,
+): Array<number | 'ellipsis'> => {
+    if (totalPages <= 5) {
+        return Array.from({ length: totalPages }, (_, index) => index + 1);
+    }
+
+    if (page <= 3) {
+        return [1, 2, 3, 4, 'ellipsis', totalPages];
+    }
+
+    if (page >= totalPages - 2) {
+        return [
+            1,
+            'ellipsis',
+            totalPages - 3,
+            totalPages - 2,
+            totalPages - 1,
+            totalPages,
+        ];
+    }
+
+    return [1, 'ellipsis', page - 1, page, page + 1, 'ellipsis', totalPages];
+};
+
+const StudentDiscoveryCard = ({
+    campaign,
+    view,
+}: {
+    campaign: PublicCampaignCard;
+    view: StudentDiscoveryView;
+}) => {
+    const stage = resolveStudentCampaignStage(campaign);
+    const metric = getStudentCampaignMetric(campaign);
+    const detailHref = paths.app.campaigns.detail.getHref(campaign.slug);
+    const moduleSummary = campaign.module_types
+        .map((type) =>
+            publicModuleOptions.find((option) => option.value === type),
+        )
+        .filter((option): option is { value: ModuleType | ''; label: string } =>
+            Boolean(option),
+        )
+        .map((option) => option.label)
+        .join(' / ');
+
+    return (
+        <article
+            className={`border border-[#E5E7EB] bg-white ${
+                view === 'list'
+                    ? 'grid gap-0 md:grid-cols-[240px_minmax(0,1fr)]'
+                    : 'flex h-full flex-col'
+            }`}
+        >
+            <div
+                className={`relative overflow-hidden border-b border-[#E5E7EB] bg-[#F3F4F6] ${
+                    view === 'list' ? 'md:border-b-0 md:border-r' : ''
+                }`}
+            >
+                {campaign.cover_image_url ? (
+                    <img
+                        src={campaign.cover_image_url}
+                        alt={toDisplayTitle(campaign.title)}
+                        className={`w-full object-cover ${
+                            view === 'list'
+                                ? 'h-full min-h-[220px]'
+                                : 'h-[220px]'
+                        }`}
+                    />
+                ) : (
+                    <div
+                        className={`flex items-center justify-center bg-[#F3F4F6] px-6 text-center text-[13px] font-semibold uppercase tracking-[0.14em] text-[#4B5563] ${
+                            view === 'list'
+                                ? 'h-full min-h-[220px]'
+                                : 'h-[220px]'
+                        }`}
+                    >
+                        BK Volunteers
+                    </div>
+                )}
+                <span
+                    className={`absolute left-4 top-4 inline-flex border px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] ${getStudentCampaignStageClassName(
+                        stage,
+                    )}`}
+                >
+                    {getStudentCampaignStageLabel(stage)}
+                </span>
+            </div>
+
+            <div className="flex min-h-full flex-col p-5">
+                <div className="min-w-0">
+                    <p className="broadsheet-kicker text-[#4B5563]">
+                        {toDisplayTitle(campaign.organization.name)}
+                    </p>
+                    <h2 className="mt-3 font-heading text-[28px] leading-[1.2] font-bold text-[#0A0A0A]">
+                        {toDisplayTitle(campaign.title)}
+                    </h2>
+                </div>
+
+                <p className="mt-3 text-[16px] leading-[1.7] text-[#4B5563]">
+                    {toDisplayText(campaign.summary)}
+                </p>
+
+                <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[14px] leading-6 text-[#4B5563]">
+                    <span className="inline-flex items-center gap-2">
+                        <Building2 className="size-4" strokeWidth={1.75} />
+                        {toDisplayTitle(campaign.organization.name)}
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                        <Layers3 className="size-4" strokeWidth={1.75} />
+                        {moduleSummary}
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                        <CalendarDays className="size-4" strokeWidth={1.75} />
+                        {formatStudentDiscoveryDate(campaign.start_at)} -{' '}
+                        {formatStudentDiscoveryDate(campaign.end_at)}
+                    </span>
+                </div>
+
+                <div className="mt-6 border-t border-[#E5E7EB] pt-4">
+                    <div className="flex items-center justify-between gap-3 text-[14px] leading-6">
+                        <p className="font-semibold text-[#0A0A0A]">
+                            {metric.label}
+                        </p>
+                        <p className="font-semibold text-[#0A0A0A]">
+                            {metric.value}
+                        </p>
+                    </div>
+                    <div className="mt-2 h-2 bg-[#E5E7EB]">
+                        <div
+                            className="h-2 bg-[#0A0A0A]"
+                            style={{
+                                width: `${Math.max(
+                                    0,
+                                    Math.min(100, metric.percent),
+                                )}%`,
+                            }}
+                        />
+                    </div>
+                </div>
+
+                <div className="mt-5 flex items-center justify-between gap-4 border-t border-[#E5E7EB] pt-4">
+                    <span className="broadsheet-kicker text-[#4B5563]">
+                        Hồ sơ chiến dịch
+                    </span>
+                    <Link
+                        to={detailHref}
+                        className="inline-flex items-center gap-2 border border-[#0A0A0A] px-4 py-2 text-[14px] font-semibold text-[#0A0A0A] transition hover:bg-[#0A0A0A] hover:text-white"
+                    >
+                        Xem chi tiết
+                        <ArrowRight className="size-4" strokeWidth={1.75} />
+                    </Link>
+                </div>
+            </div>
+        </article>
+    );
+};
+
 const StudentCampaignDiscovery = () => {
-    const [filters, setFilters] = React.useState<PublicCampaignFilters>({
-        page: 1,
-        limit: 9,
-    });
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const deferredSearchQuery = React.useDeferredValue(searchQuery);
+    const [selectedOrganizationId, setSelectedOrganizationId] =
+        React.useState('');
+    const [selectedModuleType, setSelectedModuleType] = React.useState<
+        ModuleType | ''
+    >('');
+    const [selectedStages, setSelectedStages] = React.useState<
+        StudentCampaignStage[]
+    >(['ONGOING']);
+    const [view, setView] = React.useState<StudentDiscoveryView>('grid');
+    const [currentPage, setCurrentPage] = React.useState(1);
     const [campaignItems, setCampaignItems] = React.useState<
         PublicCampaignCard[]
+    >([]);
+    const [organizations, setOrganizations] = React.useState<
+        OrganizationCard[]
     >([]);
     const [meta, setMeta] = React.useState<Meta | null>(null);
     const [isLoading, setIsLoading] = React.useState(true);
@@ -313,10 +578,34 @@ const StudentCampaignDiscovery = () => {
 
     React.useEffect(() => {
         let mounted = true;
+
+        void listOrganizations()
+            .then((items) => {
+                if (!mounted) return;
+                setOrganizations(items);
+            })
+            .catch(() => {
+                if (!mounted) return;
+                setOrganizations([]);
+            });
+
+        return () => {
+            mounted = false;
+        };
+    }, []);
+
+    React.useEffect(() => {
+        let mounted = true;
         setIsLoading(true);
         setError(null);
 
-        getPublicCampaigns(filters)
+        void getPublicCampaigns({
+            q: deferredSearchQuery.trim() || undefined,
+            organization_id: selectedOrganizationId || undefined,
+            module_type: selectedModuleType || undefined,
+            page: 1,
+            limit: 24,
+        })
             .then((result) => {
                 if (!mounted) return;
                 setCampaignItems(result.items);
@@ -333,131 +622,404 @@ const StudentCampaignDiscovery = () => {
         return () => {
             mounted = false;
         };
-    }, [filters]);
+    }, [deferredSearchQuery, selectedModuleType, selectedOrganizationId]);
 
-    const totalPages = meta?.total_pages ?? meta?.totalPages ?? 1;
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [
+        deferredSearchQuery,
+        selectedModuleType,
+        selectedOrganizationId,
+        selectedStages,
+    ]);
+
+    const filteredCampaigns = React.useMemo(() => {
+        if (selectedStages.length === 0) {
+            return campaignItems;
+        }
+
+        return campaignItems.filter((campaign) =>
+            selectedStages.includes(resolveStudentCampaignStage(campaign)),
+        );
+    }, [campaignItems, selectedStages]);
+
+    const totalPages = Math.max(
+        1,
+        Math.ceil(filteredCampaigns.length / studentDiscoveryPageSize),
+    );
+    const currentPageSafe = Math.min(currentPage, totalPages);
+    const pagedCampaigns = React.useMemo(() => {
+        const startIndex = (currentPageSafe - 1) * studentDiscoveryPageSize;
+        return filteredCampaigns.slice(
+            startIndex,
+            startIndex + studentDiscoveryPageSize,
+        );
+    }, [currentPageSafe, filteredCampaigns]);
+    const visibleStart =
+        filteredCampaigns.length === 0
+            ? 0
+            : (currentPageSafe - 1) * studentDiscoveryPageSize + 1;
+    const visibleEnd =
+        filteredCampaigns.length === 0
+            ? 0
+            : Math.min(
+                  filteredCampaigns.length,
+                  currentPageSafe * studentDiscoveryPageSize,
+              );
+    const pageItems = getStudentCampaignPageItems(currentPageSafe, totalPages);
+
+    const toggleStage = (stage: StudentCampaignStage) => {
+        setSelectedStages((current) =>
+            current.includes(stage)
+                ? current.filter((item) => item !== stage)
+                : [...current, stage],
+        );
+    };
+
+    const resetFilters = () => {
+        setSearchQuery('');
+        setSelectedOrganizationId('');
+        setSelectedModuleType('');
+        setSelectedStages(['ONGOING']);
+        setCurrentPage(1);
+    };
 
     return (
-        <ContentLayout title="Chiến Dịch Công Khai">
-            <div className="space-y-6">
-                <div className="rounded-xl border border-slate-200 bg-white p-4">
-                    <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_180px_180px]">
-                        <Input
-                            value={filters.q ?? ''}
-                            onChange={(event) =>
-                                setFilters((current) => ({
-                                    ...current,
-                                    q: event.target.value,
-                                    page: 1,
-                                }))
-                            }
-                            placeholder="Tìm theo tên chiến dịch hoặc đơn vị"
-                        />
-                        <select
-                            value={filters.module_type ?? ''}
-                            onChange={(event) =>
-                                setFilters((current) => ({
-                                    ...current,
-                                    module_type: event.target.value as
-                                        | ModuleType
-                                        | '',
-                                    page: 1,
-                                }))
-                            }
-                            className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-700"
-                        >
-                            {publicModuleOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                        <select
-                            value={filters.status ?? ''}
-                            onChange={(event) =>
-                                setFilters((current) => ({
-                                    ...current,
-                                    status: event.target.value as
-                                        | 'PUBLISHED'
-                                        | 'ONGOING'
-                                        | '',
-                                    page: 1,
-                                }))
-                            }
-                            className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-700"
-                        >
-                            {publicStatusOptions.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-
-                {isLoading ? <LoadingState /> : null}
-                {error ? <ErrorState message={error} /> : null}
-                {!isLoading && !error && campaignItems.length === 0 ? (
-                    <EmptyState
-                        title="Chưa có chiến dịch phù hợp"
-                        description="Thử thay đổi bộ lọc hoặc quay lại sau."
-                    />
-                ) : null}
-
-                {!isLoading && !error && campaignItems.length > 0 ? (
-                    <>
-                        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                            {campaignItems.map((campaign) => (
-                                <CampaignCard
-                                    key={campaign.id}
-                                    campaign={campaign}
-                                    detailHref={paths.app.campaigns.detail.getHref(
-                                        campaign.slug,
-                                    )}
-                                />
-                            ))}
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <p className="text-sm text-slate-600">
-                                Trang {meta?.page ?? 1}/{totalPages || 1} - tổng{' '}
-                                {meta?.total ?? campaignItems.length} chiến dịch
+        <>
+            <Head title="Khám phá chiến dịch" />
+            <div className="bg-white">
+                <section className="border-b border-[#E5E7EB] pb-6">
+                    <p className="broadsheet-kicker">Khu vực sinh viên</p>
+                    <div className="mt-3 flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+                        <div className="max-w-4xl">
+                            <h2 className="font-heading text-[42px] leading-[1.05] font-bold text-[#0A0A0A] sm:text-[56px]">
+                                Khám phá chiến dịch
+                            </h2>
+                            <p className="mt-4 max-w-3xl text-[18px] leading-[1.7] text-[#4B5563]">
+                                Theo dõi các chiến dịch công khai, tìm đơn vị tổ
+                                chức phù hợp và mở hồ sơ tham gia ngay từ cổng
+                                sinh viên.
                             </p>
-                            <div className="flex gap-2">
-                                <Button
+                        </div>
+                        <div
+                            className="inline-flex w-full border border-[#D1D5DB] bg-white xl:w-auto"
+                            role="group"
+                            aria-label="Chế độ hiển thị"
+                        >
+                            <button
+                                type="button"
+                                aria-pressed={view === 'grid'}
+                                onClick={() => setView('grid')}
+                                className={`px-4 py-3 text-[14px] font-semibold transition ${
+                                    view === 'grid'
+                                        ? 'bg-[#0A0A0A] text-white'
+                                        : 'text-[#4B5563] hover:bg-[#F9FAFB]'
+                                }`}
+                            >
+                                Lưới
+                            </button>
+                            <button
+                                type="button"
+                                aria-pressed={view === 'list'}
+                                onClick={() => setView('list')}
+                                className={`border-l border-[#D1D5DB] px-4 py-3 text-[14px] font-semibold transition ${
+                                    view === 'list'
+                                        ? 'bg-[#0A0A0A] text-white'
+                                        : 'text-[#4B5563] hover:bg-[#F9FAFB]'
+                                }`}
+                            >
+                                Danh sách
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="grid gap-8 pt-8 xl:grid-cols-[300px_minmax(0,1fr)]">
+                    <aside className="space-y-6">
+                        <div className="border border-[#E5E7EB] bg-white p-5">
+                            <div className="flex items-start justify-between gap-4 border-b border-[#E5E7EB] pb-4">
+                                <div>
+                                    <p className="broadsheet-kicker">
+                                        Bộ lọc tìm kiếm
+                                    </p>
+                                    <p className="mt-2 text-[14px] leading-6 text-[#4B5563]">
+                                        Thu hẹp danh sách theo đơn vị, loại hình
+                                        và trạng thái thời gian.
+                                    </p>
+                                </div>
+                                <button
                                     type="button"
-                                    variant="outline"
-                                    disabled={(filters.page ?? 1) <= 1}
-                                    onClick={() =>
-                                        setFilters((current) => ({
-                                            ...current,
-                                            page: Math.max(
-                                                1,
-                                                (current.page ?? 1) - 1,
-                                            ),
-                                        }))
-                                    }
+                                    onClick={resetFilters}
+                                    className="text-[13px] font-semibold text-[#4B5563] transition hover:text-[#0A0A0A]"
                                 >
-                                    Trước
-                                </Button>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    disabled={(filters.page ?? 1) >= totalPages}
-                                    onClick={() =>
-                                        setFilters((current) => ({
-                                            ...current,
-                                            page: (current.page ?? 1) + 1,
-                                        }))
-                                    }
-                                >
-                                    Sau
-                                </Button>
+                                    Xóa tất cả
+                                </button>
+                            </div>
+
+                            <div className="mt-5 space-y-5">
+                                <div>
+                                    <label
+                                        htmlFor="student-campaign-search"
+                                        className="broadsheet-kicker"
+                                    >
+                                        Tìm kiếm
+                                    </label>
+                                    <div className="relative mt-2">
+                                        <Search
+                                            className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#4B5563]"
+                                            strokeWidth={1.75}
+                                        />
+                                        <input
+                                            id="student-campaign-search"
+                                            value={searchQuery}
+                                            onChange={(event) =>
+                                                setSearchQuery(
+                                                    event.target.value,
+                                                )
+                                            }
+                                            className="broadsheet-input w-full pl-10"
+                                            placeholder="Tên chiến dịch hoặc đơn vị"
+                                            type="text"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p className="broadsheet-kicker">
+                                        Trạng thái
+                                    </p>
+                                    <div className="mt-3 space-y-3">
+                                        {studentStageOptions.map((option) => (
+                                            <label
+                                                key={option.value}
+                                                className="flex items-center gap-3 text-[15px] text-[#0A0A0A]"
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedStages.includes(
+                                                        option.value,
+                                                    )}
+                                                    onChange={() =>
+                                                        toggleStage(
+                                                            option.value,
+                                                        )
+                                                    }
+                                                    aria-label={option.label}
+                                                    className="h-4 w-4 border border-[#D1D5DB] text-[#0A0A0A] focus:ring-0"
+                                                />
+                                                <span>{option.label}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label
+                                        htmlFor="student-campaign-organization"
+                                        className="broadsheet-kicker"
+                                    >
+                                        Đơn vị tổ chức
+                                    </label>
+                                    <select
+                                        id="student-campaign-organization"
+                                        value={selectedOrganizationId}
+                                        onChange={(event) =>
+                                            setSelectedOrganizationId(
+                                                event.target.value,
+                                            )
+                                        }
+                                        className="broadsheet-select mt-2"
+                                    >
+                                        <option value="">Tất cả đơn vị</option>
+                                        {organizations.map((organization) => (
+                                            <option
+                                                key={organization.id}
+                                                value={organization.id}
+                                            >
+                                                {organization.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <p className="broadsheet-kicker">
+                                        Loại hình
+                                    </p>
+                                    <div className="mt-3 flex flex-wrap gap-2">
+                                        {publicModuleOptions
+                                            .filter((option) => option.value)
+                                            .map((option) => {
+                                                const isActive =
+                                                    selectedModuleType ===
+                                                    option.value;
+
+                                                return (
+                                                    <button
+                                                        key={option.value}
+                                                        type="button"
+                                                        aria-pressed={isActive}
+                                                        onClick={() =>
+                                                            setSelectedModuleType(
+                                                                isActive
+                                                                    ? ''
+                                                                    : (option.value as ModuleType),
+                                                            )
+                                                        }
+                                                        className={`border px-3 py-2 text-[13px] font-semibold uppercase tracking-[0.12em] transition ${
+                                                            isActive
+                                                                ? 'border-[#0A0A0A] bg-[#0A0A0A] text-white'
+                                                                : 'border-[#D1D5DB] text-[#4B5563] hover:border-[#0A0A0A] hover:text-[#0A0A0A]'
+                                                        }`}
+                                                    >
+                                                        {option.label}
+                                                    </button>
+                                                );
+                                            })}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </>
-                ) : null}
+
+                        <div className="border border-[#0A0A0A] bg-[#0A0A0A] p-5 text-white">
+                            <p className="broadsheet-kicker text-white/70">
+                                Cơ hội tham gia
+                            </p>
+                            <h3 className="mt-3 font-heading text-[32px] leading-[1.1] font-bold">
+                                Trở thành đại sứ
+                            </h3>
+                            <p className="mt-3 text-[16px] leading-[1.7] text-white/80">
+                                Kết nối thêm sinh viên quan tâm, theo dõi chiến
+                                dịch nổi bật và nhận thông báo sớm về đợt mở
+                                đăng ký tiếp theo.
+                            </p>
+                            <button
+                                type="button"
+                                className="mt-5 inline-flex items-center gap-2 border border-white bg-white px-4 py-2 text-[14px] font-semibold text-[#0A0A0A] transition hover:bg-transparent hover:text-white"
+                            >
+                                Tìm hiểu thêm
+                                <ArrowRight
+                                    className="size-4"
+                                    strokeWidth={1.75}
+                                />
+                            </button>
+                        </div>
+                    </aside>
+
+                    <div className="space-y-6">
+                        <div className="flex flex-col gap-3 border-b border-[#E5E7EB] pb-4 lg:flex-row lg:items-center lg:justify-between">
+                            <div>
+                                <p className="broadsheet-kicker">
+                                    Toàn cảnh danh mục
+                                </p>
+                                <p className="mt-2 text-[16px] leading-7 text-[#4B5563]">
+                                    Hiển thị {visibleStart}-{visibleEnd} trên{' '}
+                                    {filteredCampaigns.length} chiến dịch phù
+                                    hợp. Nguồn dữ liệu hiện có{' '}
+                                    {meta?.total ?? campaignItems.length} chiến
+                                    dịch công khai.
+                                </p>
+                            </div>
+                            <div className="border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-3 text-[14px] leading-6 text-[#4B5563]">
+                                Bộ lọc thời gian áp dụng trực tiếp trên danh
+                                sách khám phá dành cho sinh viên.
+                            </div>
+                        </div>
+
+                        {isLoading ? <LoadingState /> : null}
+                        {error ? <ErrorState message={error} /> : null}
+                        {!isLoading &&
+                        !error &&
+                        filteredCampaigns.length === 0 ? (
+                            <EmptyState
+                                title="Chưa có chiến dịch phù hợp"
+                                description="Thử thay đổi bộ lọc hoặc quay lại sau để xem những chiến dịch mới được công khai."
+                            />
+                        ) : null}
+
+                        {!isLoading &&
+                        !error &&
+                        filteredCampaigns.length > 0 ? (
+                            <>
+                                <div
+                                    className={
+                                        view === 'grid'
+                                            ? 'grid gap-6 md:grid-cols-2'
+                                            : 'grid gap-4'
+                                    }
+                                >
+                                    {pagedCampaigns.map((campaign) => (
+                                        <StudentDiscoveryCard
+                                            key={campaign.id}
+                                            campaign={campaign}
+                                            view={view}
+                                        />
+                                    ))}
+                                </div>
+
+                                <div className="flex flex-wrap items-center justify-center gap-2 border-t border-[#E5E7EB] pt-6">
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setCurrentPage((current) =>
+                                                Math.max(1, current - 1),
+                                            )
+                                        }
+                                        disabled={currentPageSafe <= 1}
+                                        className="border border-[#D1D5DB] px-4 py-2 text-[14px] font-semibold text-[#0A0A0A] transition hover:bg-[#F9FAFB] disabled:cursor-not-allowed disabled:text-[#9CA3AF]"
+                                    >
+                                        Trang trước
+                                    </button>
+
+                                    {pageItems.map((item, index) =>
+                                        item === 'ellipsis' ? (
+                                            <span
+                                                key={`${item}-${index}`}
+                                                className="px-2 text-[14px] text-[#4B5563]"
+                                            >
+                                                ...
+                                            </span>
+                                        ) : (
+                                            <button
+                                                key={item}
+                                                type="button"
+                                                aria-label={`Trang ${item}`}
+                                                onClick={() =>
+                                                    setCurrentPage(item)
+                                                }
+                                                className={`min-w-10 border px-3 py-2 text-[14px] font-semibold transition ${
+                                                    item === currentPageSafe
+                                                        ? 'border-[#0A0A0A] bg-[#0A0A0A] text-white'
+                                                        : 'border-[#D1D5DB] text-[#0A0A0A] hover:bg-[#F9FAFB]'
+                                                }`}
+                                            >
+                                                {item}
+                                            </button>
+                                        ),
+                                    )}
+
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setCurrentPage((current) =>
+                                                Math.min(
+                                                    totalPages,
+                                                    current + 1,
+                                                ),
+                                            )
+                                        }
+                                        disabled={currentPageSafe >= totalPages}
+                                        className="border border-[#D1D5DB] px-4 py-2 text-[14px] font-semibold text-[#0A0A0A] transition hover:bg-[#F9FAFB] disabled:cursor-not-allowed disabled:text-[#9CA3AF]"
+                                    >
+                                        Trang sau
+                                    </button>
+                                </div>
+                            </>
+                        ) : null}
+                    </div>
+                </section>
             </div>
-        </ContentLayout>
+        </>
     );
 };
 
