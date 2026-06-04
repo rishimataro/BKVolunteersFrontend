@@ -21,6 +21,9 @@ describe('isDashboardPathAllowedForRole', () => {
             isDashboardPathAllowedForRole('DOANTRUONG', '/app/change-password'),
         ).toBe(true);
         expect(
+            isDashboardPathAllowedForRole('DOANTRUONG', '/app/notifications'),
+        ).toBe(true);
+        expect(
             isDashboardPathAllowedForRole(
                 'DOANTRUONG',
                 '/app/campaigns/chien-dich-mua-he-xanh',

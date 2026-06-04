@@ -75,7 +75,10 @@ export const Header = () => {
             ? pathname === item.to
             : pathname === item.to || pathname.startsWith(`${item.to}/`),
     );
-    const pageTitle = currentItem?.name || 'Tổng quan';
+    const pageTitle =
+        pathname === paths.app.notifications.getHref()
+            ? 'Trung tâm thông báo'
+            : currentItem?.name || 'Tổng quan';
     const isMinimalSchoolBoard = user.data?.role === ROLES.DOANTRUONG;
 
     return (

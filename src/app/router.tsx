@@ -239,6 +239,15 @@ export const AppRouter = () => {
                         ),
                 },
                 {
+                    path: paths.app.notifications.path,
+                    lazy: () =>
+                        import('@/app/routes/app/notifications.tsx').then(
+                            (m) => ({
+                                Component: m.NotificationsRoute,
+                            }),
+                        ),
+                },
+                {
                     path: paths.app.donate.path,
                     lazy: () =>
                         import('@/app/routes/app/donate.tsx').then((m) => ({

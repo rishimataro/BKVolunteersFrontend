@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from 'react-router';
 import { Bell, CheckCheck } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -8,8 +9,9 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useNotifications } from '@/components/ui/notifications';
+import { paths } from '@/config/paths';
 import {
-    getNotifications,
+    getNotificationsPage,
     markAllNotificationsRead,
     markNotificationRead,
     type NotificationItem,
@@ -29,8 +31,8 @@ export const NotificationMenu = () => {
     const loadNotifications = React.useCallback(async () => {
         setLoading(true);
         try {
-            const data = await getNotifications({ page: 1, limit: 20 });
-            setItems(data);
+            const data = await getNotificationsPage({ page: 1, limit: 20 });
+            setItems(data.items);
         } catch (error) {
             addNotification({
                 type: 'error',
@@ -148,6 +150,16 @@ export const NotificationMenu = () => {
                             </button>
                         ))
                     )}
+                </div>
+
+                <div className="border-t border-slate-200 px-4 py-3">
+                    <Link
+                        to={paths.app.notifications.getHref()}
+                        onClick={() => setOpen(false)}
+                        className="inline-flex w-full items-center justify-center border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition hover:border-slate-400 hover:bg-slate-50"
+                    >
+                        Xem tất cả thông báo
+                    </Link>
                 </div>
             </DropdownMenuContent>
         </DropdownMenu>

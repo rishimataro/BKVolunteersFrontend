@@ -39,6 +39,7 @@ const roleAllowedDashboardPaths: Partial<
         { match: 'exact', value: paths.app.users.getHref() },
         { match: 'exact', value: paths.app.users.dataTransfer.getHref() },
         { match: 'exact', value: paths.app.changePassword.getHref() },
+        { match: 'exact', value: paths.app.notifications.getHref() },
         {
             match: 'prefix',
             value: `${paths.app.campaigns.getHref()}/`,
