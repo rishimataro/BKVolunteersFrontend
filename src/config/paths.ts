@@ -78,6 +78,11 @@ export const paths = {
                 path: 'campaigns/create',
                 getHref: () => '/app/campaigns/create',
             },
+            registration: {
+                path: 'campaigns/:slug/register/:moduleId',
+                getHref: (slug: string, moduleId: string) =>
+                    `/app/campaigns/${slug}/register/${moduleId}`,
+            },
             detail: {
                 path: 'campaigns/:slug',
                 getHref: (slug: string) => `/app/campaigns/${slug}`,

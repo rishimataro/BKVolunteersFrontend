@@ -9,7 +9,6 @@ import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
 import { ROLES, useUser } from '@/features/auth';
 import { getPublicCampaignDetail } from '@/features/campaign/api/public';
-import { createEventRegistration } from '@/features/campaign/api/events';
 import {
     createItemPledge,
     getItemTargets,
@@ -99,14 +98,6 @@ const CampaignDetailView = ({
                 quantity: number;
                 donor_name: string;
                 expected_handover_at: string;
-                note: string;
-            }
-        >
-    >({});
-    const [eventForm, setEventForm] = React.useState<
-        Record<
-            string,
-            {
                 note: string;
             }
         >
@@ -227,40 +218,6 @@ const CampaignDetailView = ({
             addNotification({
                 type: 'error',
                 title: 'Đăng ký hiện vật thất bại',
-                message:
-                    submitError instanceof Error
-                        ? submitError.message
-                        : 'Lỗi hệ thống',
-            });
-        } finally {
-            setSubmittingModuleId(null);
-        }
-    };
-
-    const onSubmitEventRegistration = async (moduleId: string) => {
-        try {
-            setSubmittingModuleId(moduleId);
-            const result = await createEventRegistration(moduleId, {
-                answers: {
-                    note: eventForm[moduleId]?.note?.trim() || '',
-                },
-            });
-            addNotification({
-                type: 'success',
-                title: 'Đăng ký sự kiện thành công',
-                message:
-                    result.status === 'APPROVED'
-                        ? 'Bạn đã được duyệt tham gia ngay.'
-                        : 'Yêu cầu tham gia của bạn đã được ghi nhận.',
-            });
-            setEventForm((current) => ({
-                ...current,
-                [moduleId]: { note: '' },
-            }));
-        } catch (submitError) {
-            addNotification({
-                type: 'error',
-                title: 'Đăng ký sự kiện thất bại',
                 message:
                     submitError instanceof Error
                         ? submitError.message
@@ -782,43 +739,24 @@ const CampaignDetailView = ({
                                         {module.cta.enabled &&
                                         isStudent &&
                                         module.type === 'event' ? (
-                                            <div className="mt-4 space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
-                                                <p className="text-sm font-semibold text-slate-900">
-                                                    Đăng ký tham gia sự kiện
+                                            <div className="mt-4 border border-[#D1D5DB] bg-[#F9FAFB] p-4">
+                                                <p className="broadsheet-kicker">
+                                                    Phiếu tham gia
                                                 </p>
-                                                <Input
-                                                    placeholder="Ghi chú đăng ký (nếu có)"
-                                                    value={
-                                                        eventForm[module.id]
-                                                            ?.note ?? ''
-                                                    }
-                                                    onChange={(event) =>
-                                                        setEventForm(
-                                                            (current) => ({
-                                                                ...current,
-                                                                [module.id]: {
-                                                                    note: event
-                                                                        .target
-                                                                        .value,
-                                                                },
-                                                            }),
-                                                        )
-                                                    }
-                                                />
-                                                <Button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        void onSubmitEventRegistration(
-                                                            module.id,
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        submittingModuleId ===
-                                                        module.id
-                                                    }
+                                                <p className="mt-2 text-[15px] leading-7 text-[#4B5563]">
+                                                    Mở phiếu đăng ký riêng để
+                                                    cập nhật số điện thoại, kỹ
+                                                    năng và cam kết tham gia.
+                                                </p>
+                                                <Link
+                                                    to={paths.app.campaigns.registration.getHref(
+                                                        campaign.slug,
+                                                        module.id,
+                                                    )}
+                                                    className="mt-4 inline-flex h-10 items-center justify-center border border-[#0A0A0A] bg-[#0A0A0A] px-5 text-[14px] font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-[#1F2937]"
                                                 >
-                                                    Gửi đăng ký sự kiện
-                                                </Button>
+                                                    Đăng ký tham gia
+                                                </Link>
                                             </div>
                                         ) : null}
 

@@ -228,4 +228,37 @@ describe('AppCampaignDetailRoute', () => {
         expect(screen.queryByText(/Kế hoạch chi tiết/i)).toBeNull();
         expect(screen.getByText(/Chiến dịch công khai/i)).toBeTruthy();
     });
+    it('links students to the dedicated registration page for event modules', async () => {
+        mockUseUser.mockReturnValue({
+            data: {
+                id: 'student-1',
+                role: 'SINHVIEN',
+            },
+        });
+
+        render(
+            <MemoryRouter
+                initialEntries={['/app/campaigns/mua-he-xanh-dak-lak']}
+            >
+                <Routes>
+                    <Route
+                        path="/app/campaigns/:slug"
+                        element={<AppCampaignDetailRoute />}
+                    />
+                </Routes>
+            </MemoryRouter>,
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByRole('link', { name: 'Đăng ký tham gia' }),
+            ).toBeTruthy();
+        });
+
+        expect(
+            screen
+                .getByRole('link', { name: 'Đăng ký tham gia' })
+                .getAttribute('href'),
+        ).toBe('/app/campaigns/mua-he-xanh-dak-lak/register/m-1');
+    });
 });

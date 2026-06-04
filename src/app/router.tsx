@@ -171,6 +171,15 @@ export const AppRouter = () => {
                         ),
                 },
                 {
+                    path: paths.app.campaigns.registration.path,
+                    lazy: () =>
+                        import('@/app/routes/app/campaign-registration.tsx').then(
+                            (m) => ({
+                                Component: m.CampaignRegistrationRoute,
+                            }),
+                        ),
+                },
+                {
                     path: paths.app.campaigns.detail.path,
                     lazy: () =>
                         import('@/app/routes/app/campaign-detail.tsx').then(
