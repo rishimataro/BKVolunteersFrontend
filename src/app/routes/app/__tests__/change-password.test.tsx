@@ -5,17 +5,16 @@ import { MemoryRouter } from 'react-router';
 import { ChangePasswordRoute } from '../change-password';
 
 const addNotification = vi.fn();
+const changePassword = vi.fn();
 
 vi.mock('@/components/ui/notifications', () => ({
-    useNotifications: vi.fn(() => ({
+    useNotifications: () => ({
         addNotification,
-    })),
+    }),
 }));
 
-vi.mock('@/lib/api-clients', () => ({
-    api: {
-        patch: vi.fn(),
-    },
+vi.mock('@/features/auth/api/auth', () => ({
+    changePassword: (...args: unknown[]) => changePassword(...args),
 }));
 
 describe('ChangePasswordRoute', () => {
@@ -23,18 +22,19 @@ describe('ChangePasswordRoute', () => {
         vi.clearAllMocks();
     });
 
-    const renderPage = () => {
-        return render(
+    const renderPage = () =>
+        render(
             <MemoryRouter>
                 <ChangePasswordRoute />
             </MemoryRouter>,
         );
-    };
 
     it('renders the change password form', () => {
         renderPage();
 
-        expect(screen.getByText('Đổi mật khẩu')).toBeDefined();
+        expect(
+            screen.getByRole('heading', { level: 1, name: 'Đổi mật khẩu' }),
+        ).toBeDefined();
         expect(screen.getByLabelText(/mật khẩu hiện tại/i)).toBeDefined();
         expect(screen.getByLabelText(/^mật khẩu mới$/i)).toBeDefined();
         expect(screen.getByLabelText(/^xác nhận mật khẩu mới$/i)).toBeDefined();
@@ -47,13 +47,13 @@ describe('ChangePasswordRoute', () => {
         renderPage();
 
         fireEvent.change(screen.getByLabelText(/mật khẩu hiện tại/i), {
-            target: { value: 'old12345' },
+            target: { value: 'OldPass1' },
         });
         fireEvent.change(screen.getByLabelText(/^mật khẩu mới$/i), {
-            target: { value: 'new12345' },
+            target: { value: 'NewPass1' },
         });
         fireEvent.change(screen.getByLabelText(/xác nhận mật khẩu mới/i), {
-            target: { value: 'different' },
+            target: { value: 'Different1' },
         });
 
         fireEvent.click(screen.getByRole('button', { name: /lưu thay đổi/i }));
@@ -69,20 +69,20 @@ describe('ChangePasswordRoute', () => {
         renderPage();
 
         fireEvent.change(screen.getByLabelText(/mật khẩu hiện tại/i), {
-            target: { value: 'old12345' },
+            target: { value: 'OldPass1' },
         });
         fireEvent.change(screen.getByLabelText(/^mật khẩu mới$/i), {
-            target: { value: 'ab' },
+            target: { value: 'Ab1' },
         });
         fireEvent.change(screen.getByLabelText(/xác nhận mật khẩu mới/i), {
-            target: { value: 'ab' },
+            target: { value: 'Ab1' },
         });
 
         fireEvent.click(screen.getByRole('button', { name: /lưu thay đổi/i }));
 
         await waitFor(() => {
             expect(
-                screen.getByText(/mật khẩu mới phải có ít nhất 6 ký tự/i),
+                screen.getByText(/mật khẩu mới phải có ít nhất 8 ký tự/i),
             ).toBeDefined();
         });
     });
