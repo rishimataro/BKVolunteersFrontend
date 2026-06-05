@@ -590,11 +590,14 @@ export const UsersRoute = () => {
             userId: string;
             status: 'ACTIVE' | 'LOCKED';
         }) => updateUserStatus(userId, status),
-        onSuccess: async () => {
+        onSuccess: async (_data, variables) => {
             addNotification({
                 type: 'success',
                 title: 'Đã cập nhật trạng thái',
-                message: 'Tình trạng tài khoản đã được thay đổi.',
+                message:
+                    variables.status === 'LOCKED'
+                        ? 'Tài khoản đã bị khóa và các phiên đăng nhập sẽ phải xác thực lại.'
+                        : 'Tài khoản đã được mở khóa và có thể đăng nhập lại bình thường.',
             });
             await invalidateUsers();
         },
@@ -677,6 +680,16 @@ export const UsersRoute = () => {
     };
 
     const onToggleLock = async (user: UserManagementItem) => {
+        const confirmed = window.confirm(
+            user.status === 'LOCKED'
+                ? `Bạn có chắc muốn mở khóa tài khoản ${user.email}?`
+                : `Bạn có chắc muốn khóa tài khoản ${user.email}? Người dùng sẽ bị chặn truy cập ngay ở các phiên hiện tại.`,
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
         await statusMutation.mutateAsync({
             userId: user.id,
             status: user.status === 'LOCKED' ? 'ACTIVE' : 'LOCKED',
@@ -777,6 +790,7 @@ export const UsersRoute = () => {
                 return (
                     <div className="flex flex-wrap justify-center gap-2">
                         <Button
+                            aria-label="Chỉnh sửa tài khoản"
                             type="button"
                             variant="ghost"
                             size="icon-sm"
@@ -787,6 +801,13 @@ export const UsersRoute = () => {
                             <PencilLine className="size-4" strokeWidth={1.5} />
                         </Button>
                         <Button
+                            aria-label={
+                                user.status === 'LOCKED'
+                                    ? 'Mở khóa tài khoản'
+                                    : isSelf
+                                      ? 'Không thể khóa chính bạn'
+                                      : 'Khóa tài khoản'
+                            }
                             type="button"
                             variant="ghost"
                             size="icon-sm"
@@ -796,7 +817,9 @@ export const UsersRoute = () => {
                             title={
                                 user.status === 'LOCKED'
                                     ? 'Mở khóa tài khoản'
-                                    : 'Khóa tài khoản'
+                                    : isSelf
+                                      ? 'Không thể khóa chính bạn'
+                                      : 'Khóa tài khoản'
                             }
                         >
                             {user.status === 'LOCKED' ? (
@@ -809,6 +832,7 @@ export const UsersRoute = () => {
                             )}
                         </Button>
                         <Button
+                            aria-label="Đặt lại mật khẩu"
                             type="button"
                             variant="ghost"
                             size="icon-sm"
@@ -819,6 +843,11 @@ export const UsersRoute = () => {
                             <KeyRound className="size-4" strokeWidth={1.5} />
                         </Button>
                         <Button
+                            aria-label={
+                                isSelf
+                                    ? 'Không thể xóa chính bạn'
+                                    : 'Xóa tài khoản'
+                            }
                             type="button"
                             variant="ghost"
                             size="icon-sm"
@@ -845,6 +874,10 @@ export const UsersRoute = () => {
                             Chỉ tài khoản Đoàn trường mới được phép quản lý
                             người dùng.
                         </p>
+                        <p className="mt-2 text-sm leading-6 text-[#737781]">
+                            Hãy dùng đúng tài khoản quản trị để khóa, mở khóa
+                            hoặc chỉnh sửa quyền truy cập hệ thống.
+                        </p>
                     </ManagementPanel>
                 </ContentLayout>
             }
@@ -856,7 +889,7 @@ export const UsersRoute = () => {
                         badge="Quản trị hệ thống"
                         icon={UserCog}
                         title="Quản lý người dùng"
-                        description="Theo dõi tài khoản trên toàn hệ thống, giữ luồng phê duyệt và phân quyền hiện tại, đồng thời đưa giao diện về đúng ngôn ngữ quản trị học thuật của Unity Academic."
+                        description="Theo dõi tài khoản trên toàn hệ thống, khóa hoặc mở khóa đúng phạm vi Đoàn trường, và đảm bảo thay đổi bảo mật phản ánh ngay ở phiên đăng nhập thực tế."
                         actions={
                             <>
                                 <Link
@@ -927,7 +960,9 @@ export const UsersRoute = () => {
                                 </h3>
                                 <p className="text-[14px] leading-6 text-[#424750]">
                                     Tìm nhanh theo email, MSSV hoặc tên đăng
-                                    nhập. Dữ liệu vẫn đi qua API hiện tại.
+                                    nhập. Khóa tài khoản sẽ có hiệu lực ngay
+                                    trên backend và không cho phép tiếp tục truy
+                                    cập bằng phiên cũ.
                                 </p>
                             </div>
                             <p className="text-[14px] leading-6 text-[#737781]">

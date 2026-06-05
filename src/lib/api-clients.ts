@@ -37,6 +37,46 @@ function authRequestInterceptor(config: InternalAxiosRequestConfig) {
     return config;
 }
 
+const getApiErrorMessage = (
+    error: AxiosError,
+    originalRequest: InternalAxiosRequestConfig | undefined,
+) => {
+    const data = error.response?.data as
+        | { message?: string; error?: { message?: string } }
+        | undefined;
+
+    if (!error.response) {
+        return 'Không thể kết nối tới máy chủ. Vui lòng kiểm tra backend hoặc kết nối mạng.';
+    }
+
+    if (error.response.status === HttpStatus.NOT_FOUND) {
+        const endpoint = originalRequest?.url ?? 'đã yêu cầu';
+        return `API ${endpoint} chưa sẵn sàng hoặc không tồn tại trên backend hiện tại.`;
+    }
+
+    return data?.error?.message || data?.message || error.message;
+};
+
+const shouldClearAuthForForbidden = (
+    status: number | undefined,
+    message: string,
+) => {
+    if (status !== HttpStatus.FORBIDDEN) {
+        return false;
+    }
+
+    const normalized = message.toLowerCase();
+
+    return (
+        normalized.includes('tai khoan da bi khoa') ||
+        normalized.includes('tai khoản đã bị khóa') ||
+        normalized.includes('vo hieu hoa') ||
+        normalized.includes('vô hiệu hóa') ||
+        normalized.includes('nguoi dung khong hop le') ||
+        normalized.includes('người dùng không hợp lệ')
+    );
+};
+
 export const api = Axios.create({
     baseURL: `${env.API_URL.replace(/\/$/, '')}/api/v1`,
 });
@@ -51,10 +91,7 @@ api.interceptors.response.use(
         const originalRequest = error.config as InternalAxiosRequestConfig & {
             _retry?: boolean;
         };
-        const data = error.response?.data as
-            | { message?: string; error?: { message?: string } }
-            | undefined;
-        const message = data?.error?.message || data?.message || error.message;
+        const message = getApiErrorMessage(error, originalRequest);
 
         const isAuthRefreshRoute =
             originalRequest.url === '/auth/refresh' ||
@@ -112,6 +149,13 @@ api.interceptors.response.use(
             } finally {
                 isRefreshing = false;
             }
+        }
+
+        if (
+            shouldClearAuthForForbidden(error.response?.status, message) &&
+            originalRequest.url !== '/auth/login'
+        ) {
+            useAuthStore.getState().clearAuth();
         }
 
         if (error.response?.status !== HttpStatus.UNAUTHORIZED) {
