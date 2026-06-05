@@ -119,9 +119,11 @@ export const ChangePasswordPanel = ({
             setNewPassword('');
             setConfirmPassword('');
             setError('');
-        } catch {
+        } catch (caughtError) {
             setError(
-                'Không thể cập nhật mật khẩu. Vui lòng kiểm tra lại mật khẩu hiện tại.',
+                caughtError instanceof Error
+                    ? caughtError.message
+                    : 'Không thể cập nhật mật khẩu. Vui lòng kiểm tra lại mật khẩu hiện tại.',
             );
         } finally {
             setIsSaving(false);
@@ -226,7 +228,10 @@ export const ChangePasswordPanel = ({
                 </div>
 
                 {error ? (
-                    <p className="border border-[#FCA5A5] bg-[#FEF2F2] px-4 py-3 text-[14px] leading-6 text-[#991B1B]">
+                    <p
+                        aria-live="polite"
+                        className="border border-[#FCA5A5] bg-[#FEF2F2] px-4 py-3 text-[14px] leading-6 text-[#991B1B]"
+                    >
                         {error}
                     </p>
                 ) : null}

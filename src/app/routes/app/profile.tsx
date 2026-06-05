@@ -4,8 +4,6 @@ import {
     Award,
     BadgeCheck,
     BookOpenText,
-    GraduationCap,
-    HandCoins,
     LockKeyhole,
     Mail,
     Phone,
@@ -13,15 +11,14 @@ import {
     UserRound,
 } from 'lucide-react';
 import { Link } from 'react-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Head } from '@/components/seo';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
 import { ROLES, useUser } from '@/features/auth';
-import {
-    getStudentDashboard,
-    type StudentDashboardSummary,
-} from '@/features/campaign/api/student';
+import { updateCurrentUserProfile } from '@/features/auth/api/auth';
+import { useAuthStore } from '@/store/auth-store';
 import type { User } from '@/types/api';
 
 const roleLabels: Record<string, string> = {
@@ -40,13 +37,9 @@ const impactMilestones = [
 ];
 
 type ProfileDraft = {
-    bio: string;
     email: string;
-    facultyName: string;
     fullName: string;
-    identityCode: string;
     phone: string;
-    profileLink: string;
 };
 
 const getDisplayName = (user: User) =>
@@ -58,6 +51,8 @@ const getIdentityCode = (user: User) =>
     user.studentCode?.trim() || user.mssv?.trim() || user.username;
 
 const getFacultyName = (user: User) =>
+    user.facultyName?.trim() ||
+    user.managedClubName?.trim() ||
     user.organization?.faculty?.name?.trim() ||
     user.organization?.name?.trim() ||
     'Chưa cập nhật khoa';
@@ -102,20 +97,27 @@ const getLastSyncedText = (user: User) => {
     }).format(new Date(value));
 };
 
+const getFormattedDateTime = (value?: string | number | Date | null) => {
+    if (!value) {
+        return 'Chưa ghi nhận';
+    }
+
+    return new Intl.DateTimeFormat('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    }).format(new Date(value));
+};
+
 const createDraft = (user: User): ProfileDraft => ({
-    bio:
-        user.role === ROLES.SINHVIEN
-            ? 'Sinh viên đang tham gia các hoạt động tình nguyện và được đồng bộ hồ sơ từ tài khoản BK Volunteers.'
-            : 'Thông tin tài khoản đang được đồng bộ từ hệ thống BK Volunteers.',
     email: user.email,
-    facultyName: getFacultyName(user),
     fullName: getDisplayName(user),
-    identityCode: getIdentityCode(user),
     phone: user.phone?.trim() || '',
-    profileLink: '',
 });
 
-const getImpactMeta = (points: number, eventHours: number) => {
+const getImpactMeta = (points: number) => {
     const currentLevel =
         impactMilestones.find((item) => points >= item.minPoints) ??
         impactMilestones[impactMilestones.length - 1];
@@ -131,22 +133,50 @@ const getImpactMeta = (points: number, eventHours: number) => {
 
     return {
         currentLevel,
-        eventHours,
         nextLevel,
         points,
         progressPercent,
     };
 };
 
+const getAccountStatusLabel = (status?: User['status']) => {
+    if (status === 'ACTIVE') {
+        return 'Đang hoạt động';
+    }
+
+    if (status === 'LOCKED') {
+        return 'Tạm khóa';
+    }
+
+    if (status === 'DISABLED') {
+        return 'Đã vô hiệu hóa';
+    }
+
+    return 'Chưa xác định';
+};
+
+const getProfileSummary = (user: User) => {
+    if (user.role === ROLES.SINHVIEN) {
+        return 'Backend hiện tại cho phép cập nhật họ tên, email và số điện thoại. Các trường mô tả, liên kết công khai và thống kê chiến dịch sẽ được mở khi backend bổ sung endpoint tương ứng.';
+    }
+
+    return 'Backend hiện tại cho phép cập nhật email tài khoản. Các trường hồ sơ còn lại đang hiển thị theo dữ liệu xác thực và phân quyền hiện có.';
+};
+
+const getReadOnlyBio = (user: User) => {
+    if (user.role === ROLES.SINHVIEN) {
+        return 'Thông tin giới thiệu cá nhân chưa có trường dữ liệu riêng trên backend hiện tại. Hồ sơ đang ưu tiên đồng bộ các dữ liệu xác thực và liên hệ cốt lõi.';
+    }
+
+    return 'Tài khoản quản lý hiện đang đồng bộ từ backend auth/users. Trường giới thiệu sẽ được mở khi backend hỗ trợ hồ sơ mở rộng cho tài khoản vận hành.';
+};
+
 export const ProfileRoute = () => {
     const user = useUser();
+    const queryClient = useQueryClient();
     const { addNotification } = useNotifications();
     const account = user.data;
     const isStudent = account?.role === ROLES.SINHVIEN;
-    const [summary, setSummary] =
-        React.useState<StudentDashboardSummary | null>(null);
-    const [statsError, setStatsError] = React.useState<string | null>(null);
-    const [statsLoading, setStatsLoading] = React.useState(isStudent);
     const [draft, setDraft] = React.useState<ProfileDraft | null>(
         account ? createDraft(account) : null,
     );
@@ -159,70 +189,49 @@ export const ProfileRoute = () => {
         setDraft(createDraft(account));
     }, [account]);
 
-    React.useEffect(() => {
-        if (!isStudent) {
-            setStatsLoading(false);
-            setStatsError(null);
-            setSummary(null);
-            return;
-        }
-
-        let mounted = true;
-        setStatsLoading(true);
-        setStatsError(null);
-
-        getStudentDashboard()
-            .then((response) => {
-                if (!mounted) {
-                    return;
-                }
-
-                setSummary(response);
-            })
-            .catch((error) => {
-                if (!mounted) {
-                    return;
-                }
-
-                const message =
-                    error instanceof Error
-                        ? error.message
-                        : 'Không thể tải thống kê hồ sơ.';
-                setStatsError(message);
-                addNotification({
-                    type: 'error',
-                    title: 'Không thể tải hồ sơ sinh viên',
-                    message,
-                });
-            })
-            .finally(() => {
-                if (mounted) {
-                    setStatsLoading(false);
-                }
+    const updateProfileMutation = useMutation({
+        mutationFn: updateCurrentUserProfile,
+        onSuccess: (updatedUser) => {
+            queryClient.setQueryData(['authenticated-user'], updatedUser);
+            useAuthStore
+                .getState()
+                .setAuth(
+                    updatedUser,
+                    useAuthStore.getState().accessToken,
+                    useAuthStore.getState().refreshToken,
+                );
+            setDraft(createDraft(updatedUser));
+            addNotification({
+                type: 'success',
+                title: 'Đã cập nhật hồ sơ',
+                message: 'Thông tin tài khoản đã được đồng bộ với backend.',
             });
-
-        return () => {
-            mounted = false;
-        };
-    }, [addNotification, isStudent]);
+        },
+    });
 
     if (!account || !draft) {
         return null;
     }
 
     const displayName = getDisplayName(account);
+    const identityCode = getIdentityCode(account);
+    const facultyName = getFacultyName(account);
     const roleLabel = roleLabels[account.role] ?? account.role;
     const lastSyncedText = getLastSyncedText(account);
-    const points = account.totalPoints ?? (summary?.event_hours ?? 0) * 18;
-    const impactMeta = getImpactMeta(points, summary?.event_hours ?? 0);
+    const lastLoginText = getFormattedDateTime(account.lastLoginAt);
+    const points = account.totalPoints ?? 0;
+    const impactMeta = getImpactMeta(points);
+    const readOnlyBio = getReadOnlyBio(account);
+    const canEditStudentFields = isStudent;
+    const saveErrorMessage =
+        updateProfileMutation.error instanceof Error
+            ? updateProfileMutation.error.message
+            : null;
     const initialDraft = createDraft(account);
     const hasLocalChanges =
-        draft.bio !== initialDraft.bio ||
         draft.email !== initialDraft.email ||
-        draft.facultyName !== initialDraft.facultyName ||
         draft.fullName !== initialDraft.fullName ||
-        draft.phone !== initialDraft.phone ||
-        draft.profileLink !== initialDraft.profileLink;
+        draft.phone !== initialDraft.phone;
 
     const handleDraftChange =
         (field: keyof ProfileDraft) =>
@@ -243,14 +252,29 @@ export const ProfileRoute = () => {
             );
         };
 
-    const handleSave = () => {
-        addNotification({
-            type: 'info',
-            title: 'Đang chuẩn bị cập nhật hồ sơ',
-            message: hasLocalChanges
-                ? 'Bạn đã chỉnh sửa dữ liệu cục bộ. Chức năng lưu trực tiếp sẽ được mở khi backend hỗ trợ cập nhật hồ sơ sinh viên.'
-                : 'Trang hồ sơ hiện đang hiển thị dữ liệu đồng bộ từ tài khoản. Chức năng cập nhật trực tiếp sẽ được mở sau.',
-        });
+    const handleSave = async () => {
+        if (!hasLocalChanges) {
+            addNotification({
+                type: 'info',
+                title: 'Không có thay đổi mới',
+                message: 'Hồ sơ hiện đã khớp với dữ liệu backend gần nhất.',
+            });
+            return;
+        }
+
+        try {
+            await updateProfileMutation.mutateAsync({
+                email: draft.email.trim(),
+                ...(canEditStudentFields
+                    ? {
+                          fullName: draft.fullName.trim(),
+                          phone: draft.phone.trim() || undefined,
+                      }
+                    : {}),
+            });
+        } catch {
+            return;
+        }
     };
 
     return (
@@ -328,7 +352,7 @@ export const ProfileRoute = () => {
                                     {displayName}
                                 </h2>
                                 <p className="mt-3 text-[15px] leading-7 text-[#4B5563]">
-                                    {draft.identityCode} · {draft.facultyName}
+                                    {identityCode} · {facultyName}
                                 </p>
                                 <div className="mt-5 grid gap-3 border-t border-[#E5E7EB] pt-5">
                                     <div className="flex items-start gap-3">
@@ -358,7 +382,8 @@ export const ProfileRoute = () => {
                                                 {account.className?.trim() ||
                                                     'Chưa cập nhật lớp'}{' '}
                                                 ·{' '}
-                                                {account.organization?.name?.trim() ||
+                                                {account.managedClubName?.trim() ||
+                                                    account.organization?.name?.trim() ||
                                                     'BK Volunteers'}
                                             </p>
                                         </div>
@@ -393,10 +418,10 @@ export const ProfileRoute = () => {
                                     </p>
                                     <p className="mt-3 text-[15px] leading-7 text-white/80">
                                         {isStudent
-                                            ? `Bạn đã ghi nhận ${impactMeta.eventHours} giờ tình nguyện và ${impactMeta.points.toLocaleString(
+                                            ? `Hệ thống hiện đang đồng bộ ${impactMeta.points.toLocaleString(
                                                   'vi-VN',
-                                              )} điểm tác động trong hệ thống.`
-                                            : 'Tài khoản đang được đồng bộ để sẵn sàng cho các mốc hoạt động tiếp theo.'}
+                                              )} điểm tác động từ hồ sơ người dùng. Các thống kê chiến dịch chi tiết sẽ xuất hiện khi backend bổ sung module sinh viên.`
+                                            : 'Tài khoản đang được đồng bộ từ backend xác thực và sẵn sàng cho các mốc vận hành tiếp theo.'}
                                     </p>
                                 </div>
                                 <Award
@@ -437,7 +462,7 @@ export const ProfileRoute = () => {
                                         Thống kê hoạt động
                                     </p>
                                     <h2 className="mt-2 text-[30px] font-semibold leading-[1.1] text-[#0A0A0A]">
-                                        Hồ sơ tham gia
+                                        Hồ sơ tài khoản
                                     </h2>
                                 </div>
                                 <BadgeCheck
@@ -445,81 +470,56 @@ export const ProfileRoute = () => {
                                     strokeWidth={1.6}
                                 />
                             </div>
-
-                            {statsLoading ? (
-                                <div className="mt-6 border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-5 text-[15px] leading-7 text-[#4B5563]">
-                                    Đang đồng bộ thống kê từ khu vực sinh viên.
+                            <div className="mt-6 grid gap-4">
+                                <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
+                                    <div className="flex items-center gap-3">
+                                        <BadgeCheck
+                                            className="size-5 text-[#0A0A0A]"
+                                            strokeWidth={1.6}
+                                        />
+                                        <span className="text-[16px] leading-7 text-[#0A0A0A]">
+                                            Điểm tác động
+                                        </span>
+                                    </div>
+                                    <span className="text-[28px] font-bold text-[#0A0A0A]">
+                                        {formatCompactMoney(points)}
+                                    </span>
                                 </div>
-                            ) : null}
-
-                            {statsError ? (
-                                <div className="mt-6 border border-[#DC2626] bg-[#FEF2F2] px-4 py-5 text-[15px] leading-7 text-[#991B1B]">
-                                    {statsError}
+                                <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
+                                    <div className="flex items-center gap-3">
+                                        <ShieldCheck
+                                            className="size-5 text-[#0A0A0A]"
+                                            strokeWidth={1.6}
+                                        />
+                                        <span className="text-[16px] leading-7 text-[#0A0A0A]">
+                                            Trạng thái tài khoản
+                                        </span>
+                                    </div>
+                                    <span className="text-[18px] font-semibold text-[#0A0A0A]">
+                                        {getAccountStatusLabel(account.status)}
+                                    </span>
                                 </div>
-                            ) : null}
-
-                            {!statsLoading && !statsError ? (
-                                <div className="mt-6 grid gap-4">
-                                    <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
-                                        <div className="flex items-center gap-3">
-                                            <GraduationCap
-                                                className="size-5 text-[#0A0A0A]"
-                                                strokeWidth={1.6}
-                                            />
-                                            <span className="text-[16px] leading-7 text-[#0A0A0A]">
-                                                Chiến dịch đã tham gia
-                                            </span>
-                                        </div>
-                                        <span className="text-[28px] font-bold text-[#0A0A0A]">
-                                            {summary?.campaigns_count ?? 0}
+                                <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
+                                    <div className="flex items-center gap-3">
+                                        <UserRound
+                                            className="size-5 text-[#0A0A0A]"
+                                            strokeWidth={1.6}
+                                        />
+                                        <span className="text-[16px] leading-7 text-[#0A0A0A]">
+                                            Đăng nhập gần nhất
                                         </span>
                                     </div>
-                                    <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
-                                        <div className="flex items-center gap-3">
-                                            <UserRound
-                                                className="size-5 text-[#0A0A0A]"
-                                                strokeWidth={1.6}
-                                            />
-                                            <span className="text-[16px] leading-7 text-[#0A0A0A]">
-                                                Giờ tình nguyện
-                                            </span>
-                                        </div>
-                                        <span className="text-[28px] font-bold text-[#0A0A0A]">
-                                            {summary?.event_hours ?? 0}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-4">
-                                        <div className="flex items-center gap-3">
-                                            <ShieldCheck
-                                                className="size-5 text-[#0A0A0A]"
-                                                strokeWidth={1.6}
-                                            />
-                                            <span className="text-[16px] leading-7 text-[#0A0A0A]">
-                                                Giấy chứng nhận
-                                            </span>
-                                        </div>
-                                        <span className="text-[28px] font-bold text-[#0A0A0A]">
-                                            {summary?.certificates_count ?? 0}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <HandCoins
-                                                className="size-5 text-[#0A0A0A]"
-                                                strokeWidth={1.6}
-                                            />
-                                            <span className="text-[16px] leading-7 text-[#0A0A0A]">
-                                                Tổng quyên góp
-                                            </span>
-                                        </div>
-                                        <span className="text-[28px] font-bold text-[#0A0A0A]">
-                                            {formatCompactMoney(
-                                                summary?.money_amount ?? 0,
-                                            )}
-                                        </span>
-                                    </div>
+                                    <span className="text-[18px] font-semibold text-[#0A0A0A]">
+                                        {lastLoginText}
+                                    </span>
                                 </div>
-                            ) : null}
+                                <div className="border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-5 text-[15px] leading-7 text-[#4B5563]">
+                                    Backend hiện tại chưa expose thống kê chiến
+                                    dịch, chứng nhận và gây quỹ cho hồ sơ sinh
+                                    viên. Trang này đang ưu tiên dữ liệu thật từ
+                                    `auth/me`.
+                                </div>
+                            </div>
                         </section>
                     </aside>
 
@@ -534,19 +534,22 @@ export const ProfileRoute = () => {
                                         Hồ sơ đã đồng bộ
                                     </h2>
                                     <p className="mt-3 text-[16px] leading-7 text-[#4B5563]">
-                                        Bạn có thể rà soát dữ liệu liên hệ ngay
-                                        trên trang này. Việc lưu trực tiếp sẽ
-                                        được mở khi backend hỗ trợ cập nhật hồ
-                                        sơ cho từng sinh viên.
+                                        {getProfileSummary(account)}
                                     </p>
                                 </div>
 
                                 <button
                                     type="button"
                                     onClick={handleSave}
+                                    disabled={
+                                        updateProfileMutation.isPending ||
+                                        !hasLocalChanges
+                                    }
                                     className="inline-flex h-12 items-center justify-center border border-[#0A0A0A] bg-[#0A0A0A] px-5 text-[14px] font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-[#1F2937]"
                                 >
-                                    Lưu thay đổi
+                                    {updateProfileMutation.isPending
+                                        ? 'Đang lưu...'
+                                        : 'Lưu thay đổi'}
                                 </button>
                             </div>
 
@@ -561,10 +564,11 @@ export const ProfileRoute = () => {
                                         </span>
                                         <input
                                             aria-label="Họ và tên"
-                                            className="broadsheet-input h-12"
+                                            className={`broadsheet-input h-12 ${canEditStudentFields ? '' : 'bg-[#F9FAFB] text-[#4B5563]'}`}
                                             onChange={handleDraftChange(
                                                 'fullName',
                                             )}
+                                            readOnly={!canEditStudentFields}
                                             type="text"
                                             value={draft.fullName}
                                         />
@@ -579,7 +583,7 @@ export const ProfileRoute = () => {
                                             className="broadsheet-input h-12 bg-[#F9FAFB] text-[#4B5563]"
                                             readOnly
                                             type="text"
-                                            value={draft.identityCode}
+                                            value={identityCode}
                                         />
                                     </label>
 
@@ -589,12 +593,10 @@ export const ProfileRoute = () => {
                                         </span>
                                         <input
                                             aria-label="Khoa / đơn vị đào tạo"
-                                            className="broadsheet-input h-12"
-                                            onChange={handleDraftChange(
-                                                'facultyName',
-                                            )}
+                                            className="broadsheet-input h-12 bg-[#F9FAFB] text-[#4B5563]"
+                                            readOnly
                                             type="text"
-                                            value={draft.facultyName}
+                                            value={facultyName}
                                         />
                                     </label>
 
@@ -620,9 +622,9 @@ export const ProfileRoute = () => {
                                     </span>
                                     <textarea
                                         aria-label="Giới thiệu bản thân"
-                                        className="min-h-[150px] border border-[#D1D5DB] bg-white px-3 py-3 text-[16px] leading-7 text-[#0A0A0A] outline-none transition focus:border-2 focus:border-[#0A0A0A]"
-                                        onChange={handleDraftChange('bio')}
-                                        value={draft.bio}
+                                        className="min-h-[150px] border border-[#D1D5DB] bg-[#F9FAFB] px-3 py-3 text-[16px] leading-7 text-[#4B5563] outline-none"
+                                        readOnly
+                                        value={readOnlyBio}
                                     />
                                 </label>
 
@@ -633,11 +635,12 @@ export const ProfileRoute = () => {
                                         </span>
                                         <input
                                             aria-label="Số điện thoại"
-                                            className="broadsheet-input h-12"
+                                            className={`broadsheet-input h-12 ${canEditStudentFields ? '' : 'bg-[#F9FAFB] text-[#4B5563]'}`}
                                             onChange={handleDraftChange(
                                                 'phone',
                                             )}
                                             placeholder="Ví dụ: 0901 234 567"
+                                            readOnly={!canEditStudentFields}
                                             type="tel"
                                             value={draft.phone}
                                         />
@@ -649,22 +652,27 @@ export const ProfileRoute = () => {
                                         </span>
                                         <input
                                             aria-label="Facebook / LinkedIn"
-                                            className="broadsheet-input h-12"
-                                            onChange={handleDraftChange(
-                                                'profileLink',
-                                            )}
-                                            placeholder="Dán liên kết hồ sơ công khai nếu cần"
+                                            className="broadsheet-input h-12 bg-[#F9FAFB] text-[#4B5563]"
+                                            placeholder="Backend chưa hỗ trợ lưu liên kết hồ sơ công khai"
+                                            readOnly
                                             type="text"
-                                            value={draft.profileLink}
+                                            value=""
                                         />
                                     </label>
                                 </div>
                             </form>
 
+                            {saveErrorMessage ? (
+                                <div className="mt-6 border border-[#DC2626] bg-[#FEF2F2] px-4 py-5 text-[15px] leading-7 text-[#991B1B]">
+                                    {saveErrorMessage}
+                                </div>
+                            ) : null}
+
                             <div className="mt-6 broadsheet-note">
-                                Mọi chỉnh sửa trên trang này hiện chỉ được giữ ở
-                                phiên làm việc cục bộ. Dữ liệu gốc vẫn được đồng
-                                bộ từ tài khoản và lịch sử hoạt động của bạn.
+                                Dữ liệu hiển thị trên trang này hiện được đồng
+                                bộ trực tiếp từ backend `auth/me`. Các trường
+                                chưa có endpoint cập nhật riêng được giữ ở chế
+                                độ chỉ đọc để tránh ghi giả lập trên frontend.
                             </div>
                         </section>
 

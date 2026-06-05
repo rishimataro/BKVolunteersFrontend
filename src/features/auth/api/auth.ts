@@ -22,6 +22,12 @@ type ResetPasswordPayload = {
     newPasswordConfirm: string;
 };
 
+export type UpdateCurrentUserProfilePayload = {
+    email: string;
+    fullName?: string;
+    phone?: string;
+};
+
 export const getUser = async (): Promise<User | null> => {
     try {
         return await api.get('/auth/me');
@@ -69,6 +75,12 @@ export const changePassword = (
     data: ChangePasswordInput,
 ): Promise<GeneralResponse> => {
     return api.patch('/auth/change-password', data);
+};
+
+export const updateCurrentUserProfile = (
+    data: UpdateCurrentUserProfilePayload,
+): Promise<User> => {
+    return api.patch('/auth/me', data);
 };
 
 export const sendVerificationEmail = (

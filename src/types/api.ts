@@ -14,11 +14,7 @@ export type Meta = {
     total_pages?: number;
 };
 
-export type UserRole =
-    | 'SINHVIEN'
-    | 'LCD'
-    | 'CLB'
-    | 'DOANTRUONG';
+export type UserRole = 'SINHVIEN' | 'LCD' | 'CLB' | 'DOANTRUONG';
 
 export type AccountType = 'STUDENT' | 'OPERATOR';
 export type Role = UserRole;
@@ -143,7 +139,10 @@ export type User = Entity<{
     phone?: string | null;
     totalPoints?: number;
     updatedAt?: number | string | Date;
+    lastLoginAt?: number | string | Date | null;
     accountType?: AccountType;
+    facultyName?: string | null;
+    managedClubName?: string | null;
     organizationId?: string | null;
     organization?: {
         id: string;

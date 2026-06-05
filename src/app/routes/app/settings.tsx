@@ -3,18 +3,21 @@ import {
     Globe,
     Laptop2,
     Link2,
+    LogOut,
     ShieldCheck,
+    ShieldOff,
     Smartphone,
     UserRoundCheck,
 } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 import { Head } from '@/components/seo';
 import { Button } from '@/components/ui/button';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
-import { ROLES, useUser } from '@/features/auth';
+import { ROLES, useLogout, useUser } from '@/features/auth';
 import { ChangePasswordPanel } from '@/features/auth/components/change-password-panel';
+import type { User } from '@/types/api';
 
 const roleLabels: Record<string, string> = {
     [ROLES.SINHVIEN]: 'Sinh viên',
@@ -30,7 +33,9 @@ const getMaskedEmail = (email: string) => {
         return email;
     }
 
-    return `${localPart.slice(0, 1)}${'•'.repeat(Math.max(localPart.length - 2, 1))}${localPart.slice(-1)}@${domain}`;
+    return `${localPart.slice(0, 1)}${'•'.repeat(
+        Math.max(localPart.length - 2, 1),
+    )}${localPart.slice(-1)}@${domain}`;
 };
 
 const getBrowserLabel = (userAgent: string) => {
@@ -89,8 +94,52 @@ const getCurrentSession = () => {
     };
 };
 
+const formatDateTime = (value?: User['lastLoginAt']) => {
+    if (!value) {
+        return 'Chưa ghi nhận';
+    }
+
+    return new Intl.DateTimeFormat('vi-VN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    }).format(new Date(value));
+};
+
+const getAccountStatusLabel = (status?: User['status']) => {
+    if (status === 'LOCKED') {
+        return 'Tạm khóa';
+    }
+
+    if (status === 'DISABLED') {
+        return 'Vô hiệu';
+    }
+
+    return 'Đang hoạt động';
+};
+
+const getAccountStatusClasses = (status?: User['status']) => {
+    if (status === 'LOCKED' || status === 'DISABLED') {
+        return {
+            panel: 'border-[#991B1B] bg-[#FEF2F2] text-[#991B1B]',
+            badge: 'border-[#991B1B] text-[#991B1B]',
+        };
+    }
+
+    return {
+        panel: 'border-[#166534] bg-[#F0FDF4] text-[#166534]',
+        badge: 'border-[#166534] text-[#166534]',
+    };
+};
+
 export const SettingsRoute = () => {
+    const navigate = useNavigate();
     const user = useUser();
+    const logout = useLogout({
+        onSuccess: () => navigate(paths.auth.login.getHref()),
+    });
     const { addNotification } = useNotifications();
 
     if (!user.data) {
@@ -100,13 +149,16 @@ export const SettingsRoute = () => {
     const currentSession = getCurrentSession();
     const roleLabel = roleLabels[user.data.role] ?? user.data.role;
     const maskedEmail = getMaskedEmail(user.data.email);
+    const accountStatusLabel = getAccountStatusLabel(user.data.status);
+    const accountStatusClasses = getAccountStatusClasses(user.data.status);
+    const lastLoginText = formatDateTime(user.data.lastLoginAt);
 
     const handleUnavailableFeature = (featureName: string) => {
         addNotification({
             type: 'info',
-            title: `${featureName} đang được chuẩn bị`,
+            title: `${featureName} chưa sẵn sàng`,
             message:
-                'Chức năng này sẽ được bật khi hệ thống đồng bộ đầy đủ nhật ký đăng nhập và lớp xác thực phụ.',
+                'Backend hiện mới hỗ trợ phiên đăng nhập hiện tại. Nhật ký nhiều thiết bị, 2FA và đăng xuất hàng loạt sẽ được bật ở sprint sau.',
         });
     };
 
@@ -125,23 +177,35 @@ export const SettingsRoute = () => {
                             </h1>
                             <p className="mt-4 max-w-3xl text-[18px] leading-[1.7] text-[#4B5563]">
                                 Quản lý mật khẩu, theo dõi phiên đăng nhập hiện
-                                tại và rà soát các lớp bảo vệ đang áp dụng cho
-                                tài khoản sinh viên của bạn.
+                                tại và rà soát những lớp bảo vệ backend đang hỗ
+                                trợ cho tài khoản tình nguyện viên.
                             </p>
                         </div>
 
-                        <div className="border border-[#166534] bg-[#F0FDF4] px-5 py-4 text-[#166534] xl:max-w-[320px]">
+                        <div
+                            className={`px-5 py-4 xl:max-w-[340px] ${accountStatusClasses.panel} border`}
+                        >
                             <div className="flex items-start gap-3">
-                                <ShieldCheck
-                                    className="mt-0.5 size-5"
-                                    strokeWidth={1.75}
-                                />
+                                {user.data.status === 'ACTIVE' ? (
+                                    <ShieldCheck
+                                        className="mt-0.5 size-5"
+                                        strokeWidth={1.75}
+                                    />
+                                ) : (
+                                    <ShieldOff
+                                        className="mt-0.5 size-5"
+                                        strokeWidth={1.75}
+                                    />
+                                )}
                                 <div>
-                                    <p className="broadsheet-kicker text-[#166534]">
+                                    <p className="broadsheet-kicker">
                                         Trạng thái tài khoản
                                     </p>
                                     <p className="mt-2 text-[18px] font-semibold leading-7">
-                                        Tài khoản đang được bảo vệ ổn định
+                                        {accountStatusLabel}
+                                    </p>
+                                    <p className="mt-2 text-[14px] leading-6">
+                                        Đăng nhập gần nhất: {lastLoginText}
                                     </p>
                                 </div>
                             </div>
@@ -170,7 +234,7 @@ export const SettingsRoute = () => {
                 <section className="grid gap-6 pt-8 lg:grid-cols-12">
                     <section className="border border-[#D1D5DB] bg-white p-6 lg:col-span-7">
                         <ChangePasswordPanel
-                            description="Cập nhật mật khẩu truy cập, kiểm tra các điều kiện bắt buộc và thay đổi trực tiếp ngay trên trang cài đặt bảo mật."
+                            description="Cập nhật mật khẩu truy cập và lưu thay đổi trực tiếp trên trang cài đặt bảo mật. Nếu backend không phản hồi, biểu mẫu sẽ hiển thị lỗi cụ thể."
                             submitLabel="Cập nhật mật khẩu"
                             title="Thay đổi mật khẩu"
                         />
@@ -189,13 +253,13 @@ export const SettingsRoute = () => {
                                     Xác thực bổ sung
                                 </p>
                                 <h2 className="mt-2 text-[30px] font-semibold leading-[1.15] text-[#0A0A0A]">
-                                    Xác thực hai lớp
+                                    Tình trạng bảo vệ hiện tại
                                 </h2>
                                 <p className="mt-3 text-[16px] leading-7 text-[#4B5563]">
-                                    Hệ thống hiện ưu tiên mật khẩu và Email Đại
-                                    học để bảo vệ tài khoản. Lớp xác thực bổ
-                                    sung sẽ được bật khi backend hoàn tất đồng
-                                    bộ thiết bị.
+                                    Sprint 1 đang dùng dữ liệu thật từ phiên
+                                    đăng nhập hiện tại, trạng thái tài khoản và
+                                    Email đại học. Những lớp như 2FA nhiều thiết
+                                    bị vẫn được giữ ở trạng thái chờ backend.
                                 </p>
                             </div>
                         </div>
@@ -212,12 +276,40 @@ export const SettingsRoute = () => {
                                         </p>
                                         <p className="mt-1 text-[14px] leading-6 text-[#4B5563]">
                                             Dùng để nhận cảnh báo đăng nhập và
-                                            hướng dẫn khôi phục tài khoản.
+                                            hỗ trợ khôi phục tài khoản.
                                         </p>
                                     </div>
                                     <span className="border border-[#166534] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#166534]">
                                         Đang hoạt động
                                     </span>
+                                </div>
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="border border-[#D1D5DB] p-4">
+                                    <p className="broadsheet-kicker">
+                                        Vai trò hiện tại
+                                    </p>
+                                    <p className="mt-3 text-[22px] font-semibold text-[#0A0A0A]">
+                                        {roleLabel}
+                                    </p>
+                                    <p className="mt-2 text-[14px] leading-6 text-[#4B5563]">
+                                        Quyền truy cập đang được lấy trực tiếp
+                                        từ phiên `auth/me`.
+                                    </p>
+                                </div>
+
+                                <div className="border border-[#D1D5DB] p-4">
+                                    <p className="broadsheet-kicker">
+                                        Lần đăng nhập gần nhất
+                                    </p>
+                                    <p className="mt-3 text-[22px] font-semibold text-[#0A0A0A]">
+                                        {lastLoginText}
+                                    </p>
+                                    <p className="mt-2 text-[14px] leading-6 text-[#4B5563]">
+                                        Dữ liệu này được backend cập nhật sau
+                                        mỗi lần đăng nhập thành công.
+                                    </p>
                                 </div>
                             </div>
 
@@ -229,9 +321,10 @@ export const SettingsRoute = () => {
                                     Chưa có điều khiển riêng cho sinh viên
                                 </p>
                                 <p className="mt-2 text-[15px] leading-7 text-[#4B5563]">
-                                    Khi tính năng hoàn tất, bạn sẽ có thể xác
-                                    nhận đăng nhập từ thiết bị lạ qua Email Đại
-                                    học hoặc lớp xác thực phụ.
+                                    Khi backend hoàn tất đồng bộ nhật ký thiết
+                                    bị và xác thực phụ, trang này sẽ hiển thị
+                                    thao tác bật hoặc tắt trực tiếp thay vì chỉ
+                                    thông báo.
                                 </p>
                                 <Button
                                     className="mt-5 h-11 border border-[#0A0A0A] bg-white px-5 text-[15px] font-semibold text-[#0A0A0A] hover:bg-[#F9FAFB]"
@@ -249,10 +342,11 @@ export const SettingsRoute = () => {
                             </div>
 
                             <div className="broadsheet-note">
-                                Vai trò hiện tại: <strong>{roleLabel}</strong>.
-                                Tài khoản sinh viên được bảo vệ bằng mật khẩu,
-                                phiên đăng nhập hiện tại và xác minh qua Email
-                                Đại học.
+                                Trạng thái tài khoản hiện tại:
+                                <strong> {accountStatusLabel}</strong>. Dữ liệu
+                                quyền và phiên đang dùng đều lấy từ backend
+                                thật; chỉ riêng nhiều thiết bị và 2FA là chưa có
+                                endpoint.
                             </div>
                         </div>
                     </section>
@@ -268,24 +362,38 @@ export const SettingsRoute = () => {
                                 Quản lý phiên đăng nhập
                             </h2>
                             <p className="mt-3 max-w-3xl text-[16px] leading-7 text-[#4B5563]">
-                                Dữ liệu hiện tại chỉ xác nhận phiên đang mở trên
-                                thiết bị này. Nhật ký nhiều thiết bị và thao tác
-                                đăng xuất hàng loạt sẽ được bổ sung sau.
+                                Sprint 1 cho phép kiểm tra phiên hiện tại và
+                                đăng xuất ngay khỏi thiết bị này. Nhật ký nhiều
+                                thiết bị và đăng xuất hàng loạt vẫn đang chờ
+                                backend.
                             </p>
                         </div>
 
-                        <Button
-                            className="h-11 border border-[#DC2626] bg-white px-5 text-[15px] font-semibold text-[#DC2626] hover:bg-[#FEF2F2]"
-                            onClick={() =>
-                                handleUnavailableFeature(
-                                    'Đăng xuất tất cả phiên',
-                                )
-                            }
-                            type="button"
-                            variant="ghost"
-                        >
-                            Đăng xuất khỏi thiết bị khác
-                        </Button>
+                        <div className="flex flex-col gap-3 sm:flex-row">
+                            <Button
+                                className="h-11 border border-[#0A0A0A] bg-[#0A0A0A] px-5 text-[15px] font-semibold text-white hover:bg-[#1F2937]"
+                                disabled={logout.isPending}
+                                onClick={() => logout.mutate({})}
+                                type="button"
+                            >
+                                <LogOut className="mr-2 size-4" />
+                                {logout.isPending
+                                    ? 'Đang đăng xuất...'
+                                    : 'Đăng xuất phiên hiện tại'}
+                            </Button>
+                            <Button
+                                className="h-11 border border-[#DC2626] bg-white px-5 text-[15px] font-semibold text-[#DC2626] hover:bg-[#FEF2F2]"
+                                onClick={() =>
+                                    handleUnavailableFeature(
+                                        'Đăng xuất tất cả phiên',
+                                    )
+                                }
+                                type="button"
+                                variant="ghost"
+                            >
+                                Đăng xuất khỏi thiết bị khác
+                            </Button>
+                        </div>
                     </div>
 
                     <div className="overflow-x-auto">
@@ -325,7 +433,7 @@ export const SettingsRoute = () => {
                                             </div>
                                             <div>
                                                 <p className="text-[16px] font-semibold text-[#0A0A0A]">
-                                                    {currentSession.device} •{' '}
+                                                    {currentSession.device} ·{' '}
                                                     {currentSession.browser}
                                                 </p>
                                                 <p className="mt-1 text-[14px] leading-6 text-[#4B5563]">
@@ -338,13 +446,16 @@ export const SettingsRoute = () => {
                                         {currentSession.location}
                                     </td>
                                     <td className="px-6 py-5">
-                                        <span className="border border-[#166534] px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#166534]">
+                                        <span
+                                            className={`px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.08em] ${accountStatusClasses.badge} border`}
+                                        >
                                             Phiên hiện tại
                                         </span>
                                     </td>
                                     <td className="px-6 py-5 text-[15px] leading-7 text-[#4B5563]">
-                                        Được ghi nhận sau khi bạn đăng nhập
-                                        thành công vào hệ thống.
+                                        Đăng nhập gần nhất: {lastLoginText}. Khi
+                                        backend có session audit, bảng này sẽ mở
+                                        rộng thêm thiết bị khác.
                                     </td>
                                 </tr>
                             </tbody>
@@ -367,9 +478,10 @@ export const SettingsRoute = () => {
                                 quan.
                             </h2>
                             <p className="mt-4 text-[16px] leading-7 text-white/80">
-                                Hệ thống không công khai thông tin ngoài phạm vi
-                                chương trình tình nguyện nếu không có ngữ cảnh
-                                học vụ hoặc xác minh tham gia tương ứng.
+                                Sprint 1 mới hiển thị chính sách ở mức cam kết
+                                vận hành. Trang tài liệu chi tiết và nhật ký
+                                truy cập dữ liệu sẽ được bổ sung khi backend sẵn
+                                sàng.
                             </p>
                         </div>
                         <div className="flex flex-col gap-3">

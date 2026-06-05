@@ -1,12 +1,13 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { ProfileRoute } from '../profile';
 
 const addNotification = vi.fn();
 const mockUseUser = vi.fn();
-const getStudentDashboard = vi.fn();
+const updateCurrentUserProfile = vi.fn();
 
 vi.mock('@/components/ui/notifications', () => ({
     useNotifications: () => ({
@@ -24,25 +25,38 @@ vi.mock('@/features/auth', () => ({
     useUser: () => mockUseUser(),
 }));
 
-vi.mock('@/features/campaign/api/student', () => ({
-    getStudentDashboard: (...args: unknown[]) => getStudentDashboard(...args),
+vi.mock('@/features/auth/api/auth', () => ({
+    updateCurrentUserProfile: (...args: unknown[]) =>
+        updateCurrentUserProfile(...args),
+}));
+
+vi.mock('@/store/auth-store', () => ({
+    useAuthStore: {
+        getState: () => ({
+            accessToken: 'token',
+            refreshToken: 'refresh',
+            setAuth: vi.fn(),
+        }),
+    },
 }));
 
 const renderRoute = () =>
     render(
-        <MemoryRouter initialEntries={['/app/profile']}>
-            <Routes>
-                <Route path="/app/profile" element={<ProfileRoute />} />
-                <Route
-                    path="/app/settings"
-                    element={<div>Trang bảo mật</div>}
-                />
-                <Route
-                    path="/app/change-password"
-                    element={<div>Trang đổi mật khẩu</div>}
-                />
-            </Routes>
-        </MemoryRouter>,
+        <QueryClientProvider client={new QueryClient()}>
+            <MemoryRouter initialEntries={['/app/profile']}>
+                <Routes>
+                    <Route path="/app/profile" element={<ProfileRoute />} />
+                    <Route
+                        path="/app/settings"
+                        element={<div>Trang bảo mật</div>}
+                    />
+                    <Route
+                        path="/app/change-password"
+                        element={<div>Trang đổi mật khẩu</div>}
+                    />
+                </Routes>
+            </MemoryRouter>
+        </QueryClientProvider>,
     );
 
 describe('ProfileRoute', () => {
@@ -69,23 +83,30 @@ describe('ProfileRoute', () => {
                         name: 'Khoa Công nghệ thông tin',
                     },
                 },
+                status: 'ACTIVE',
+                lastLoginAt: '2026-06-05T08:30:00.000Z',
+                facultyName: 'Khoa Công nghệ thông tin',
             },
         });
-
-        getStudentDashboard.mockResolvedValue({
-            campaigns_count: 12,
-            money_amount: 2500000,
-            money_donations_count: 3,
-            item_received_quantity: 5,
-            item_received_count: 2,
-            event_hours: 45,
-            event_completed_count: 6,
-            certificates_count: 4,
-            recent_activities: [],
+        updateCurrentUserProfile.mockResolvedValue({
+            id: 'student-1',
+            role: 'SINHVIEN',
+            username: 'nguyenvanan',
+            email: 'an.nguyen@sv.dut.udn.vn',
+            firstName: 'An',
+            lastName: 'Nguyễn Văn',
+            fullName: 'Nguyễn Văn An',
+            studentCode: '20216042',
+            className: '22TCLC_DT1',
+            phone: '0901234567',
+            totalPoints: 840,
+            facultyName: 'Khoa Công nghệ thông tin',
+            status: 'ACTIVE',
+            lastLoginAt: '2026-06-05T08:30:00.000Z',
         });
     });
 
-    it('renders the student profile layout with synchronized statistics', async () => {
+    it('renders the student profile layout with backend-backed account data', async () => {
         renderRoute();
 
         await waitFor(() => {
@@ -101,13 +122,11 @@ describe('ProfileRoute', () => {
             screen.getByDisplayValue('Khoa Công nghệ thông tin'),
         ).toBeTruthy();
         expect(screen.getByText('Đại sứ Vàng')).toBeTruthy();
-        expect(screen.getByText('Chiến dịch đã tham gia')).toBeTruthy();
-        expect(screen.getByText('12')).toBeTruthy();
-        expect(screen.getByText('2,5 triệu')).toBeTruthy();
+        expect(screen.getByText('Đăng nhập gần nhất')).toBeTruthy();
         expect(screen.getByText('Đi tới bảo mật')).toBeTruthy();
     });
 
-    it('shows an information toast when saving local-only profile edits', async () => {
+    it('calls profile update API and shows success feedback when saving', async () => {
         renderRoute();
 
         await waitFor(() => {
@@ -122,17 +141,28 @@ describe('ProfileRoute', () => {
 
         fireEvent.click(screen.getByRole('button', { name: 'Lưu thay đổi' }));
 
+        await waitFor(() => {
+            expect(updateCurrentUserProfile).toHaveBeenCalledWith(
+                {
+                    email: 'an.nguyen@sv.dut.udn.vn',
+                    fullName: 'Nguyễn Văn An',
+                    phone: '0901234567',
+                },
+                expect.anything(),
+            );
+        });
+
         expect(addNotification).toHaveBeenCalledWith(
             expect.objectContaining({
-                type: 'info',
-                title: 'Đang chuẩn bị cập nhật hồ sơ',
+                type: 'success',
+                title: 'Đã cập nhật hồ sơ',
             }),
         );
     });
 
-    it('still renders account information when dashboard statistics fail', async () => {
-        getStudentDashboard.mockRejectedValue(
-            new Error('Không thể tải thống kê hồ sơ.'),
+    it('shows inline error feedback when profile update fails', async () => {
+        updateCurrentUserProfile.mockRejectedValue(
+            new Error('Không thể kết nối tới máy chủ.'),
         );
 
         renderRoute();
@@ -143,18 +173,15 @@ describe('ProfileRoute', () => {
             ).toBeTruthy();
         });
 
+        fireEvent.change(screen.getByLabelText('Số điện thoại'), {
+            target: { value: '0901234567' },
+        });
+        fireEvent.click(screen.getByRole('button', { name: 'Lưu thay đổi' }));
+
         await waitFor(() => {
             expect(
-                screen.getByText('Không thể tải thống kê hồ sơ.'),
+                screen.getByText('Không thể kết nối tới máy chủ.'),
             ).toBeTruthy();
         });
-
-        expect(screen.getByText('Nguyễn Văn An')).toBeTruthy();
-        expect(addNotification).toHaveBeenCalledWith(
-            expect.objectContaining({
-                type: 'error',
-                title: 'Không thể tải hồ sơ sinh viên',
-            }),
-        );
     });
 });
