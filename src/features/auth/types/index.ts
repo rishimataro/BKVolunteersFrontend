@@ -3,9 +3,15 @@ import { z } from 'zod';
 export const loginInputSchema = z.object({
     username: z
         .string()
-        .min(3, 'Dinh danh phai co it nhat 3 ky tu')
-        .max(80, 'Dinh danh khong duoc qua 80 ky tu'),
-    password: z.string().min(6, 'Mat khau phai co it nhat 6 ky tu'),
+        .trim()
+        .min(1, 'Vui lòng nhập định danh.')
+        .min(3, 'Định danh phải có ít nhất 3 ký tự')
+        .max(80, 'Định danh không được quá 80 ký tự'),
+    password: z
+        .string()
+        .min(1, 'Vui lòng nhập mật khẩu.')
+        .min(6, 'Mật khẩu phải có ít nhất 6 ký tự')
+        .max(50, 'Mật khẩu không được quá 50 ký tự'),
 });
 
 export type LoginInput = z.infer<typeof loginInputSchema>;
@@ -14,44 +20,47 @@ export const registerInputSchema = z
     .object({
         email: z
             .string()
-            .min(1, 'Email la bat buoc')
-            .email('Email khong hop le')
-            .endsWith('dut.udn.vn', 'Email phai ket thuc bang @sv[so].dut.udn.vn'),
-        firstName: z.string().min(1, 'Ten la bat buoc'),
-        lastName: z.string().min(1, 'Ho la bat buoc'),
-        username: z.string().min(3, 'Ten dang nhap phai co it nhat 3 ky tu'),
-        password: z.string().min(6, 'Mat khau phai co it nhat 6 ky tu'),
-        passwordConfirmed: z.string().min(1, 'Xac nhan mat khau la bat buoc'),
+            .min(1, 'Email là bắt buộc')
+            .email('Email không hợp lệ')
+            .endsWith(
+                'dut.udn.vn',
+                'Email phải kết thúc bằng @sv[so].dut.udn.vn',
+            ),
+        firstName: z.string().min(1, 'Tên là bắt buộc'),
+        lastName: z.string().min(1, 'Họ là bắt buộc'),
+        username: z.string().min(3, 'Tên đăng nhập phải có ít nhất 3 ký tự'),
+        password: z.string().min(6, 'Mật khẩu phải có ít nhất 6 ký tự'),
+        passwordConfirmed: z.string().min(1, 'Xác nhận mật khẩu là bắt buộc'),
     })
     .refine((data) => data.password === data.passwordConfirmed, {
-        message: 'Mat khau khong khop',
+        message: 'Mật khẩu không khớp',
         path: ['passwordConfirmed'],
     });
 
 export type RegisterInput = z.infer<typeof registerInputSchema>;
 
 export const forgotPasswordInputSchema = z.object({
-    email: z.string().min(1, 'Email la bat buoc').email('Email khong hop le'),
+    email: z.string().min(1, 'Email là bắt buộc').email('Email không hợp lệ'),
 });
 
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordInputSchema>;
 
 export const resetPasswordInputSchema = z.object({
-    newPassword: z.string().min(6, 'Mat khau moi phai co it nhat 6 ky tu'),
+    newPassword: z.string().min(6, 'Mật khẩu mới phải có ít nhất 6 ký tự'),
 });
 
 export type ResetPasswordInput = z.infer<typeof resetPasswordInputSchema>;
 
 export const changePasswordInputSchema = z
     .object({
-        oldPassword: z.string().min(8, 'Mat khau cu phai co it nhat 8 ky tu'),
-        newPassword: z.string().min(8, 'Mat khau moi phai co it nhat 8 ky tu'),
+        oldPassword: z.string().min(8, 'Mật khẩu cũ phải có ít nhất 8 ký tự'),
+        newPassword: z.string().min(8, 'Mật khẩu mới phải có ít nhất 8 ký tự'),
         newPasswordConfirm: z
             .string()
-            .min(8, 'Xac nhan mat khau phai co it nhat 8 ky tu'),
+            .min(8, 'Xác nhận mật khẩu phải có ít nhất 8 ký tự'),
     })
     .refine((data) => data.newPassword === data.newPasswordConfirm, {
-        message: 'Mat khau xac nhan khong khop',
+        message: 'Mật khẩu xác nhận không khớp',
         path: ['newPasswordConfirm'],
     });
 

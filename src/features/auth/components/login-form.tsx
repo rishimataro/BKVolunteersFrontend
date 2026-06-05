@@ -8,11 +8,17 @@ import { Link } from '@/components/ui/link';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
 import { MicrosoftIcon } from '@/components/ui/icon';
+import { loginInputSchema } from '../types';
 import { useLogin } from '../lib/auth-provider';
 
 type LoginFormErrors = {
     username?: string;
     password?: string;
+};
+
+type LoginFormValues = {
+    username: string;
+    password: string;
 };
 
 const decorativeIcons = [
@@ -41,86 +47,164 @@ const decorativeIcons = [
 export const LoginForm = () => {
     const { addNotification } = useNotifications();
     const login = useLogin();
-    const [username, setUsername] = React.useState('');
+    const [identifier, setIdentifier] = React.useState('');
     const [password, setPassword] = React.useState('');
     const [showPassword, setShowPassword] = React.useState(false);
     const [errors, setErrors] = React.useState<LoginFormErrors>({});
+    const [touchedFields, setTouchedFields] = React.useState<
+        Record<keyof LoginFormErrors, boolean>
+    >({
+        username: false,
+        password: false,
+    });
+
+    const validateValues = React.useCallback((values: LoginFormValues) => {
+        const parsedValues = loginInputSchema.safeParse(values);
+
+        if (parsedValues.success) {
+            return {};
+        }
+
+        return parsedValues.error.issues.reduce<LoginFormErrors>(
+            (nextErrors, issue) => {
+                const field = issue.path[0];
+
+                if (
+                    (field === 'username' || field === 'password') &&
+                    !nextErrors[field]
+                ) {
+                    nextErrors[field] = issue.message;
+                }
+
+                return nextErrors;
+            },
+            {},
+        );
+    }, []);
+
+    const updateFieldState = React.useCallback(
+        (
+            field: keyof LoginFormErrors,
+            value: string,
+            nextValues?: Partial<LoginFormValues>,
+        ) => {
+            const values: LoginFormValues = {
+                username:
+                    nextValues?.username ??
+                    (field === 'username' ? value : identifier),
+                password:
+                    nextValues?.password ??
+                    (field === 'password' ? value : password),
+            };
+
+            if (field === 'username') {
+                setIdentifier(value);
+            } else {
+                setPassword(value);
+            }
+
+            if (!touchedFields[field]) {
+                if (errors[field]) {
+                    setErrors((current) => ({
+                        ...current,
+                        [field]: undefined,
+                    }));
+                }
+                return;
+            }
+
+            const nextErrors = validateValues(values);
+
+            setErrors((current) => ({
+                ...current,
+                [field]: nextErrors[field],
+            }));
+        },
+        [errors, identifier, password, touchedFields, validateValues],
+    );
+
+    const normalizeLoginError = React.useCallback((error: unknown) => {
+        if (!Axios.isAxiosError(error)) {
+            return 'Đăng nhập thất bại, vui lòng thử lại.';
+        }
+
+        const rawMessage =
+            (error.response?.data as { message?: string } | undefined)
+                ?.message ?? error.message;
+        const normalizedMessage = rawMessage.toLowerCase();
+
+        if (
+            normalizedMessage.includes('tai khoan da bi khoa hoac vo hieu hoa')
+        ) {
+            return 'Tài khoản đã bị khóa hoặc vô hiệu hóa.';
+        }
+
+        if (
+            normalizedMessage.includes('identifier hoac mat khau khong hop le')
+        ) {
+            return 'Thông tin đăng nhập không hợp lệ.';
+        }
+
+        if (normalizedMessage.includes('identifier va mat khau la bat buoc')) {
+            return 'Vui lòng nhập định danh và mật khẩu.';
+        }
+
+        return rawMessage || 'Đăng nhập thất bại, vui lòng thử lại.';
+    }, []);
+
+    const onFieldBlur = React.useCallback(
+        (field: keyof LoginFormErrors) => {
+            setTouchedFields((current) => ({
+                ...current,
+                [field]: true,
+            }));
+
+            const nextErrors = validateValues({
+                username: identifier.trim(),
+                password,
+            });
+
+            setErrors((current) => ({
+                ...current,
+                [field]: nextErrors[field],
+            }));
+        },
+        [identifier, password, validateValues],
+    );
 
     const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        const isUsernameValid = validateField('username', username);
-        const isPasswordValid = validateField('password', password);
+        const values = {
+            username: identifier.trim(),
+            password,
+        };
+        const nextErrors = validateValues(values);
 
-        if (!isUsernameValid || !isPasswordValid) {
+        setTouchedFields({
+            username: true,
+            password: true,
+        });
+        setErrors(nextErrors);
+
+        if (Object.keys(nextErrors).length > 0) {
             return;
         }
 
         try {
-            await login.mutateAsync({
-                username: username.trim(),
-                password,
-            });
+            await login.mutateAsync(values);
             addNotification({
                 type: 'success',
-                title: 'Dang nhap thanh cong',
-                message: 'Phien dang nhap da duoc tao.',
+                title: 'Đăng nhập thành công',
+                message: 'Phiên đăng nhập đã được tạo.',
             });
         } catch (error) {
-            const message = Axios.isAxiosError(error)
-                ? ((error.response?.data as { message?: string } | undefined)
-                      ?.message ?? error.message)
-                : 'Dang nhap that bai, vui long thu lai.';
-
             addNotification({
                 type: 'error',
-                title: 'Dang nhap that bai',
-                message,
+                title: 'Đăng nhập thất bại',
+                message: normalizeLoginError(error),
             });
         }
-    };
-
-    const validateField = (
-        field: keyof LoginFormErrors,
-        value: string,
-    ): boolean => {
-        if (!value.trim()) {
-            setErrors((current) => ({
-                ...current,
-                [field]:
-                    field === 'username'
-                        ? 'Vui lòng nhập tên đăng nhập.'
-                        : 'Vui lòng nhập mật khẩu.',
-            }));
-            return false;
-        }
-
-        if (field === 'password' && value.length < 6) {
-            setErrors((current) => ({
-                ...current,
-                password: 'Mật khẩu phải có ít nhất 6 ký tự.',
-            }));
-            return false;
-        }
-
-        if (field === 'username' && value.length < 3) {
-            setErrors((current) => ({
-                ...current,
-                username: 'Tên đăng nhập phải có ít nhất 3 ký tự.',
-            }));
-            return false;
-        }
-
-        setErrors((current) => {
-            if (!current[field]) return current;
-
-            return {
-                ...current,
-                [field]: undefined,
-            };
-        });
-
-        return true;
     };
 
     const onMicrosoftClick = () => {
@@ -167,19 +251,24 @@ export const LoginForm = () => {
                                         htmlFor="username"
                                         className="block mb-2 text-base font-semibold sm:text-lg text-slate-600"
                                     >
-                                        Tên đăng nhập:
+                                        Email, tên đăng nhập hoặc MSSV
                                     </Label>
+                                    <p className="mb-2 text-sm text-slate-500">
+                                        Dùng thông tin đăng nhập đã được cấp để
+                                        truy cập đúng vai trò.
+                                    </p>
                                     <Input
                                         id="username"
-                                        value={username}
+                                        value={identifier}
                                         onChange={(e) => {
-                                            setUsername(e.target.value);
-                                            validateField(
+                                            updateFieldState(
                                                 'username',
                                                 e.target.value,
                                             );
                                         }}
-                                        placeholder="Tên đăng nhập"
+                                        onBlur={() => onFieldBlur('username')}
+                                        placeholder="Email, tên đăng nhập hoặc MSSV"
+                                        autoComplete="username"
                                         error={errors.username}
                                         className="h-12 sm:h-14 rounded-[1rem] border border-slate-300 bg-white px-5 text-base text-slate-700 shadow-[0_10px_30px_-26px_rgba(15,23,42,0.8)] transition-all duration-200 placeholder:text-slate-300 hover:border-[#71bfca] focus-visible:border-[#58aeb6] focus-visible:ring-4 focus-visible:ring-[#8fe5e2]/35"
                                     />
@@ -206,18 +295,21 @@ export const LoginForm = () => {
                                             id="password"
                                             value={password}
                                             onChange={(e) => {
-                                                setPassword(e.target.value);
-                                                validateField(
+                                                updateFieldState(
                                                     'password',
                                                     e.target.value,
                                                 );
                                             }}
+                                            onBlur={() =>
+                                                onFieldBlur('password')
+                                            }
                                             type={
                                                 showPassword
                                                     ? 'text'
                                                     : 'password'
                                             }
                                             placeholder="Mật khẩu"
+                                            autoComplete="current-password"
                                             error={errors.password}
                                             className="h-12 sm:h-14 rounded-[1rem] border border-slate-300 bg-white px-5 pr-14 text-base text-slate-700 shadow-[0_10px_30px_-26px_rgba(15,23,42,0.8)] transition-all duration-200 placeholder:text-slate-300 hover:border-[#71bfca] focus-visible:border-[#58aeb6] focus-visible:ring-4 focus-visible:ring-[#8fe5e2]/35"
                                         />
@@ -250,7 +342,9 @@ export const LoginForm = () => {
                                     disabled={login.isPending}
                                     className="inline-flex h-12 sm:h-14 w-full items-center justify-center rounded-full bg-[#58aab3] px-4 sm:px-6 text-[1.05rem] font-semibold text-white shadow-[5px_20px_20px_-24px_rgba(54,131,140,0.9)] transition-all duration-200 hover:bg-[#4a9ea9] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#8fe5e2]/50 active:translate-y-0 active:scale-[0.985]"
                                 >
-                                    {login.isPending ? 'Dang xu ly...' : 'Dang nhap'}
+                                    {login.isPending
+                                        ? 'Đang xử lý...'
+                                        : 'Đăng nhập'}
                                 </button>
                             </form>
 
@@ -302,5 +396,3 @@ export const LoginForm = () => {
         // End section: Login-form
     );
 };
-
-

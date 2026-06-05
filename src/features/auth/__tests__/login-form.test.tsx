@@ -39,6 +39,7 @@ describe('LoginForm', () => {
         expect(container.querySelector('#username')).toBeTruthy();
         expect(container.querySelector('#password')).toBeTruthy();
         expect(container.querySelector('button[type="submit"]')).toBeTruthy();
+        expect(getByText(/email, tên đăng nhập hoặc mssv/i)).toBeTruthy();
         expect(getByText(/microsoft/i)).toBeTruthy();
     });
 
@@ -108,6 +109,43 @@ describe('LoginForm', () => {
             expect(addNotification).toHaveBeenCalledWith(
                 expect.objectContaining({
                     type: 'error',
+                }),
+            );
+        });
+    });
+
+    it('maps locked account API errors to a clear Vietnamese message', async () => {
+        mutateAsync.mockRejectedValueOnce({
+            isAxiosError: true,
+            message: 'Request failed',
+            response: {
+                data: {
+                    message: 'Tai khoan da bi khoa hoac vo hieu hoa',
+                },
+            },
+        });
+        const { container } = renderForm();
+
+        const usernameInput = container.querySelector(
+            '#username',
+        ) as HTMLInputElement;
+        const passwordInput = container.querySelector(
+            '#password',
+        ) as HTMLInputElement;
+        const submitButton = container.querySelector(
+            'button[type="submit"]',
+        ) as HTMLButtonElement;
+
+        fireEvent.change(usernameInput, { target: { value: 'testuser' } });
+        fireEvent.change(passwordInput, { target: { value: 'password123' } });
+        fireEvent.click(submitButton);
+
+        await waitFor(() => {
+            expect(addNotification).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    type: 'error',
+                    title: 'Đăng nhập thất bại',
+                    message: 'Tài khoản đã bị khóa hoặc vô hiệu hóa.',
                 }),
             );
         });
