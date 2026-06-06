@@ -42,6 +42,18 @@ export type ModuleStatus =
 
 export type ModuleType = 'fundraising' | 'item_donation' | 'event';
 
+export type LocationType = 'CAMPUS' | 'COMMUNITY' | 'PARTNER';
+
+export type LocationItem = {
+    id: string;
+    name: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+    type: LocationType;
+    description: string;
+};
+
 export type DonationStatus =
     | 'PENDING'
     | 'MATCHED'

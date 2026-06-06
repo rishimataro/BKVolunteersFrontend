@@ -72,6 +72,10 @@ vi.mock('@/features/campaign/api/events', () => ({
         completeEventRegistration(...args),
 }));
 
+vi.mock('@/features/locations/components/location-picker-dialog', () => ({
+    LocationPickerDialog: () => null,
+}));
+
 describe('CampaignsRoute', () => {
     beforeEach(() => {
         vi.clearAllMocks();

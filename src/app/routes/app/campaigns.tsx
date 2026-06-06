@@ -10,6 +10,7 @@ import {
     HandCoins,
     ImageUp,
     Layers3,
+    MapPin,
     Megaphone,
     PencilLine,
     RefreshCw,
@@ -82,6 +83,8 @@ import {
 import { FundraisingPanel } from '@/features/campaign/components/fundraising-panel';
 import { ItemDonationPanel } from '@/features/campaign/components/item-donation-panel';
 import { EventPanel } from '@/features/campaign/components/event-panel';
+import { formatLocationValue } from '@/features/locations/api/locations';
+import { LocationPickerDialog } from '@/features/locations/components/location-picker-dialog';
 import {
     SchoolApprovalQueue,
     type ApprovalQueueAction,
@@ -1125,6 +1128,8 @@ const CampaignsScreen = ({ mode }: { mode: 'manage' | 'create' }) => {
         quota: 0,
         location: '',
     });
+    const [isModuleLocationDialogOpen, setIsModuleLocationDialogOpen] =
+        React.useState(false);
     const [campaignSearch, setCampaignSearch] = React.useState('');
     const [campaignStatusFilter, setCampaignStatusFilter] =
         React.useState<(typeof organizerStatusOptions)[number]['value']>('ALL');
@@ -1965,6 +1970,17 @@ const CampaignsScreen = ({ mode }: { mode: 'manage' | 'create' }) => {
 
     const onSubmitReview = async () => {
         if (!canMutateCampaign || !detail) return;
+
+        if (!['DRAFT', 'REVISION_REQUIRED'].includes(detail.status)) {
+            addNotification({
+                type: 'error',
+                title: 'Không thể gửi duyệt',
+                message:
+                    'Chỉ có thể gửi duyệt chiến dịch đang ở trạng thái nháp hoặc cần chỉnh sửa.',
+            });
+            return;
+        }
+
         try {
             await submitCampaignReview(detail.id);
             addNotification({
@@ -1985,6 +2001,17 @@ const CampaignsScreen = ({ mode }: { mode: 'manage' | 'create' }) => {
 
     const onPublish = async () => {
         if (!canMutateCampaign || !detail) return;
+
+        if (detail.status !== 'APPROVED') {
+            addNotification({
+                type: 'error',
+                title: 'Chưa thể công khai',
+                message:
+                    'Chiến dịch chỉ được công khai sau khi Đoàn trường phê duyệt.',
+            });
+            return;
+        }
+
         try {
             await publishCampaign(detail.id);
             addNotification({
@@ -4427,6 +4454,14 @@ const CampaignsScreen = ({ mode }: { mode: 'manage' | 'create' }) => {
                                                     onClick={() =>
                                                         void onSubmitReview()
                                                     }
+                                                    disabled={
+                                                        ![
+                                                            'DRAFT',
+                                                            'REVISION_REQUIRED',
+                                                        ].includes(
+                                                            detail.status,
+                                                        )
+                                                    }
                                                     className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-[#C3C6D2] bg-white px-4 text-[15px] font-semibold text-[#002A58] transition hover:border-[#A9C7FF] hover:bg-[#F3F4F5]"
                                                 >
                                                     <Send
@@ -4440,7 +4475,11 @@ const CampaignsScreen = ({ mode }: { mode: 'manage' | 'create' }) => {
                                                     onClick={() =>
                                                         void onPublish()
                                                     }
-                                                    className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#002A58] px-4 text-[15px] font-semibold text-white transition hover:bg-[#0E4686]"
+                                                    disabled={
+                                                        detail.status !==
+                                                        'APPROVED'
+                                                    }
+                                                    className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-[#002A58] px-4 text-[15px] font-semibold text-white transition hover:bg-[#0E4686] disabled:cursor-not-allowed disabled:opacity-50"
                                                 >
                                                     <ShieldCheck
                                                         className="size-4"
@@ -4951,6 +4990,35 @@ const CampaignsScreen = ({ mode }: { mode: 'manage' | 'create' }) => {
                                                                     )
                                                                 }
                                                             />
+                                                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                                                                <button
+                                                                    type="button"
+                                                                    className="inline-flex h-11 items-center justify-center rounded-lg border border-[#C3C6D2] bg-white px-4 text-[14px] font-semibold text-[#191C1D] transition hover:border-[#0E4686]"
+                                                                    onClick={() =>
+                                                                        setIsModuleLocationDialogOpen(
+                                                                            true,
+                                                                        )
+                                                                    }
+                                                                >
+                                                                    <MapPin
+                                                                        className="mr-2 size-4"
+                                                                        strokeWidth={
+                                                                            1.75
+                                                                        }
+                                                                    />
+                                                                    Chọn trên
+                                                                    bản đồ
+                                                                </button>
+                                                                <span className="text-[12px] leading-5 text-[#737781]">
+                                                                    Ưu tiên chọn
+                                                                    danh mục địa
+                                                                    điểm có sẵn
+                                                                    để dữ liệu
+                                                                    public và
+                                                                    quản trị
+                                                                    nhất quán.
+                                                                </span>
+                                                            </div>
                                                         </label>
                                                     </>
                                                 ) : null}
@@ -5298,6 +5366,17 @@ const CampaignsScreen = ({ mode }: { mode: 'manage' | 'create' }) => {
                         )}
                     </>
                 ) : null}
+                <LocationPickerDialog
+                    open={isModuleLocationDialogOpen}
+                    onOpenChange={setIsModuleLocationDialogOpen}
+                    currentValue={moduleForm.location}
+                    onSelectLocation={(location) =>
+                        setModuleForm((current) => ({
+                            ...current,
+                            location: formatLocationValue(location),
+                        }))
+                    }
+                />
                 {actionDialog && actionDialogConfig ? (
                     <ActionDrawer
                         open
