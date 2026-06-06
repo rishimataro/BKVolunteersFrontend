@@ -35,14 +35,24 @@ const roleAllowedDashboardPaths: Partial<
 > = {
     [ROLES.DOANTRUONG]: [
         { match: 'exact', value: paths.app.dashboard.getHref() },
+        { match: 'exact', value: paths.app.campaigns.getHref() },
         { match: 'exact', value: paths.app.adminOrganizations.getHref() },
         { match: 'exact', value: paths.app.users.getHref() },
         { match: 'exact', value: paths.app.users.dataTransfer.getHref() },
         { match: 'exact', value: paths.app.changePassword.getHref() },
         { match: 'exact', value: paths.app.notifications.getHref() },
+        { match: 'exact', value: paths.app.settings.getHref() },
+        { match: 'exact', value: paths.app.reports.getHref() },
+        { match: 'exact', value: paths.app.auditLogs.getHref() },
+        { match: 'exact', value: paths.app.backgroundJobs.getHref() },
+        { match: 'exact', value: paths.app.certificateTemplates.getHref() },
         {
             match: 'prefix',
             value: `${paths.app.campaigns.getHref()}/`,
+        },
+        {
+            match: 'prefix',
+            value: `${paths.app.certificates.getHref()}/`,
         },
     ],
 };
@@ -83,6 +93,16 @@ export const useNavigationItems = () => {
                     icon: LayoutDashboard,
                 },
                 {
+                    name: 'Phê duyệt chiến dịch',
+                    to: paths.app.campaigns.getHref(),
+                    icon: Heart,
+                },
+                {
+                    name: 'Báo cáo',
+                    to: paths.app.reports.getHref(),
+                    icon: BarChart3,
+                },
+                {
                     name: 'Quản lý đơn vị',
                     to: paths.app.adminOrganizations.getHref(),
                     icon: Building2,
@@ -108,7 +128,7 @@ export const useNavigationItems = () => {
             },
             checkAccess({ allowedRoles: [ROLES.SINHVIEN] })
                 ? {
-                      name: 'Lá»‹ch sá»­ hoáº¡t Ä‘á»™ng',
+                      name: 'Lịch sử hoạt động',
                       to: paths.app.myImpact.getHref(),
                       icon: History,
                   }
