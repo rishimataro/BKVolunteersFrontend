@@ -34,7 +34,7 @@ export type CampaignStatus =
 
 export type ModuleStatus =
     | 'DRAFT'
-    | 'READY_FOR_REVIEW'
+    | 'READY'
     | 'APPROVED'
     | 'OPEN'
     | 'CLOSED'
