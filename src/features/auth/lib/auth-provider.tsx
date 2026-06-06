@@ -32,7 +32,8 @@ const authConfig = {
     loginFn: async (data: LoginInput) => {
         const response = await loginWithEmailAndPassword(data);
         const user = response.user ?? response.account ?? null;
-        const accessToken = response.accessToken ?? response.access_token ?? null;
+        const accessToken =
+            response.accessToken ?? response.access_token ?? null;
         const refreshToken =
             response.refreshToken ?? response.refresh_token ?? null;
 
@@ -51,6 +52,8 @@ const authConfig = {
         try {
             const refreshToken = useAuthStore.getState().refreshToken;
             await apiLogout(refreshToken);
+        } catch {
+            // Clear the local session even if the backend refresh cookie is missing.
         } finally {
             useAuthStore.getState().clearAuth();
         }

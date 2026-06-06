@@ -1,4 +1,4 @@
-import Axios, { type InternalAxiosRequestConfig, type AxiosError } from 'axios';
+import Axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 import { useNotifications } from '@/components/ui/notifications';
 import { env } from '@/config/env';
@@ -15,24 +15,27 @@ type PromiseHandler = {
 let failedQueue: PromiseHandler[] = [];
 
 const processQueue = (error: unknown, token: string | null = null) => {
-    failedQueue.forEach((prom) => {
+    failedQueue.forEach((promiseHandler) => {
         if (error) {
-            prom.reject(error);
+            promiseHandler.reject(error);
         } else {
-            prom.resolve(token);
+            promiseHandler.resolve(token);
         }
     });
+
     failedQueue = [];
 };
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
     if (config.headers) {
         config.headers.Accept = 'application/json';
+
         const token = useAuthStore.getState().accessToken;
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
     }
+
     config.withCredentials = true;
     return config;
 }
@@ -46,7 +49,7 @@ const getApiErrorMessage = (
         | undefined;
 
     if (!error.response) {
-        return 'Không thể kết nối tới máy chủ. Vui lòng kiểm tra backend hoặc kết nối mạng.';
+        return `Không thể kết nối tới backend tại ${env.API_URL}. Hãy kiểm tra backend đang chạy và thử mở ${env.API_URL}/api/health.`;
     }
 
     if (error.response.status === HttpStatus.NOT_FOUND) {
@@ -65,15 +68,15 @@ const shouldClearAuthForForbidden = (
         return false;
     }
 
-    const normalized = message.toLowerCase();
+    const normalizedMessage = message.toLowerCase();
 
     return (
-        normalized.includes('tai khoan da bi khoa') ||
-        normalized.includes('tai khoản đã bị khóa') ||
-        normalized.includes('vo hieu hoa') ||
-        normalized.includes('vô hiệu hóa') ||
-        normalized.includes('nguoi dung khong hop le') ||
-        normalized.includes('người dùng không hợp lệ')
+        normalizedMessage.includes('tai khoan da bi khoa') ||
+        normalizedMessage.includes('tài khoản đã bị khóa') ||
+        normalizedMessage.includes('vo hieu hoa') ||
+        normalizedMessage.includes('vô hiệu hóa') ||
+        normalizedMessage.includes('nguoi dung khong hop le') ||
+        normalizedMessage.includes('người dùng không hợp lệ')
     );
 };
 
@@ -110,11 +113,10 @@ api.interceptors.response.use(
                         if (originalRequest.headers) {
                             originalRequest.headers.Authorization = `Bearer ${token}`;
                         }
+
                         return api(originalRequest);
                     })
-                    .catch((err) => {
-                        return Promise.reject(err);
-                    });
+                    .catch((refreshError) => Promise.reject(refreshError));
             }
 
             originalRequest._retry = true;
@@ -127,20 +129,33 @@ api.interceptors.response.use(
                 })) as {
                     access_token?: string;
                     accessToken?: string;
+                    refresh_token?: string;
+                    refreshToken?: string;
                 };
+
                 const newToken = response.access_token ?? response.accessToken;
+                const newRefreshToken =
+                    response.refresh_token ?? response.refreshToken;
+
                 if (!newToken) {
                     throw new Error(
                         'Refresh response does not include access token',
                     );
                 }
+
                 useAuthStore
                     .getState()
-                    .setAuth(useAuthStore.getState().user, newToken);
+                    .setAuth(
+                        useAuthStore.getState().user,
+                        newToken,
+                        newRefreshToken ?? undefined,
+                    );
                 processQueue(null, newToken);
+
                 if (originalRequest.headers) {
                     originalRequest.headers.Authorization = `Bearer ${newToken}`;
                 }
+
                 return api(originalRequest);
             } catch (refreshError) {
                 processQueue(refreshError, null);
@@ -161,7 +176,7 @@ api.interceptors.response.use(
         if (error.response?.status !== HttpStatus.UNAUTHORIZED) {
             useNotifications.getState().addNotification({
                 type: 'error',
-                title: 'Lỗi',
+                title: 'Lỗi kết nối API',
                 message,
             });
         }
