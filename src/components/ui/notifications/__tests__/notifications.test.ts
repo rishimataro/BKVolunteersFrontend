@@ -63,3 +63,29 @@ test('should automatically dismiss notifications after duration', () => {
     expect(result.current.notifications.length).toBe(0);
     vi.useRealTimers();
 });
+
+test('should dedupe repeated notifications shown in a short interval', () => {
+    vi.useFakeTimers();
+    const { result } = renderHook(() => useNotifications());
+
+    const notification: Omit<Notification, 'id'> = {
+        title: 'Backend unavailable',
+        type: 'error',
+        message: 'Không thể kết nối tới backend.',
+    };
+
+    act(() => {
+        result.current.addNotification(notification);
+        result.current.addNotification(notification);
+    });
+
+    expect(result.current.notifications.length).toBe(1);
+
+    act(() => {
+        vi.advanceTimersByTime(4001);
+        result.current.addNotification(notification);
+    });
+
+    expect(result.current.notifications.length).toBe(2);
+    vi.useRealTimers();
+});

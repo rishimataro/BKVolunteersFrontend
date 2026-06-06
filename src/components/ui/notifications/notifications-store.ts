@@ -15,10 +15,27 @@ type NotificationsStore = {
     dismissNotification: (id: string) => void;
 };
 
+const NOTIFICATION_DEDUPE_WINDOW_MS = 4000;
+const recentNotificationTimestamps = new Map<string, number>();
+
+const buildNotificationKey = (notification: Omit<Notification, 'id'>) =>
+    [notification.type, notification.title, notification.message ?? ''].join(
+        '::',
+    );
+
 export const useNotifications = create<NotificationsStore>()((set, get) => ({
     notifications: [],
 
     addNotification: (notification) => {
+        const now = Date.now();
+        const notificationKey = buildNotificationKey(notification);
+        const lastShownAt = recentNotificationTimestamps.get(notificationKey);
+
+        if (lastShownAt && now - lastShownAt < NOTIFICATION_DEDUPE_WINDOW_MS) {
+            return;
+        }
+
+        recentNotificationTimestamps.set(notificationKey, now);
         const id = nanoid();
 
         // Cấu hình thời gian chờ mặc định (ví dụ: 5000ms = 5 giây)
