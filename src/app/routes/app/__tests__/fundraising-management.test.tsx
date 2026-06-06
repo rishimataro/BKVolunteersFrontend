@@ -202,12 +202,24 @@ describe('FundraisingManagementRoute', () => {
 
         fireEvent.click(screen.getAllByText('Nguyễn Thành Trung')[0]);
         fireEvent.click(screen.getByRole('button', { name: /xác nhận/i }));
+        fireEvent.change(
+            screen.getByPlaceholderText(
+                /ví dụ: đã đối chiếu transaction và ảnh minh chứng khớp số tiền./i,
+            ),
+            {
+                target: { value: 'Da doi chieu sao ke va minh chung.' },
+            },
+        );
+        fireEvent.click(
+            screen.getByRole('button', { name: /xác nhận đóng góp/i }),
+        );
 
         await waitFor(() => {
             expect(verifyFundraisingDonation).toHaveBeenCalledWith(
                 'donation-1',
                 {
                     transaction_id: 'tx-1',
+                    note: 'Da doi chieu sao ke va minh chung.',
                 },
             );
         });
@@ -218,5 +230,102 @@ describe('FundraisingManagementRoute', () => {
                 title: 'Đã xác minh đóng góp',
             }),
         );
+    });
+
+    it('requests a donor to recheck evidence through the reject dialog', async () => {
+        renderRoute();
+
+        await waitFor(() => {
+            expect(
+                screen.getByRole('heading', { name: /xác minh đóng góp/i }),
+            ).toBeTruthy();
+        });
+
+        fireEvent.click(
+            screen.getByRole('row', { name: /nguyễn thành trung/i }),
+        );
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: /yêu cầu kiểm tra lại/i,
+            }),
+        );
+        fireEvent.change(screen.getByLabelText(/lý do yêu cầu kiểm tra lại/i), {
+            target: {
+                value: 'Can bo sung anh bien lai ro hon va noi dung chuyen khoan.',
+            },
+        });
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: /gửi yêu cầu kiểm tra lại/i,
+            }),
+        );
+
+        await waitFor(() => {
+            expect(rejectFundraisingDonation).toHaveBeenCalledWith(
+                'donation-1',
+                'Can bo sung anh bien lai ro hon va noi dung chuyen khoan.',
+            );
+        });
+
+        expect(addNotification).toHaveBeenCalledWith(
+            expect.objectContaining({
+                type: 'success',
+                title: 'Đã yêu cầu kiểm tra lại',
+            }),
+        );
+    });
+
+    it('blocks verification when no transaction or evidence is available', async () => {
+        getFundraisingDonations.mockResolvedValue({
+            items: [
+                {
+                    id: 'donation-3',
+                    module_id: 'module-1',
+                    student_id: 'student-3',
+                    donor_name: 'Phạm Gia Huy',
+                    amount: 250000,
+                    status: 'PENDING',
+                    matched_transaction_id: null,
+                    message: null,
+                    evidence_url: null,
+                    created_at: '2026-06-04T08:15:00.000Z',
+                },
+            ],
+            pagination: {
+                page: 1,
+                limit: 100,
+                total: 1,
+                totalPages: 1,
+            },
+        });
+        getFundraisingTransactions.mockResolvedValue({
+            items: [],
+            pagination: {
+                page: 1,
+                limit: 100,
+                total: 0,
+                totalPages: 1,
+            },
+        });
+
+        renderRoute();
+
+        await waitFor(() => {
+            expect(
+                screen.getByRole('heading', { name: /xác minh đóng góp/i }),
+            ).toBeTruthy();
+        });
+
+        fireEvent.click(screen.getByRole('row', { name: /phạm gia huy/i }));
+        fireEvent.click(screen.getByRole('button', { name: /xác nhận/i }));
+
+        expect(
+            screen.getByText(
+                /cần có transaction đối soát hoặc minh chứng chuyển khoản trước khi xác nhận./i,
+            ),
+        ).toBeTruthy();
+        expect(
+            screen.getByRole('button', { name: /xác nhận đóng góp/i }),
+        ).toHaveProperty('disabled', true);
     });
 });

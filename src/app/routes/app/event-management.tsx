@@ -104,6 +104,18 @@ type VolunteerRow = {
     searchText: string;
 };
 
+type RejectDialogState = {
+    registrationId: string;
+    studentName: string;
+};
+
+type CompleteDialogState = {
+    registrationId: string;
+    studentName: string;
+    hours: string;
+    note: string;
+};
+
 const actionButtonClassName =
     'inline-flex h-10 w-10 items-center justify-center border border-[#C3C6D2] bg-white text-[#002A58] transition hover:border-[#A9C7FF] hover:bg-[#F3F4F5] disabled:cursor-not-allowed disabled:opacity-40';
 
@@ -270,11 +282,17 @@ export const EventManagementRoute = () => {
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
     const [actionId, setActionId] = useState<string | null>(null);
     const [bulkApproving, setBulkApproving] = useState(false);
+    const [showBulkApproveDialog, setShowBulkApproveDialog] = useState(false);
     const [showGuide, setShowGuide] = useState(false);
-    const [rejectId, setRejectId] = useState<string | null>(null);
+    const [rejectDialog, setRejectDialog] = useState<RejectDialogState | null>(
+        null,
+    );
     const [rejectReason, setRejectReason] = useState('');
     const [rejecting, setRejecting] = useState(false);
     const [previewId, setPreviewId] = useState<string | null>(null);
+    const [completeDialog, setCompleteDialog] =
+        useState<CompleteDialogState | null>(null);
+    const [completing, setCompleting] = useState(false);
 
     const loadData = async () => {
         if (!moduleId) {
@@ -450,6 +468,7 @@ export const EventManagementRoute = () => {
                 title: 'Đã duyệt hàng loạt',
                 message: `Đã duyệt ${selectedPendingIds.length} đơn đăng ký chờ xử lý.`,
             });
+            setShowBulkApproveDialog(false);
             setSelectedIds([]);
             await loadData();
         } catch {
@@ -465,20 +484,23 @@ export const EventManagementRoute = () => {
     };
 
     const handleReject = async () => {
-        if (!rejectId || !rejectReason.trim()) {
+        if (!rejectDialog || !rejectReason.trim()) {
             return;
         }
 
         setRejecting(true);
 
         try {
-            await rejectEventRegistration(rejectId, rejectReason.trim());
+            await rejectEventRegistration(
+                rejectDialog.registrationId,
+                rejectReason.trim(),
+            );
             addNotification({
                 type: 'success',
                 title: 'Đã từ chối đơn đăng ký',
                 message: 'Lý do từ chối đã được gửi cho tình nguyện viên.',
             });
-            setRejectId(null);
+            setRejectDialog(null);
             setRejectReason('');
             await loadData();
         } catch {
@@ -515,12 +537,30 @@ export const EventManagementRoute = () => {
     };
 
     const handleComplete = async (registrationId: string) => {
+        const hours = Number(completeDialog?.hours ?? 0);
+        const note = completeDialog?.note.trim() ?? '';
+
+        if (
+            !completeDialog ||
+            completeDialog.registrationId !== registrationId ||
+            !Number.isFinite(hours) ||
+            hours <= 0
+        ) {
+            addNotification({
+                type: 'error',
+                title: 'Thiếu dữ liệu hoàn thành',
+                message: 'Vui lòng nhập số giờ tham gia lớn hơn 0.',
+            });
+            return;
+        }
+
+        setCompleting(true);
         setActionId(registrationId);
 
         try {
             await completeEventRegistration(registrationId, {
-                hours: 1,
-                note: 'Hoàn thành',
+                hours,
+                note: note || undefined,
             });
             addNotification({
                 type: 'success',
@@ -528,6 +568,7 @@ export const EventManagementRoute = () => {
                 message:
                     'Tình nguyện viên đã được đánh dấu hoàn thành hoạt động.',
             });
+            setCompleteDialog(null);
             await loadData();
         } catch {
             addNotification({
@@ -536,6 +577,7 @@ export const EventManagementRoute = () => {
                 message: 'Không thể cập nhật trạng thái hoàn thành.',
             });
         } finally {
+            setCompleting(false);
             setActionId(null);
         }
     };
@@ -870,7 +912,7 @@ export const EventManagementRoute = () => {
                                     bulkApproving ||
                                     selectedPendingIds.length === 0
                                 }
-                                onClick={() => void handleBulkApprove()}
+                                onClick={() => setShowBulkApproveDialog(true)}
                                 className="inline-flex h-12 items-center justify-center gap-2 border border-[#006D37] bg-[#006D37] px-6 text-[15px] font-semibold text-white transition hover:bg-[#005228] disabled:cursor-not-allowed disabled:border-[#C3C6D2] disabled:bg-[#E7E8E9] disabled:text-[#737781]"
                             >
                                 <Check className="size-4" strokeWidth={1.75} />
@@ -1041,8 +1083,15 @@ export const EventManagementRoute = () => {
                                                                         <button
                                                                             type="button"
                                                                             onClick={() =>
-                                                                                setRejectId(
-                                                                                    registration.id,
+                                                                                setRejectDialog(
+                                                                                    {
+                                                                                        registrationId:
+                                                                                            registration.id,
+                                                                                        studentName:
+                                                                                            registration
+                                                                                                .student
+                                                                                                .full_name,
+                                                                                    },
                                                                                 )
                                                                             }
                                                                             className={`${actionButtonClassName} text-[#B91C1C] hover:border-[#FECACA] hover:bg-[#FEF2F2]`}
@@ -1094,8 +1143,22 @@ export const EventManagementRoute = () => {
                                                                             registration.id
                                                                         }
                                                                         onClick={() =>
-                                                                            void handleComplete(
-                                                                                registration.id,
+                                                                            setCompleteDialog(
+                                                                                {
+                                                                                    registrationId:
+                                                                                        registration.id,
+                                                                                    studentName:
+                                                                                        registration
+                                                                                            .student
+                                                                                            .full_name,
+                                                                                    hours: String(
+                                                                                        registration.hours ??
+                                                                                            1,
+                                                                                    ),
+                                                                                    note:
+                                                                                        registration.review_note ??
+                                                                                        '',
+                                                                                },
                                                                             )
                                                                         }
                                                                         className={
@@ -1393,7 +1456,146 @@ export const EventManagementRoute = () => {
                     </div>
                 ) : null}
 
-                {rejectId ? (
+                {showBulkApproveDialog ? (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+                        <div className="w-full max-w-xl border border-[#C3C6D2] bg-white">
+                            <div className="border-b border-[#C3C6D2] px-6 py-5">
+                                <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-[#737781]">
+                                    Duyệt hàng loạt
+                                </p>
+                                <h3 className="mt-2 text-[24px] font-semibold leading-8 text-[#002A58]">
+                                    Xác nhận duyệt các hồ sơ chờ xử lý
+                                </h3>
+                            </div>
+                            <div className="space-y-4 px-6 py-6">
+                                <p className="text-[15px] leading-6 text-[#424750]">
+                                    Bạn sắp duyệt{' '}
+                                    <span className="font-semibold text-[#191C1D]">
+                                        {selectedPendingIds.length}
+                                    </span>{' '}
+                                    hồ sơ tình nguyện viên đang ở trạng thái chờ
+                                    xử lý.
+                                </p>
+                                <div className="border border-[#C3C6D2] bg-[#F8F9FA] p-4 text-[14px] leading-6 text-[#424750]">
+                                    Chỉ các hồ sơ còn ở trạng thái `PENDING` mới
+                                    được xử lý trong đợt duyệt này.
+                                </div>
+                            </div>
+                            <div className="flex justify-end gap-3 border-t border-[#C3C6D2] px-6 py-4">
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setShowBulkApproveDialog(false)
+                                    }
+                                    className="inline-flex h-11 items-center justify-center border border-[#C3C6D2] bg-white px-5 text-[15px] font-semibold text-[#002A58] transition hover:border-[#A9C7FF] hover:bg-[#F3F4F5]"
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    type="button"
+                                    disabled={
+                                        bulkApproving ||
+                                        selectedPendingIds.length === 0
+                                    }
+                                    onClick={() => void handleBulkApprove()}
+                                    className="inline-flex h-11 items-center justify-center border border-[#006D37] bg-[#006D37] px-5 text-[15px] font-semibold text-white transition hover:bg-[#005228] disabled:cursor-not-allowed disabled:border-[#C3C6D2] disabled:bg-[#E7E8E9] disabled:text-[#737781]"
+                                >
+                                    {bulkApproving
+                                        ? 'Đang duyệt...'
+                                        : 'Xác nhận duyệt'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ) : null}
+
+                {completeDialog ? (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+                        <div className="w-full max-w-xl border border-[#C3C6D2] bg-white">
+                            <div className="border-b border-[#C3C6D2] px-6 py-5">
+                                <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-[#737781]">
+                                    Ghi nhận hoàn thành
+                                </p>
+                                <h3 className="mt-2 text-[24px] font-semibold leading-8 text-[#002A58]">
+                                    {completeDialog.studentName}
+                                </h3>
+                            </div>
+                            <div className="space-y-4 px-6 py-6">
+                                <label className="block">
+                                    <span className="mb-2 block text-[12px] font-bold uppercase tracking-[0.08em] text-[#191C1D]">
+                                        Số giờ tham gia *
+                                    </span>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        step="0.5"
+                                        value={completeDialog.hours}
+                                        onChange={(event) =>
+                                            setCompleteDialog((current) =>
+                                                current
+                                                    ? {
+                                                          ...current,
+                                                          hours: event.target
+                                                              .value,
+                                                      }
+                                                    : current,
+                                            )
+                                        }
+                                        className={`${inputClassName} w-full`}
+                                        placeholder="Ví dụ: 4"
+                                    />
+                                </label>
+                                <label className="block">
+                                    <span className="mb-2 block text-[12px] font-bold uppercase tracking-[0.08em] text-[#191C1D]">
+                                        Ghi chú hoàn thành
+                                    </span>
+                                    <textarea
+                                        value={completeDialog.note}
+                                        onChange={(event) =>
+                                            setCompleteDialog((current) =>
+                                                current
+                                                    ? {
+                                                          ...current,
+                                                          note: event.target
+                                                              .value,
+                                                      }
+                                                    : current,
+                                            )
+                                        }
+                                        rows={4}
+                                        className="w-full border border-[#C3C6D2] bg-white px-4 py-3 text-[15px] leading-6 text-[#191C1D] outline-none transition focus:border-[#A9C7FF] focus:ring-4 focus:ring-[#A9C7FF]/20"
+                                        placeholder="Ví dụ: tham gia đầy đủ, hỗ trợ điều phối nhóm."
+                                    />
+                                </label>
+                            </div>
+                            <div className="flex justify-end gap-3 border-t border-[#C3C6D2] px-6 py-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setCompleteDialog(null)}
+                                    className="inline-flex h-11 items-center justify-center border border-[#C3C6D2] bg-white px-5 text-[15px] font-semibold text-[#002A58] transition hover:border-[#A9C7FF] hover:bg-[#F3F4F5]"
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    type="button"
+                                    disabled={completing}
+                                    onClick={() =>
+                                        void handleComplete(
+                                            completeDialog.registrationId,
+                                        )
+                                    }
+                                    className="inline-flex h-11 items-center justify-center border border-[#002A58] bg-[#002A58] px-5 text-[15px] font-semibold text-white transition hover:bg-[#0E4686] disabled:cursor-not-allowed disabled:border-[#C3C6D2] disabled:bg-[#E7E8E9] disabled:text-[#737781]"
+                                >
+                                    {completing
+                                        ? 'Đang lưu...'
+                                        : 'Lưu hoàn thành'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ) : null}
+
+                {rejectDialog ? (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
                         <div className="w-full max-w-xl border border-[#C3C6D2] bg-white">
                             <div className="border-b border-[#C3C6D2] px-6 py-5">
@@ -1401,7 +1603,7 @@ export const EventManagementRoute = () => {
                                     Từ chối đăng ký
                                 </p>
                                 <h3 className="mt-2 text-[24px] font-semibold leading-8 text-[#002A58]">
-                                    Gửi phản hồi cho tình nguyện viên
+                                    {rejectDialog.studentName}
                                 </h3>
                             </div>
                             <div className="space-y-4 px-6 py-6">
@@ -1435,7 +1637,7 @@ export const EventManagementRoute = () => {
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        setRejectId(null);
+                                        setRejectDialog(null);
                                         setRejectReason('');
                                     }}
                                     className="inline-flex h-11 items-center justify-center border border-[#C3C6D2] bg-white px-5 text-[15px] font-semibold text-[#002A58] transition hover:border-[#A9C7FF] hover:bg-[#F3F4F5]"

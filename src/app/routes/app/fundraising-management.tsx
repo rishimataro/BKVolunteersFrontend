@@ -137,9 +137,12 @@ export const FundraisingManagementRoute = () => {
     const [actionDonationId, setActionDonationId] = useState<string | null>(
         null,
     );
-    const [showRejectForm, setShowRejectForm] = useState(false);
+    const [showRejectDialog, setShowRejectDialog] = useState(false);
+    const [showVerifyDialog, setShowVerifyDialog] = useState(false);
+    const [verifyNote, setVerifyNote] = useState('');
     const [rejectReason, setRejectReason] = useState('');
     const [submittingReject, setSubmittingReject] = useState(false);
+    const [submittingVerify, setSubmittingVerify] = useState(false);
 
     const loadData = async () => {
         if (!moduleId) {
@@ -249,6 +252,13 @@ export const FundraisingManagementRoute = () => {
         setSelectedTransactionId(availableTransactions[0]?.id ?? '');
     }, [availableTransactions, matchedTransaction]);
 
+    useEffect(() => {
+        setShowRejectDialog(false);
+        setShowVerifyDialog(false);
+        setRejectReason('');
+        setVerifyNote('');
+    }, [selectedDonationId]);
+
     const totalAmount = filteredDonations.reduce(
         (sum, donation) => sum + donation.amount,
         0,
@@ -259,12 +269,26 @@ export const FundraisingManagementRoute = () => {
     const verifiedCount = donations.filter(
         (donation) => donation.status === 'VERIFIED',
     ).length;
+    const hasVerificationSource = Boolean(
+        selectedDonation &&
+        (selectedDonation.matched_transaction_id ||
+            matchedTransaction ||
+            selectedTransactionId ||
+            selectedDonation.evidence_url),
+    );
 
     const handleVerify = async () => {
-        if (!selectedDonation) {
+        if (!selectedDonation || !hasVerificationSource) {
+            addNotification({
+                type: 'error',
+                title: 'Thiếu căn cứ xác minh',
+                message:
+                    'Hãy chọn transaction đối soát hoặc kiểm tra minh chứng trước khi xác nhận.',
+            });
             return;
         }
 
+        setSubmittingVerify(true);
         setActionDonationId(selectedDonation.id);
 
         try {
@@ -273,12 +297,15 @@ export const FundraisingManagementRoute = () => {
                     selectedDonation.matched_transaction_id ||
                     selectedTransactionId ||
                     undefined,
+                note: verifyNote.trim() || undefined,
             });
             addNotification({
                 type: 'success',
                 title: 'Đã xác minh đóng góp',
                 message: `Khoản đóng góp #${selectedDonation.id} đã được xác nhận.`,
             });
+            setShowVerifyDialog(false);
+            setVerifyNote('');
             await loadData();
         } catch {
             addNotification({
@@ -287,6 +314,7 @@ export const FundraisingManagementRoute = () => {
                 message: 'Không thể xác minh khoản đóng góp này.',
             });
         } finally {
+            setSubmittingVerify(false);
             setActionDonationId(null);
         }
     };
@@ -364,7 +392,7 @@ export const FundraisingManagementRoute = () => {
                 message: `Khoản đóng góp #${selectedDonation.id} đã được chuyển sang trạng thái cần kiểm tra lại.`,
             });
             setRejectReason('');
-            setShowRejectForm(false);
+            setShowRejectDialog(false);
             await loadData();
         } catch {
             addNotification({
@@ -835,60 +863,13 @@ export const FundraisingManagementRoute = () => {
                                                     </button>
                                                 </div>
                                             </div>
-
-                                            {showRejectForm ? (
-                                                <div className="space-y-3 border border-[#FECACA] bg-[#FEF2F2] p-4">
-                                                    <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-[#B91C1C]">
-                                                        Yêu cầu kiểm tra lại
-                                                    </p>
-                                                    <textarea
-                                                        value={rejectReason}
-                                                        onChange={(event) =>
-                                                            setRejectReason(
-                                                                event.target
-                                                                    .value,
-                                                            )
-                                                        }
-                                                        rows={4}
-                                                        className="w-full border border-[#FCA5A5] bg-white px-4 py-3 text-[15px] leading-6 text-[#191C1D] outline-none transition focus:border-[#F87171] focus:ring-4 focus:ring-[#FCA5A5]/30"
-                                                        placeholder="Nêu rõ lý do cần kiểm tra lại khoản đóng góp này."
-                                                    />
-                                                    <div className="flex gap-3">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() =>
-                                                                setShowRejectForm(
-                                                                    false,
-                                                                )
-                                                            }
-                                                            className="inline-flex h-11 items-center justify-center border border-[#C3C6D2] bg-white px-4 text-[15px] font-semibold text-[#002A58] transition hover:border-[#A9C7FF] hover:bg-[#F3F4F5]"
-                                                        >
-                                                            Hủy
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            disabled={
-                                                                submittingReject ||
-                                                                !rejectReason.trim()
-                                                            }
-                                                            onClick={() =>
-                                                                void handleReject()
-                                                            }
-                                                            className="inline-flex h-11 items-center justify-center border border-[#B91C1C] bg-white px-4 text-[15px] font-semibold text-[#B91C1C] transition hover:bg-[#FEE2E2] disabled:cursor-not-allowed disabled:border-[#E7E8E9] disabled:text-[#A3A7B0]"
-                                                        >
-                                                            Gửi yêu cầu kiểm tra
-                                                            lại
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ) : null}
                                         </div>
 
                                         <div className="flex gap-3 border-t border-[#C3C6D2] px-6 py-5">
                                             <button
                                                 type="button"
                                                 onClick={() =>
-                                                    setShowRejectForm(true)
+                                                    setShowRejectDialog(true)
                                                 }
                                                 disabled={
                                                     selectedDonation.status ===
@@ -907,7 +888,7 @@ export const FundraisingManagementRoute = () => {
                                             <button
                                                 type="button"
                                                 onClick={() =>
-                                                    void handleVerify()
+                                                    setShowVerifyDialog(true)
                                                 }
                                                 disabled={
                                                     [
@@ -938,6 +919,145 @@ export const FundraisingManagementRoute = () => {
                             </aside>
                         </section>
                     </>
+                ) : null}
+
+                {showVerifyDialog && selectedDonation ? (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+                        <div className="w-full max-w-xl border border-[#C3C6D2] bg-white">
+                            <div className="border-b border-[#C3C6D2] px-6 py-5">
+                                <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-[#737781]">
+                                    Xác nhận đóng góp
+                                </p>
+                                <h3 className="mt-2 text-[24px] font-semibold leading-8 text-[#002A58]">
+                                    {selectedDonation.donor_name}
+                                </h3>
+                            </div>
+                            <div className="space-y-4 px-6 py-6">
+                                <div className="border border-[#C3C6D2] bg-[#F8F9FA] p-4 text-[14px] leading-6 text-[#191C1D]">
+                                    <p>
+                                        Số tiền:{' '}
+                                        <span className="font-semibold">
+                                            {formatCurrency(
+                                                selectedDonation.amount,
+                                            )}
+                                        </span>
+                                    </p>
+                                    <p className="mt-2">
+                                        Transaction áp dụng:{' '}
+                                        <span className="font-semibold">
+                                            {matchedTransaction?.provider_transaction_id ||
+                                                selectedTransactionId ||
+                                                'Xác minh theo minh chứng'}
+                                        </span>
+                                    </p>
+                                </div>
+                                {!hasVerificationSource ? (
+                                    <div className="border border-[#FECACA] bg-[#FEF2F2] p-4 text-[14px] leading-6 text-[#B91C1C]">
+                                        Cần có transaction đối soát hoặc minh
+                                        chứng chuyển khoản trước khi xác nhận.
+                                    </div>
+                                ) : null}
+                                <label className="block">
+                                    <span className="mb-2 block text-[12px] font-bold uppercase tracking-[0.08em] text-[#191C1D]">
+                                        Ghi chú xác minh
+                                    </span>
+                                    <textarea
+                                        value={verifyNote}
+                                        onChange={(event) =>
+                                            setVerifyNote(event.target.value)
+                                        }
+                                        rows={4}
+                                        className="w-full border border-[#C3C6D2] bg-white px-4 py-3 text-[15px] leading-6 text-[#191C1D] outline-none transition focus:border-[#A9C7FF] focus:ring-4 focus:ring-[#A9C7FF]/20"
+                                        placeholder="Ví dụ: đã đối chiếu transaction và ảnh minh chứng khớp số tiền."
+                                    />
+                                </label>
+                            </div>
+                            <div className="flex justify-end gap-3 border-t border-[#C3C6D2] px-6 py-4">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowVerifyDialog(false);
+                                        setVerifyNote('');
+                                    }}
+                                    className="inline-flex h-11 items-center justify-center border border-[#C3C6D2] bg-white px-5 text-[15px] font-semibold text-[#002A58] transition hover:border-[#A9C7FF] hover:bg-[#F3F4F5]"
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    type="button"
+                                    disabled={
+                                        submittingVerify ||
+                                        !hasVerificationSource
+                                    }
+                                    onClick={() => void handleVerify()}
+                                    className="inline-flex h-11 items-center justify-center border border-[#006D37] bg-[#006D37] px-5 text-[15px] font-semibold text-white transition hover:bg-[#005228] disabled:cursor-not-allowed disabled:border-[#E7E8E9] disabled:bg-[#E7E8E9] disabled:text-[#A3A7B0]"
+                                >
+                                    {submittingVerify
+                                        ? 'Đang xác nhận...'
+                                        : 'Xác nhận đóng góp'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ) : null}
+
+                {showRejectDialog && selectedDonation ? (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+                        <div className="w-full max-w-xl border border-[#C3C6D2] bg-white">
+                            <div className="border-b border-[#C3C6D2] px-6 py-5">
+                                <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-[#B91C1C]">
+                                    Yêu cầu kiểm tra lại
+                                </p>
+                                <h3 className="mt-2 text-[24px] font-semibold leading-8 text-[#002A58]">
+                                    {selectedDonation.donor_name}
+                                </h3>
+                            </div>
+                            <div className="space-y-4 px-6 py-6">
+                                <div className="border border-[#FECACA] bg-[#FEF2F2] p-4 text-[14px] leading-6 text-[#B91C1C]">
+                                    Nêu rõ lý do để người đóng góp có thể bổ
+                                    sung minh chứng hoặc kiểm tra lại giao dịch.
+                                </div>
+                                <label className="block">
+                                    <span className="mb-2 block text-[12px] font-bold uppercase tracking-[0.08em] text-[#191C1D]">
+                                        Lý do yêu cầu kiểm tra lại *
+                                    </span>
+                                    <textarea
+                                        value={rejectReason}
+                                        onChange={(event) =>
+                                            setRejectReason(event.target.value)
+                                        }
+                                        rows={5}
+                                        className="w-full border border-[#FCA5A5] bg-white px-4 py-3 text-[15px] leading-6 text-[#191C1D] outline-none transition focus:border-[#F87171] focus:ring-4 focus:ring-[#FCA5A5]/30"
+                                        placeholder="Ví dụ: Minh chứng chưa hiển thị rõ số tiền hoặc nội dung chuyển khoản cần bổ sung."
+                                    />
+                                </label>
+                            </div>
+                            <div className="flex justify-end gap-3 border-t border-[#C3C6D2] px-6 py-4">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowRejectDialog(false);
+                                        setRejectReason('');
+                                    }}
+                                    className="inline-flex h-11 items-center justify-center border border-[#C3C6D2] bg-white px-5 text-[15px] font-semibold text-[#002A58] transition hover:border-[#A9C7FF] hover:bg-[#F3F4F5]"
+                                >
+                                    Hủy
+                                </button>
+                                <button
+                                    type="button"
+                                    disabled={
+                                        submittingReject || !rejectReason.trim()
+                                    }
+                                    onClick={() => void handleReject()}
+                                    className="inline-flex h-11 items-center justify-center border border-[#93000A] bg-[#93000A] px-5 text-[15px] font-semibold text-white transition hover:bg-[#7F0008] disabled:cursor-not-allowed disabled:border-[#E7E8E9] disabled:bg-[#E7E8E9] disabled:text-[#A3A7B0]"
+                                >
+                                    {submittingReject
+                                        ? 'Đang gửi yêu cầu...'
+                                        : 'Gửi yêu cầu kiểm tra lại'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 ) : null}
             </div>
         </ContentLayout>

@@ -258,6 +258,9 @@ describe('EventManagementRoute', () => {
         fireEvent.click(
             screen.getByRole('button', { name: /duyệt hàng loạt/i }),
         );
+        fireEvent.click(
+            screen.getByRole('button', { name: /xác nhận duyệt/i }),
+        );
 
         await waitFor(() => {
             expect(approveEventRegistration).toHaveBeenCalledWith(
@@ -272,6 +275,109 @@ describe('EventManagementRoute', () => {
             expect.objectContaining({
                 type: 'success',
                 title: 'Đã duyệt hàng loạt',
+            }),
+        );
+    });
+
+    it('captures hours and note before completing a checked-in volunteer', async () => {
+        getEventRegistrations.mockResolvedValue([
+            {
+                id: 'registration-2',
+                campaign_id: 'campaign-1',
+                module_id: 'module-1',
+                student: {
+                    id: 'student-2',
+                    full_name: 'Lê Thị Mai Anh',
+                    student_code: '2012789',
+                    email: '2012789@student.dut.udn.vn',
+                },
+                status: 'CHECKED_IN',
+                answers: {
+                    faculty: 'Khoa KT Xây dựng',
+                    skills: ['Thiết kế'],
+                },
+                registered_at: '2026-06-02T08:15:00.000Z',
+                review_note: null,
+                checked_in_at: '2026-06-03T08:15:00.000Z',
+                checked_out_at: null,
+                hours: null,
+            },
+        ]);
+
+        renderRoute();
+
+        await waitFor(() => {
+            expect(screen.getByText('Mùa hè xanh 2024')).toBeTruthy();
+        });
+
+        fireEvent.click(
+            screen.getByRole('button', { name: /hoàn tất lê thị mai anh/i }),
+        );
+        fireEvent.change(screen.getByPlaceholderText(/ví dụ: 4/i), {
+            target: { value: '3.5' },
+        });
+        fireEvent.change(
+            screen.getByPlaceholderText(
+                /ví dụ: tham gia đầy đủ, hỗ trợ điều phối nhóm./i,
+            ),
+            {
+                target: { value: 'Phu trach dieu phoi dau moi sinh vien.' },
+            },
+        );
+        fireEvent.click(
+            screen.getByRole('button', { name: /lưu hoàn thành/i }),
+        );
+
+        await waitFor(() => {
+            expect(completeEventRegistration).toHaveBeenCalledWith(
+                'registration-2',
+                {
+                    hours: 3.5,
+                    note: 'Phu trach dieu phoi dau moi sinh vien.',
+                },
+            );
+        });
+    });
+
+    it('captures a rejection reason before rejecting a pending volunteer', async () => {
+        renderRoute();
+
+        await waitFor(() => {
+            expect(
+                screen.getByRole('heading', {
+                    name: /quản lý tình nguyện viên/i,
+                }),
+            ).toBeTruthy();
+        });
+
+        fireEvent.click(
+            screen.getByRole('button', { name: /từ chối trần minh quân/i }),
+        );
+        fireEvent.change(
+            screen.getByPlaceholderText(
+                /ví dụ: hồ sơ còn thiếu thông tin kỹ năng phù hợp hoặc thời gian tham gia chưa khớp với lịch trình chiến dịch./i,
+            ),
+            {
+                target: {
+                    value: 'Can bo sung ro hon lich tham gia va ky nang phu hop.',
+                },
+            },
+        );
+        fireEvent.click(
+            screen.getByRole('button', { name: /xác nhận từ chối/i }),
+        );
+
+        await waitFor(() => {
+            expect(rejectEventRegistration).toHaveBeenCalledWith(
+                'registration-1',
+                'Can bo sung ro hon lich tham gia va ky nang phu hop.',
+            );
+        });
+
+        expect(addNotification).toHaveBeenCalledWith(
+            expect.objectContaining({
+                type: 'success',
+                title: 'Đã từ chối đơn đăng ký',
             }),
         );
     });
