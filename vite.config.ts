@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
         base: './',
         server: {
             port: localPort,
-            allowedHosts: ['bkvolunteer.magure.app', 'localhost'],
+            allowedHosts: ['bkvolunteer2.magure.app', 'localhost'],
         },
         preview: {
             port: localPort,
