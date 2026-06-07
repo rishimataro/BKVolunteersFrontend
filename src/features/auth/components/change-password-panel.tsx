@@ -17,7 +17,7 @@ type ChangePasswordPanelProps = {
 const requirementIconClassName = 'size-4';
 
 const requirementLabelClassName =
-    'text-[14px] leading-6 text-[#4B5563] sm:text-[15px]';
+    'text-[14px] leading-6 text-muted-foreground sm:text-[15px]';
 
 const getPasswordRequirementState = (
     oldPassword: string,
@@ -132,16 +132,16 @@ export const ChangePasswordPanel = ({
 
     return (
         <div className={className}>
-            <div className="flex items-start gap-4 border-b border-[#E5E7EB] pb-5">
-                <div className="flex h-12 w-12 items-center justify-center border border-[#0A0A0A] bg-[#F9FAFB] text-[#0A0A0A]">
+            <div className="flex items-start gap-4 border-b border-border pb-5">
+                <div className="flex h-12 w-12 items-center justify-center border border-primary bg-muted text-primary">
                     <KeyRound className="size-5" strokeWidth={1.75} />
                 </div>
                 <div>
                     <p className="broadsheet-kicker">Bảo vệ truy cập</p>
-                    <h2 className="mt-2 text-[30px] font-semibold leading-[1.15] text-[#0A0A0A]">
+                    <h2 className="mt-2 text-[30px] font-semibold leading-[1.15] text-primary">
                         {title}
                     </h2>
-                    <p className="mt-3 max-w-2xl text-[16px] leading-7 text-[#4B5563]">
+                    <p className="mt-3 max-w-2xl text-[16px] leading-7 text-muted-foreground">
                         {description}
                     </p>
                 </div>
@@ -150,7 +150,7 @@ export const ChangePasswordPanel = ({
             <form className="space-y-5 pt-6" onSubmit={handleSubmit}>
                 <div className="space-y-2">
                     <Label
-                        className="broadsheet-kicker text-[#0A0A0A]"
+                        className="broadsheet-kicker text-primary"
                         htmlFor="oldPassword"
                     >
                         Mật khẩu hiện tại
@@ -168,7 +168,7 @@ export const ChangePasswordPanel = ({
                 <div className="grid gap-5 md:grid-cols-2">
                     <div className="space-y-2">
                         <Label
-                            className="broadsheet-kicker text-[#0A0A0A]"
+                            className="broadsheet-kicker text-primary"
                             htmlFor="newPassword"
                         >
                             Mật khẩu mới
@@ -185,7 +185,7 @@ export const ChangePasswordPanel = ({
 
                     <div className="space-y-2">
                         <Label
-                            className="broadsheet-kicker text-[#0A0A0A]"
+                            className="broadsheet-kicker text-primary"
                             htmlFor="confirmPassword"
                         >
                             Xác nhận mật khẩu mới
@@ -203,8 +203,8 @@ export const ChangePasswordPanel = ({
                     </div>
                 </div>
 
-                <div className="border border-[#D1D5DB] bg-[#F9FAFB] p-4">
-                    <p className="broadsheet-kicker text-[#0A0A0A]">
+                <div className="border border-input bg-muted p-4">
+                    <p className="broadsheet-kicker text-primary">
                         Yêu cầu mật khẩu
                     </p>
                     <div className="mt-3 space-y-2">
@@ -238,7 +238,7 @@ export const ChangePasswordPanel = ({
 
                 <div className="flex justify-end">
                     <Button
-                        className="h-12 border border-[#0A0A0A] bg-[#0A0A0A] px-6 text-[16px] font-semibold text-white hover:bg-[#1F2937]"
+                        className="h-12 border border-primary bg-primary px-6 text-[16px] font-semibold text-white hover:bg-[#1F2937]"
                         disabled={isSaving}
                         type="submit"
                     >
@@ -278,7 +278,7 @@ const PasswordField = ({
             aria-label={
                 showPassword ? 'Ẩn nội dung mật khẩu' : 'Hiện nội dung mật khẩu'
             }
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4B5563] transition hover:text-[#0A0A0A]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-primary"
             onClick={onToggle}
             type="button"
         >

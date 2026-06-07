@@ -188,12 +188,12 @@ export const StorageTestRoute = () => {
         <>
             <Head title="Supabase Storage Test" />
             <div className="bg-white">
-                <section className="border-b border-[#E5E7EB] pb-6">
+                <section className="border-b border-border pb-6">
                     <p className="broadsheet-kicker">Storage QA</p>
-                    <h1 className="mt-3 font-heading text-[40px] leading-[1.05] font-bold text-[#0A0A0A] sm:text-[54px]">
+                    <h1 className="mt-3 font-heading text-[40px] leading-[1.05] font-bold text-primary sm:text-[54px]">
                         Supabase Storage test
                     </h1>
-                    <p className="mt-4 max-w-3xl text-[18px] leading-[1.7] text-[#4B5563]">
+                    <p className="mt-4 max-w-3xl text-[18px] leading-[1.7] text-muted-foreground">
                         Man hinh nay goi truc tiep backend moi de upload file
                         vao Supabase Storage va xem metadata luu trong bang
                         files.
@@ -201,7 +201,7 @@ export const StorageTestRoute = () => {
                 </section>
 
                 <section className="grid gap-6 py-8 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-                    <div className="space-y-6 border border-[#E5E7EB] bg-[#FCFCFA] p-6">
+                    <div className="space-y-6 border border-border bg-[#FCFCFA] p-6">
                         <div className="space-y-2">
                             <Label htmlFor="storage-kind">Loai upload</Label>
                             <select
@@ -265,7 +265,7 @@ export const StorageTestRoute = () => {
                         </div>
 
                         {selectedFile ? (
-                            <div className="space-y-3 border border-[#E5E7EB] bg-white p-4">
+                            <div className="space-y-3 border border-border bg-white p-4">
                                 <div className="flex items-start gap-3">
                                     <div
                                         className={`flex size-12 shrink-0 items-center justify-center rounded-2xl ${visual.accentClassName}`}
@@ -280,7 +280,7 @@ export const StorageTestRoute = () => {
                                             <p className="truncate text-sm font-semibold text-[#111827]">
                                                 {selectedFile.name}
                                             </p>
-                                            <span className="rounded-full bg-[#F3F4F6] px-2 py-1 text-[11px] font-medium text-[#4B5563]">
+                                            <span className="rounded-full bg-[#F3F4F6] px-2 py-1 text-[11px] font-medium text-muted-foreground">
                                                 {visual.label}
                                             </span>
                                             <span className="rounded-full bg-[#ECFDF5] px-2 py-1 text-[11px] font-medium text-[#166534]">
@@ -318,7 +318,7 @@ export const StorageTestRoute = () => {
                                 </div>
 
                                 {previewMode === 'image' && previewUrl ? (
-                                    <div className="overflow-hidden rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB]">
+                                    <div className="overflow-hidden rounded-2xl border border-border bg-muted">
                                         <img
                                             src={previewUrl}
                                             alt={selectedFile.name}
@@ -328,7 +328,7 @@ export const StorageTestRoute = () => {
                                 ) : null}
 
                                 {previewMode === 'pdf' && previewUrl ? (
-                                    <div className="overflow-hidden rounded-2xl border border-[#E5E7EB] bg-[#F9FAFB]">
+                                    <div className="overflow-hidden rounded-2xl border border-border bg-muted">
                                         <iframe
                                             title={selectedFile.name}
                                             src={previewUrl}
@@ -338,7 +338,7 @@ export const StorageTestRoute = () => {
                                 ) : null}
 
                                 {previewMode === 'icon' ? (
-                                    <div className="rounded-2xl border border-dashed border-[#D1D5DB] bg-[#F9FAFB] p-4 text-sm leading-6 text-[#4B5563]">
+                                    <div className="rounded-2xl border border-dashed border-input bg-muted p-4 text-sm leading-6 text-muted-foreground">
                                         Trinh duyet khong render preview truc
                                         tiep cho dinh dang nay. Card da hien
                                         loai file, kich thuoc va trang thai
@@ -349,10 +349,10 @@ export const StorageTestRoute = () => {
                         ) : null}
                     </div>
 
-                    <div className="space-y-4 border border-[#E5E7EB] bg-white p-6">
+                    <div className="space-y-4 border border-border bg-white p-6">
                         <div>
                             <p className="broadsheet-kicker">Ket qua</p>
-                            <h2 className="mt-2 text-[26px] font-semibold leading-8 text-[#0A0A0A]">
+                            <h2 className="mt-2 text-[26px] font-semibold leading-8 text-primary">
                                 Metadata file
                             </h2>
                         </div>

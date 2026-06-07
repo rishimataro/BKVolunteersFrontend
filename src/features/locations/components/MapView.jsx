@@ -196,7 +196,7 @@ export default function MapView({
 
             {!isLoading && error ? (
                 <div
-                    className={`grid place-items-center gap-4 rounded-xl border border-dashed border-[#DC2626] bg-[#FFF4F4] px-6 text-center ${heightClassName}`}
+                    className={`grid place-items-center gap-4 rounded-xl border border-dashed border-destructive bg-[#FFF4F4] px-6 text-center ${heightClassName}`}
                 >
                     <div className="space-y-2">
                         <p className="text-[15px] font-semibold text-[#7F1D1D]">

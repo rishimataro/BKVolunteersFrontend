@@ -69,7 +69,7 @@ export const LandingCampaignsSection = ({
 
                                 <div className="mt-6 border-t border-[#E1E3E4] pt-4">
                                     <div className="mb-3 flex items-center justify-between gap-4 text-[12px] font-bold uppercase tracking-[0.08em]">
-                                        <span className="text-[#4B5563]">
+                                        <span className="text-muted-foreground">
                                             Tiến độ gây quỹ
                                         </span>
                                         <span className="text-[#006D37]">
