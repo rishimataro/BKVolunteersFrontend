@@ -5,16 +5,16 @@ export const LoadingState = ({
 }: {
     label?: string;
 }) => (
-    <div className="flex min-h-52 flex-col items-center justify-center gap-4 border border-[#E5E7EB] bg-white px-6 py-12 text-center">
-        <div className="flex h-12 w-12 items-center justify-center border border-[#0A0A0A] bg-[#F9FAFB] text-[#0A0A0A]">
+    <div className="flex min-h-52 flex-col items-center justify-center gap-4 border border-border bg-white px-6 py-12 text-center">
+        <div className="flex h-12 w-12 items-center justify-center border border-primary bg-muted text-primary">
             <Loader2 className="size-5 animate-spin" />
         </div>
         <div className="space-y-2">
             <p className="broadsheet-kicker">Trạng thái tải</p>
-            <p className="font-heading text-[22px] leading-[1.3] font-bold text-[#0A0A0A]">
+            <p className="font-heading text-[22px] leading-[1.3] font-bold text-primary">
                 {label}
             </p>
-            <p className="mx-auto max-w-xl text-[16px] leading-[1.7] text-[#4B5563]">
+            <p className="mx-auto max-w-xl text-[16px] leading-[1.7] text-muted-foreground">
                 Hệ thống đang cập nhật dữ liệu mới nhất từ máy chủ.
             </p>
         </div>
@@ -28,16 +28,16 @@ export const EmptyState = ({
     title?: string;
     description?: string;
 }) => (
-    <div className="border border-dashed border-[#E5E7EB] bg-white px-6 py-12 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center border border-[#E5E7EB] bg-[#F9FAFB] text-[#4B5563]">
+    <div className="border border-dashed border-border bg-white px-6 py-12 text-center">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center border border-border bg-muted text-muted-foreground">
             <Inbox className="size-5" />
         </div>
         <p className="mt-4 broadsheet-kicker">Kho dữ liệu</p>
-        <h2 className="mt-2 font-heading text-[28px] leading-[1.25] font-bold text-[#0A0A0A]">
+        <h2 className="mt-2 font-heading text-[28px] leading-[1.25] font-bold text-primary">
             {title}
         </h2>
         {description ? (
-            <p className="mx-auto mt-3 max-w-2xl text-[16px] leading-[1.7] text-[#4B5563]">
+            <p className="mx-auto mt-3 max-w-2xl text-[16px] leading-[1.7] text-muted-foreground">
                 {description}
             </p>
         ) : null}
@@ -49,13 +49,13 @@ export const ErrorState = ({
 }: {
     message?: string;
 }) => (
-    <div className="flex items-start gap-4 border border-[#DC2626] bg-[#FEF2F2] px-5 py-4 text-[#991B1B]">
-        <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center border border-[#DC2626] bg-white text-[#DC2626]">
+    <div className="flex items-start gap-4 border border-destructive bg-[#FEF2F2] px-5 py-4 text-[#991B1B]">
+        <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center border border-destructive bg-white text-destructive">
             <AlertTriangle className="size-4" />
         </div>
         <div className="grid gap-1">
             <p className="broadsheet-kicker text-[#991B1B]">Thông báo lỗi</p>
-            <p className="font-heading text-[22px] leading-[1.3] font-bold text-[#0A0A0A]">
+            <p className="font-heading text-[22px] leading-[1.3] font-bold text-primary">
                 Đã xảy ra lỗi tải dữ liệu
             </p>
             <p className="text-[16px] leading-[1.7] text-[#991B1B]">

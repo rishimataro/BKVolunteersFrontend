@@ -1,13 +1,2 @@
-import { Navigate } from 'react-router';
+﻿export { VerifyCodePage } from '@/pages/guest/auth/verify-code';
 
-import { paths } from '@/config/paths';
-import { VerifyCodeForm } from '@/features/auth/components/verify-code';
-import { hasPasswordRecoveryRequest } from '@/features/auth/lib/password-recovery';
-
-export const VerifyCodePage = () => {
-    if (!hasPasswordRecoveryRequest()) {
-        return <Navigate to={paths.auth.forgotPassword.getHref()} replace />;
-    }
-
-    return <VerifyCodeForm />;
-};

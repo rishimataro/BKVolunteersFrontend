@@ -380,11 +380,11 @@ export const ApprovalCampaignDetailView = ({
             />
 
             <div className="space-y-6">
-                <section className="border-b border-[#E5E7EB] bg-white px-4 py-5 sm:px-6">
+                <section className="border-b border-border bg-white px-4 py-5 sm:px-6">
                     <div className="mx-auto max-w-7xl">
                         <Link
                             to={backHref}
-                            className="inline-flex items-center gap-2 text-[14px] font-semibold text-[#0A0A0A] transition hover:text-[#DC2626]"
+                            className="inline-flex items-center gap-2 text-[14px] font-semibold text-primary transition hover:text-destructive"
                         >
                             <ArrowLeft className="size-4" />
                             {backLabel}
@@ -409,21 +409,21 @@ export const ApprovalCampaignDetailView = ({
                                                 'inline-flex px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em]',
                                                 statusAccentClassName[
                                                     detail.status
-                                                ] ?? 'bg-[#0A0A0A] text-white',
+                                                ] ?? 'bg-primary text-white',
                                             )}
                                         >
                                             {toDisplayText(detail.status)}
                                         </span>
-                                        <span className="text-[14px] leading-6 text-[#4B5563]">
+                                        <span className="text-[14px] leading-6 text-muted-foreground">
                                             ID: {detail.id}
                                         </span>
                                     </div>
 
                                     <div className="space-y-2">
-                                        <h1 className="max-w-5xl font-heading text-[48px] leading-[1.1] font-bold tracking-[-0.03em] text-[#0A0A0A] text-balance">
+                                        <h1 className="max-w-5xl font-heading text-[48px] leading-[1.1] font-bold tracking-[-0.03em] text-primary text-balance">
                                             {toDisplayTitle(detail.title)}
                                         </h1>
-                                        <p className="text-[20px] leading-8 text-[#4B5563]">
+                                        <p className="text-[20px] leading-8 text-muted-foreground">
                                             Đơn vị đề xuất:{' '}
                                             {toDisplayTitle(
                                                 detail.organization?.name ??
@@ -455,10 +455,10 @@ export const ApprovalCampaignDetailView = ({
 
                             <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
                                 <div className="space-y-6">
-                                    <article className="border border-[#E5E7EB] bg-white p-6 sm:p-8">
-                                        <div className="flex items-center gap-3 border-b border-[#E5E7EB] pb-4">
-                                            <ClipboardPen className="size-7 text-[#0A0A0A]" />
-                                            <h2 className="font-heading text-[36px] leading-[1.2] font-bold tracking-[-0.02em] text-[#0A0A0A]">
+                                    <article className="border border-border bg-white p-6 sm:p-8">
+                                        <div className="flex items-center gap-3 border-b border-border pb-4">
+                                            <ClipboardPen className="size-7 text-primary" />
+                                            <h2 className="font-heading text-[36px] leading-[1.2] font-bold tracking-[-0.02em] text-primary">
                                                 Kế hoạch chi tiết
                                             </h2>
                                         </div>
@@ -468,7 +468,7 @@ export const ApprovalCampaignDetailView = ({
                                                 <p className="broadsheet-kicker">
                                                     Mục tiêu chiến dịch
                                                 </p>
-                                                <p className="max-w-[65ch] text-[18px] leading-9 text-[#0A0A0A]">
+                                                <p className="max-w-[65ch] text-[18px] leading-9 text-primary">
                                                     {toDisplayText(
                                                         detail.description ??
                                                             detail.summary,
@@ -477,44 +477,44 @@ export const ApprovalCampaignDetailView = ({
                                             </section>
 
                                             <div className="grid gap-4 md:grid-cols-2">
-                                                <section className="border border-[#E5E7EB] bg-[#F9FAFB] p-5">
+                                                <section className="border border-border bg-muted p-5">
                                                     <p className="broadsheet-kicker">
                                                         Chỉ tiêu tuyển quân
                                                     </p>
                                                     <div className="mt-4 flex items-end gap-3">
-                                                        <span className="font-heading text-[56px] leading-none font-bold text-[#0A0A0A]">
+                                                        <span className="font-heading text-[56px] leading-none font-bold text-primary">
                                                             {volunteerTarget.toLocaleString(
                                                                 'vi-VN',
                                                             )}
                                                         </span>
-                                                        <span className="pb-1 text-[20px] leading-8 text-[#4B5563]">
+                                                        <span className="pb-1 text-[20px] leading-8 text-muted-foreground">
                                                             tình nguyện viên
                                                         </span>
                                                     </div>
-                                                    <p className="mt-4 text-[15px] leading-7 text-[#4B5563]">
+                                                    <p className="mt-4 text-[15px] leading-7 text-muted-foreground">
                                                         Tổng quota lấy từ các
                                                         hạng mục sự kiện đang có
                                                         trong hồ sơ.
                                                     </p>
                                                 </section>
 
-                                                <section className="border border-[#E5E7EB] bg-[#F9FAFB] p-5">
+                                                <section className="border border-border bg-muted p-5">
                                                     <p className="broadsheet-kicker">
                                                         Ngân sách dự kiến
                                                     </p>
                                                     <div className="mt-4 flex items-end gap-3">
-                                                        <span className="font-heading text-[56px] leading-none font-bold text-[#0A0A0A]">
+                                                        <span className="font-heading text-[56px] leading-none font-bold text-primary">
                                                             {(
                                                                 fundraisingTarget /
                                                                 1_000_000
                                                             ).toFixed(1)}
                                                             M
                                                         </span>
-                                                        <span className="pb-1 text-[20px] leading-8 text-[#4B5563]">
+                                                        <span className="pb-1 text-[20px] leading-8 text-muted-foreground">
                                                             VNĐ
                                                         </span>
                                                     </div>
-                                                    <p className="mt-4 text-[15px] leading-7 text-[#4B5563]">
+                                                    <p className="mt-4 text-[15px] leading-7 text-muted-foreground">
                                                         Tổng mục tiêu gây quỹ từ
                                                         các hạng mục đã khai báo
                                                         trong chiến dịch.
@@ -529,10 +529,10 @@ export const ApprovalCampaignDetailView = ({
                                                 <div className="space-y-5">
                                                     <div className="grid gap-1 pl-5 relative before:absolute before:left-[7px] before:top-3 before:bottom-0 before:w-px before:bg-[#D1D5DB]">
                                                         <div className="absolute left-0 top-2.5 h-3.5 w-3.5 bg-[#16A34A]" />
-                                                        <p className="text-[20px] font-semibold leading-8 text-[#0A0A0A]">
+                                                        <p className="text-[20px] font-semibold leading-8 text-primary">
                                                             Toàn chiến dịch
                                                         </p>
-                                                        <p className="text-[16px] leading-7 text-[#4B5563]">
+                                                        <p className="text-[16px] leading-7 text-muted-foreground">
                                                             {formatDate(
                                                                 detail.start_at,
                                                             )}{' '}
@@ -561,12 +561,12 @@ export const ApprovalCampaignDetailView = ({
                                                                             : 'bg-[#16A34A]',
                                                                     )}
                                                                 />
-                                                                <p className="text-[20px] font-semibold leading-8 text-[#0A0A0A]">
+                                                                <p className="text-[20px] font-semibold leading-8 text-primary">
                                                                     {toDisplayTitle(
                                                                         module.title,
                                                                     )}
                                                                 </p>
-                                                                <p className="text-[16px] leading-7 text-[#4B5563]">
+                                                                <p className="text-[16px] leading-7 text-muted-foreground">
                                                                     {
                                                                         moduleTypeLabel[
                                                                             module
@@ -590,10 +590,10 @@ export const ApprovalCampaignDetailView = ({
                                         </div>
                                     </article>
 
-                                    <article className="border border-[#E5E7EB] bg-white p-6 sm:p-8">
-                                        <div className="flex items-center gap-3 border-b border-[#E5E7EB] pb-4">
-                                            <Paperclip className="size-7 text-[#0A0A0A]" />
-                                            <h2 className="font-heading text-[36px] leading-[1.2] font-bold tracking-[-0.02em] text-[#0A0A0A]">
+                                    <article className="border border-border bg-white p-6 sm:p-8">
+                                        <div className="flex items-center gap-3 border-b border-border pb-4">
+                                            <Paperclip className="size-7 text-primary" />
+                                            <h2 className="font-heading text-[36px] leading-[1.2] font-bold tracking-[-0.02em] text-primary">
                                                 Hồ sơ đính kèm
                                             </h2>
                                         </div>
@@ -617,31 +617,31 @@ export const ApprovalCampaignDetailView = ({
                                                                 }
                                                                 target="_blank"
                                                                 rel="noreferrer"
-                                                                className="flex items-center justify-between gap-4 border border-[#E5E7EB] bg-[#F9FAFB] p-4 transition hover:border-[#0A0A0A]"
+                                                                className="flex items-center justify-between gap-4 border border-border bg-muted p-4 transition hover:border-primary"
                                                             >
                                                                 <div className="flex items-center gap-3">
-                                                                    <Icon className="size-5 text-[#0A0A0A]" />
+                                                                    <Icon className="size-5 text-primary" />
                                                                     <div>
-                                                                        <p className="text-[18px] font-semibold leading-7 text-[#0A0A0A]">
+                                                                        <p className="text-[18px] font-semibold leading-7 text-primary">
                                                                             {
                                                                                 attachment.name
                                                                             }
                                                                         </p>
-                                                                        <p className="text-[12px] uppercase tracking-[0.12em] text-[#4B5563]">
+                                                                        <p className="text-[12px] uppercase tracking-[0.12em] text-muted-foreground">
                                                                             {
                                                                                 attachment.meta
                                                                             }
                                                                         </p>
                                                                     </div>
                                                                 </div>
-                                                                <Download className="size-5 text-[#4B5563]" />
+                                                                <Download className="size-5 text-muted-foreground" />
                                                             </a>
                                                         );
                                                     },
                                                 )}
                                             </div>
                                         ) : (
-                                            <div className="mt-6 border border-dashed border-[#D1D5DB] bg-[#FAFAFA] p-6 text-[16px] leading-7 text-[#4B5563]">
+                                            <div className="mt-6 border border-dashed border-input bg-[#FAFAFA] p-6 text-[16px] leading-7 text-muted-foreground">
                                                 Gói dữ liệu hiện tại chưa trả về
                                                 tệp đính kèm riêng cho hồ sơ
                                                 này.
@@ -651,9 +651,9 @@ export const ApprovalCampaignDetailView = ({
                                 </div>
 
                                 <aside className="space-y-6">
-                                    <section className="border border-[#E5E7EB] bg-white">
-                                        <div className="flex items-center justify-between border-b border-[#E5E7EB] px-5 py-4">
-                                            <h2 className="font-heading text-[30px] leading-[1.2] font-bold tracking-[-0.02em] text-[#0A0A0A]">
+                                    <section className="border border-border bg-white">
+                                        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+                                            <h2 className="font-heading text-[30px] leading-[1.2] font-bold tracking-[-0.02em] text-primary">
                                                 Lịch sử thẩm định
                                             </h2>
                                             <span className="broadsheet-kicker">
@@ -672,24 +672,24 @@ export const ApprovalCampaignDetailView = ({
                                                                 className="grid gap-3"
                                                             >
                                                                 <div className="flex items-start gap-3">
-                                                                    <div className="flex size-10 items-center justify-center rounded-full bg-[#0A0A0A] text-white">
+                                                                    <div className="flex size-10 items-center justify-center rounded-full bg-primary text-white">
                                                                         <FileText className="size-4" />
                                                                     </div>
                                                                     <div className="min-w-0 flex-1">
                                                                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                                                            <p className="text-[18px] font-semibold leading-7 text-[#0A0A0A]">
+                                                                            <p className="text-[18px] font-semibold leading-7 text-primary">
                                                                                 {getReviewVisibilityLabel(
                                                                                     review.visibility,
                                                                                 )}
                                                                             </p>
-                                                                            <span className="text-[13px] leading-6 text-[#4B5563]">
+                                                                            <span className="text-[13px] leading-6 text-muted-foreground">
                                                                                 {formatDateTime(
                                                                                     review.created_at,
                                                                                 )}
                                                                             </span>
                                                                         </div>
-                                                                        <div className="mt-3 border border-[#E5E7EB] bg-[#F9FAFB] p-4">
-                                                                            <p className="text-[17px] leading-8 text-[#0A0A0A] italic">
+                                                                        <div className="mt-3 border border-border bg-muted p-4">
+                                                                            <p className="text-[17px] leading-8 text-primary italic">
                                                                                 “
                                                                                 {toDisplayText(
                                                                                     review.body,
@@ -704,7 +704,7 @@ export const ApprovalCampaignDetailView = ({
                                                                                     }
                                                                                     target="_blank"
                                                                                     rel="noreferrer"
-                                                                                    className="mt-4 inline-flex items-center gap-2 text-[14px] font-semibold text-[#0A0A0A] underline"
+                                                                                    className="mt-4 inline-flex items-center gap-2 text-[14px] font-semibold text-primary underline"
                                                                                 >
                                                                                     <Paperclip className="size-4" />
                                                                                     Mở
@@ -721,7 +721,7 @@ export const ApprovalCampaignDetailView = ({
                                                     )}
                                                 </div>
                                             ) : (
-                                                <div className="border border-dashed border-[#D1D5DB] bg-[#FAFAFA] p-5 text-[15px] leading-7 text-[#4B5563]">
+                                                <div className="border border-dashed border-input bg-[#FAFAFA] p-5 text-[15px] leading-7 text-muted-foreground">
                                                     Chưa có bản ghi thẩm định
                                                     nào cho hồ sơ này.
                                                 </div>
@@ -729,11 +729,11 @@ export const ApprovalCampaignDetailView = ({
                                         </div>
                                     </section>
 
-                                    <section className="border-2 border-[#0A0A0A] bg-white p-5">
-                                        <h2 className="font-heading text-[30px] leading-[1.2] font-bold tracking-[-0.02em] text-[#0A0A0A]">
+                                    <section className="border-2 border-primary bg-white p-5">
+                                        <h2 className="font-heading text-[30px] leading-[1.2] font-bold tracking-[-0.02em] text-primary">
                                             Thực hiện phê duyệt
                                         </h2>
-                                        <p className="mt-2 text-[15px] leading-7 text-[#4B5563]">
+                                        <p className="mt-2 text-[15px] leading-7 text-muted-foreground">
                                             Vai trò hiện tại:{' '}
                                             <strong>
                                                 {role === 'DOANTRUONG'
@@ -756,11 +756,11 @@ export const ApprovalCampaignDetailView = ({
                                                         )
                                                     }
                                                     placeholder="Nhập ý kiến thẩm định tại đây..."
-                                                    className="min-h-[168px] border border-[#D1D5DB] bg-white px-4 py-3 text-[17px] leading-8 text-[#0A0A0A] outline-none transition focus:border-2 focus:border-[#0A0A0A]"
+                                                    className="min-h-[168px] border border-input bg-white px-4 py-3 text-[17px] leading-8 text-primary outline-none transition focus:border-2 focus:border-primary"
                                                 />
                                             </label>
 
-                                            <label className="flex items-start gap-3 text-[14px] leading-6 text-[#4B5563]">
+                                            <label className="flex items-start gap-3 text-[14px] leading-6 text-muted-foreground">
                                                 <input
                                                     type="checkbox"
                                                     checked={isPublicComment}
@@ -770,7 +770,7 @@ export const ApprovalCampaignDetailView = ({
                                                                 .checked,
                                                         )
                                                     }
-                                                    className="mt-1 h-4 w-4 border-[#D1D5DB] text-[#0A0A0A] focus:ring-0"
+                                                    className="mt-1 h-4 w-4 border-input text-primary focus:ring-0"
                                                 />
                                                 <span>
                                                     Hiển thị nhận xét này cho
@@ -817,7 +817,7 @@ export const ApprovalCampaignDetailView = ({
                                                         : primaryAction.label}
                                                 </Button>
                                             ) : (
-                                                <div className="border border-[#E5E7EB] bg-[#F9FAFB] px-4 py-3 text-[14px] leading-6 text-[#4B5563]">
+                                                <div className="border border-border bg-muted px-4 py-3 text-[14px] leading-6 text-muted-foreground">
                                                     Hồ sơ hiện không có bước
                                                     hành động chính nào cho vai
                                                     trò này.
@@ -867,7 +867,7 @@ export const ApprovalCampaignDetailView = ({
                                             </div>
 
                                             {detail.status ? (
-                                                <div className="border-t border-[#E5E7EB] pt-4">
+                                                <div className="border-t border-border pt-4">
                                                     <div className="flex items-center gap-3">
                                                         <span className="broadsheet-kicker">
                                                             Trạng thái hiện tại
@@ -878,7 +878,7 @@ export const ApprovalCampaignDetailView = ({
                                                             }
                                                         />
                                                     </div>
-                                                    <p className="mt-2 text-[14px] leading-6 text-[#4B5563]">
+                                                    <p className="mt-2 text-[14px] leading-6 text-muted-foreground">
                                                         Giai đoạn diễn ra:{' '}
                                                         <strong>
                                                             {formatDate(

@@ -1,15 +1,10 @@
 import React from 'react';
 import { useUser } from './auth-provider';
+import { ROLES } from '@/constants/roles';
 import type { UserRole } from '@/types/api';
 
-export const ROLES = {
-    SINHVIEN: 'SINHVIEN',
-    CLB: 'CLB',
-    LCD: 'LCD',
-    DOANTRUONG: 'DOANTRUONG',
-} as const;
-
 export type RoleTypes = UserRole;
+export { ROLES };
 
 export const POLICIES = () => {
     return true;

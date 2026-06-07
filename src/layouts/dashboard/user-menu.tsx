@@ -1,0 +1,139 @@
+import { Lock, LogOut, Settings, User } from 'lucide-react';
+import { useNavigate } from 'react-router';
+
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { paths } from '@/config/paths';
+import { useLogout, useUser } from '@/features/auth';
+
+const roleLabel: Record<string, string> = {
+    SINHVIEN: 'Sinh viên',
+    CLB: 'Quản trị đơn vị',
+    LCD: 'Người duyệt cấp trường',
+    DOANTRUONG: 'Quản trị cấp trường',
+    SYSTEM: 'Hệ thống',
+};
+
+export const UserMenu = () => {
+    const navigate = useNavigate();
+    const user = useUser();
+    const logout = useLogout({
+        onSuccess: () => navigate(paths.auth.login.getHref()),
+    });
+
+    if (!user.data) return null;
+
+    const isMinimalSchoolBoard = user.data.role === 'DOANTRUONG';
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button
+                    variant="ghost"
+                    className="flex items-center gap-3 rounded-full px-2 py-1.5 hover:bg-muted sm:px-3 focus-visible:ring-0"
+                >
+                    <div className="flex size-9 items-center justify-center rounded-full bg-bk-blue text-white shadow-md">
+                        <User className="size-5" />
+                    </div>
+                    <div className="hidden text-left sm:block">
+                        <p className="text-sm font-bold leading-tight text-slate-900">
+                            {user.data.firstName} {user.data.lastName}
+                        </p>
+                        <p className="text-[10px] font-medium uppercase tracking-wider text-slate-600">
+                            {roleLabel[user.data.role] ?? user.data.role}
+                        </p>
+                    </div>
+                </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuPortal>
+                <DropdownMenuContent
+                    align="end"
+                    sideOffset={8}
+                    className="z-[100] w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 text-slate-900 shadow-2xl ring-1 ring-black/5"
+                >
+                    <div className="border-b border-border/50 bg-muted/40 px-5 py-5">
+                        <div className="flex items-center gap-4">
+                            <div className="flex size-12 items-center justify-center rounded-2xl bg-bk-blue text-base font-extrabold text-white shadow-lg shadow-bk-blue/20">
+                                {user.data.firstName?.[0]}
+                                {user.data.lastName?.[0]}
+                            </div>
+                            <div className="flex min-w-0 flex-col">
+                                <p className="truncate text-sm font-extrabold leading-tight text-slate-900">
+                                    {user.data.firstName} {user.data.lastName}
+                                </p>
+                                <p className="mt-0.5 truncate text-xs font-medium text-slate-600">
+                                    {user.data.email}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="p-2">
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-[0.1em] text-slate-500">
+                                Cá nhân
+                            </DropdownMenuLabel>
+                            {!isMinimalSchoolBoard ? (
+                                <DropdownMenuItem
+                                    onClick={() =>
+                                        navigate(paths.app.profile.getHref())
+                                    }
+                                    className="group/item cursor-pointer rounded-xl px-3 py-2.5 text-slate-900 transition-colors focus:bg-blue-50 focus:!text-slate-900"
+                                >
+                                    <User className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
+                                    <span className="font-semibold text-slate-800">
+                                        Hồ sơ của tôi
+                                    </span>
+                                </DropdownMenuItem>
+                            ) : null}
+                            {!isMinimalSchoolBoard ? (
+                                <DropdownMenuItem
+                                    onClick={() =>
+                                        navigate(paths.app.settings.getHref())
+                                    }
+                                    className="group/item cursor-pointer rounded-xl px-3 py-2.5 text-slate-900 transition-colors focus:bg-blue-50 focus:!text-slate-900"
+                                >
+                                    <Settings className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
+                                    <span className="font-semibold text-slate-800">
+                                        Cài đặt hệ thống
+                                    </span>
+                                </DropdownMenuItem>
+                            ) : null}
+                            <DropdownMenuItem
+                                onClick={() =>
+                                    navigate(paths.app.changePassword.getHref())
+                                }
+                                className="group/item cursor-pointer rounded-xl px-3 py-2.5 text-slate-900 transition-colors focus:bg-blue-50 focus:!text-slate-900"
+                            >
+                                <Lock className="mr-3 size-4.5 text-slate-600 transition-colors group-focus/item:text-bk-blue" />
+                                <span className="font-semibold text-slate-800">
+                                    Đổi mật khẩu
+                                </span>
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+
+                        <DropdownMenuSeparator className="my-2 mx-1 opacity-50" />
+
+                        <DropdownMenuItem
+                            onClick={() => logout.mutate({})}
+                            className="cursor-pointer rounded-xl px-3 py-2.5 text-destructive transition-colors focus:bg-red-50 focus:text-red-700"
+                        >
+                            <LogOut className="mr-3 size-4.5" />
+                            <span className="font-bold">Đăng xuất</span>
+                        </DropdownMenuItem>
+                    </div>
+                </DropdownMenuContent>
+            </DropdownMenuPortal>
+        </DropdownMenu>
+    );
+};

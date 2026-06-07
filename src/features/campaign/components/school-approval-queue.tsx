@@ -158,8 +158,8 @@ const getUrgency = (submittedAt: string, currentTime: number) => {
         return {
             value: 'high' as const,
             label: 'Khẩn cấp',
-            dotClassName: 'bg-[#DC2626]',
-            textClassName: 'text-[#DC2626]',
+            dotClassName: 'bg-destructive',
+            textClassName: 'text-destructive',
         };
     }
 
@@ -198,7 +198,7 @@ const getStatusClassName = (status: CampaignStatus) => {
     }
 
     if (status === 'REJECTED') {
-        return 'border-[#DC2626] bg-[#FEF2F2] text-[#B91C1C]';
+        return 'border-destructive bg-[#FEF2F2] text-[#B91C1C]';
     }
 
     return 'border-[#F59E0B] bg-[#FFFBEB] text-[#B45309]';
@@ -334,15 +334,15 @@ export const SchoolApprovalQueue = ({
     return (
         <>
             <div className="space-y-6">
-                <nav className="flex flex-wrap items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.08em] text-[#4B5563]">
+                <nav className="flex flex-wrap items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                     <Link
                         to={paths.app.dashboard.getHref()}
-                        className="transition hover:text-[#0A0A0A]"
+                        className="transition hover:text-primary"
                     >
                         Tổng quan
                     </Link>
                     <span>/</span>
-                    <span className="text-[#0A0A0A]">
+                    <span className="text-primary">
                         Danh sách phê duyệt chiến dịch
                     </span>
                 </nav>
@@ -396,7 +396,7 @@ export const SchoolApprovalQueue = ({
                 </ManagementGrid>
 
                 {error ? (
-                    <div className="border border-[#DC2626] bg-[#FEF2F2] px-4 py-3 text-[15px] leading-6 text-[#991B1B]">
+                    <div className="border border-destructive bg-[#FEF2F2] px-4 py-3 text-[15px] leading-6 text-[#991B1B]">
                         {error}
                     </div>
                 ) : null}
@@ -408,7 +408,7 @@ export const SchoolApprovalQueue = ({
                         actions={
                             <button
                                 type="button"
-                                className="text-[13px] font-semibold uppercase tracking-[0.08em] text-[#0A0A0A] transition hover:text-[#DC2626]"
+                                className="text-[13px] font-semibold uppercase tracking-[0.08em] text-primary transition hover:text-destructive"
                                 onClick={onResetFilters}
                             >
                                 Xóa bộ lọc
@@ -420,7 +420,7 @@ export const SchoolApprovalQueue = ({
                         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_repeat(4,minmax(0,1fr))]">
                             <FilterField label="Tìm kiếm">
                                 <div className="relative">
-                                    <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#4B5563]" />
+                                    <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
                                         value={filters.q}
                                         onChange={(event) =>
@@ -543,26 +543,26 @@ export const SchoolApprovalQueue = ({
                     <div className="overflow-x-auto">
                         <table className="min-w-[1120px] w-full border-collapse">
                             <thead>
-                                <tr className="border-y border-[#E5E7EB] bg-[#F9FAFB] text-left">
-                                    <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#4B5563]">
+                                <tr className="border-y border-border bg-muted text-left">
+                                    <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                                         Chiến dịch
                                     </th>
-                                    <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#4B5563]">
+                                    <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                                         Đơn vị tổ chức
                                     </th>
-                                    <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#4B5563]">
+                                    <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                                         Ngày gửi
                                     </th>
-                                    <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#4B5563]">
+                                    <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                                         Hạng mục
                                     </th>
-                                    <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#4B5563]">
+                                    <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                                         Ưu tiên
                                     </th>
-                                    <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-[#4B5563]">
+                                    <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                                         Trạng thái
                                     </th>
-                                    <th className="px-5 py-4 text-right text-[12px] font-semibold uppercase tracking-[0.16em] text-[#4B5563]">
+                                    <th className="px-5 py-4 text-right text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                                         Hành động
                                     </th>
                                 </tr>
@@ -572,7 +572,7 @@ export const SchoolApprovalQueue = ({
                                     <tr>
                                         <td
                                             colSpan={7}
-                                            className="px-5 py-8 text-[15px] text-[#4B5563]"
+                                            className="px-5 py-8 text-[15px] text-muted-foreground"
                                         >
                                             Đang tải danh sách chiến dịch chờ
                                             phê duyệt...
@@ -595,19 +595,19 @@ export const SchoolApprovalQueue = ({
                                         return (
                                             <tr
                                                 key={campaign.id}
-                                                className="border-b border-[#E5E7EB] align-top transition hover:bg-[#FAFAFA]"
+                                                className="border-b border-border align-top transition hover:bg-[#FAFAFA]"
                                             >
                                                 <td className="px-5 py-5">
                                                     <div className="grid gap-2">
-                                                        <p className="font-heading text-[28px] leading-[1.2] font-bold text-[#0A0A0A]">
+                                                        <p className="font-heading text-[28px] leading-[1.2] font-bold text-primary">
                                                             {toDisplayTitle(
                                                                 campaign.title,
                                                             )}
                                                         </p>
-                                                        <p className="text-[14px] leading-6 text-[#4B5563]">
+                                                        <p className="text-[14px] leading-6 text-muted-foreground">
                                                             ID: {campaign.id}
                                                         </p>
-                                                        <p className="line-clamp-2 max-w-[320px] text-[15px] leading-6 text-[#4B5563]">
+                                                        <p className="line-clamp-2 max-w-[320px] text-[15px] leading-6 text-muted-foreground">
                                                             {toDisplayText(
                                                                 campaign.summary,
                                                             )}
@@ -616,18 +616,18 @@ export const SchoolApprovalQueue = ({
                                                 </td>
                                                 <td className="px-5 py-5">
                                                     <div className="flex items-start gap-3">
-                                                        <div className="flex h-10 w-10 items-center justify-center border border-[#E5E7EB] bg-[#F9FAFB] text-[#4B5563]">
+                                                        <div className="flex h-10 w-10 items-center justify-center border border-border bg-muted text-muted-foreground">
                                                             <Building2 className="size-5" />
                                                         </div>
                                                         <div className="grid gap-1">
-                                                            <p className="text-[17px] font-semibold leading-7 text-[#0A0A0A]">
+                                                            <p className="text-[17px] font-semibold leading-7 text-primary">
                                                                 {toDisplayTitle(
                                                                     campaign
                                                                         .organization
                                                                         .name,
                                                                 )}
                                                             </p>
-                                                            <p className="text-[14px] leading-6 text-[#4B5563]">
+                                                            <p className="text-[14px] leading-6 text-muted-foreground">
                                                                 Mã đơn vị:{' '}
                                                                 {
                                                                     campaign
@@ -638,7 +638,7 @@ export const SchoolApprovalQueue = ({
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-5 py-5 text-[15px] leading-7 text-[#0A0A0A]">
+                                                <td className="px-5 py-5 text-[15px] leading-7 text-primary">
                                                     {formatSubmittedAt(
                                                         campaign.submitted_at,
                                                     )}
@@ -651,7 +651,7 @@ export const SchoolApprovalQueue = ({
                                                                     key={
                                                                         moduleType
                                                                     }
-                                                                    className="border border-[#E5E7EB] bg-[#F9FAFB] px-2 py-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#4B5563]"
+                                                                    className="border border-border bg-muted px-2 py-1 text-[12px] font-semibold uppercase tracking-[0.08em] text-muted-foreground"
                                                                 >
                                                                     {moduleTypeLabels[
                                                                         moduleType
@@ -791,7 +791,7 @@ export const SchoolApprovalQueue = ({
                                     <tr>
                                         <td
                                             colSpan={7}
-                                            className="px-5 py-10 text-center text-[15px] leading-6 text-[#4B5563]"
+                                            className="px-5 py-10 text-center text-[15px] leading-6 text-muted-foreground"
                                         >
                                             Không có hồ sơ phù hợp với bộ lọc
                                             hiện tại.
@@ -803,14 +803,14 @@ export const SchoolApprovalQueue = ({
                     </div>
                 </ManagementPanel>
 
-                <div className="flex flex-col gap-3 border-t border-[#E5E7EB] pt-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-[15px] leading-6 text-[#4B5563]">
+                <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-[15px] leading-6 text-muted-foreground">
                         Hiển thị{' '}
-                        <strong className="text-[#0A0A0A]">
+                        <strong className="text-primary">
                             {visibleItems.length}
                         </strong>{' '}
                         trên{' '}
-                        <strong className="text-[#0A0A0A]">
+                        <strong className="text-primary">
                             {filteredItems.length}
                         </strong>{' '}
                         hồ sơ trong danh sách đã tải.
@@ -827,7 +827,7 @@ export const SchoolApprovalQueue = ({
                         >
                             Trang trước
                         </Button>
-                        <span className="border border-[#E5E7EB] px-3 py-1.5 text-[14px] font-semibold text-[#0A0A0A]">
+                        <span className="border border-border px-3 py-1.5 text-[14px] font-semibold text-primary">
                             {currentPage}/{totalPages}
                         </span>
                         <Button
@@ -855,13 +855,13 @@ export const SchoolApprovalQueue = ({
             >
                 {reviewDialog ? (
                     <DialogContent className="max-w-2xl">
-                        <div className="border-b border-[#0A0A0A] px-6 py-5">
-                            <DialogTitle className="font-heading text-[32px] leading-[1.2] font-bold text-[#0A0A0A]">
+                        <div className="border-b border-primary px-6 py-5">
+                            <DialogTitle className="font-heading text-[32px] leading-[1.2] font-bold text-primary">
                                 {reviewDialog.action === 'reject'
                                     ? 'Từ chối hồ sơ chiến dịch'
                                     : 'Yêu cầu chỉnh sửa hồ sơ'}
                             </DialogTitle>
-                            <DialogDescription className="mt-2 text-[16px] leading-7 text-[#4B5563]">
+                            <DialogDescription className="mt-2 text-[16px] leading-7 text-muted-foreground">
                                 Nhập lý do phản hồi để đơn vị tổ chức nắm rõ yêu
                                 cầu điều chỉnh trước khi gửi lại hồ sơ.
                             </DialogDescription>
@@ -874,10 +874,10 @@ export const SchoolApprovalQueue = ({
                                     'border-l-[#DC2626]',
                                 )}
                             >
-                                <p className="broadsheet-kicker text-[#0A0A0A]">
+                                <p className="broadsheet-kicker text-primary">
                                     Chiến dịch
                                 </p>
-                                <p className="mt-2 text-[18px] leading-7 text-[#0A0A0A]">
+                                <p className="mt-2 text-[18px] leading-7 text-primary">
                                     {reviewDialog.campaignTitle}
                                 </p>
                             </div>
@@ -893,12 +893,12 @@ export const SchoolApprovalQueue = ({
                                     }
                                     rows={6}
                                     placeholder="Mô tả rõ nội dung cần chỉnh sửa hoặc lý do từ chối."
-                                    className="min-h-[160px] border border-[#D1D5DB] bg-white px-3 py-3 text-[16px] leading-7 text-[#0A0A0A] outline-none transition focus:border-2 focus:border-[#0A0A0A]"
+                                    className="min-h-[160px] border border-input bg-white px-3 py-3 text-[16px] leading-7 text-primary outline-none transition focus:border-2 focus:border-primary"
                                 />
                             </label>
                         </div>
 
-                        <div className="flex flex-col-reverse gap-3 border-t border-[#E5E7EB] px-6 py-4 sm:flex-row sm:justify-end">
+                        <div className="flex flex-col-reverse gap-3 border-t border-border px-6 py-4 sm:flex-row sm:justify-end">
                             <Button
                                 type="button"
                                 variant="outline"

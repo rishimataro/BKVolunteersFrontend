@@ -1,13 +1,2 @@
-import { Navigate } from 'react-router';
+﻿export { ResetPasswordPage } from '@/pages/guest/auth/reset-password';
 
-import { paths } from '@/config/paths';
-import { ResetPasswordForm } from '@/features/auth/components/reset-password-form';
-import { canAccessPasswordReset } from '@/features/auth/lib/password-recovery';
-
-export const ResetPasswordPage = () => {
-    if (!canAccessPasswordReset()) {
-        return <Navigate to={paths.auth.forgotPassword.getHref()} replace />;
-    }
-
-    return <ResetPasswordForm />;
-};

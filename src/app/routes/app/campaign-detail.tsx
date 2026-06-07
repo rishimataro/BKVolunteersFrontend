@@ -1,1 +1,2 @@
-export { AppCampaignDetailRoute } from '@/app/routes/campaign-detail';
+﻿export { AppCampaignDetailRoute } from '@/pages/shared/campaign-detail';
+

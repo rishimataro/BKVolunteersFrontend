@@ -1,1 +1,2 @@
-export { CampaignCreateRoute } from '@/app/routes/app/campaigns';
+﻿export { CampaignCreateRoute } from '@/pages/shared/campaigns';
+

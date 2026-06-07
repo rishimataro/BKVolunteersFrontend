@@ -1,1 +1,2 @@
-export { UserImportExportPage as UserDataTransferRoute } from '@/features/users/components/user-import-export-page';
+﻿export { UserDataTransferRoute } from '@/pages/doantruong/users-data-transfer';
+

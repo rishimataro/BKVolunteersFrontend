@@ -63,7 +63,7 @@ const getStatusClassName = (status: string) => {
         return 'border-[#C2410C] text-[#C2410C]';
     }
 
-    return 'border-[#DC2626] text-[#DC2626]';
+    return 'border-destructive text-destructive';
 };
 
 const getCertificateYear = (certificate: CertificateItem) => {
@@ -275,16 +275,16 @@ export const CertificateList = () => {
         <>
             <Head title="Giấy chứng nhận" />
             <div className="bg-white">
-                <section className="border-b border-[#E5E7EB] pb-6">
+                <section className="border-b border-border pb-6">
                     <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                         <div className="max-w-4xl">
                             <p className="broadsheet-kicker">
                                 Khu vực sinh viên
                             </p>
-                            <h1 className="mt-3 font-heading text-[42px] leading-[1.05] font-bold text-[#0A0A0A] sm:text-[56px]">
+                            <h1 className="mt-3 font-heading text-[42px] leading-[1.05] font-bold text-primary sm:text-[56px]">
                                 Giấy chứng nhận
                             </h1>
-                            <p className="mt-4 max-w-3xl text-[18px] leading-[1.7] text-[#4B5563]">
+                            <p className="mt-4 max-w-3xl text-[18px] leading-[1.7] text-muted-foreground">
                                 Theo dõi toàn bộ chứng nhận điện tử đã được cấp,
                                 tra cứu lại mã xác thực và tải bản PDF khi cần
                                 nộp hồ sơ học tập hoặc hoạt động ngoại khóa.
@@ -297,7 +297,7 @@ export const CertificateList = () => {
                                     Tìm kiếm chứng nhận
                                 </span>
                                 <Search
-                                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#4B5563]"
+                                    className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
                                     strokeWidth={1.75}
                                 />
                                 <input
@@ -311,12 +311,12 @@ export const CertificateList = () => {
                                 />
                             </label>
 
-                            <label className="inline-flex items-center gap-2 border border-[#D1D5DB] px-4 py-3 text-[14px] text-[#0A0A0A]">
+                            <label className="inline-flex items-center gap-2 border border-input px-4 py-3 text-[14px] text-primary">
                                 <SlidersHorizontal
                                     className="size-4"
                                     strokeWidth={1.75}
                                 />
-                                <span className="broadsheet-kicker text-[#0A0A0A]">
+                                <span className="broadsheet-kicker text-primary">
                                     Năm cấp
                                 </span>
                                 <select
@@ -339,49 +339,49 @@ export const CertificateList = () => {
                     </div>
                 </section>
 
-                <section className="border-b border-[#E5E7EB] py-5">
+                <section className="border-b border-border py-5">
                     <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_240px] lg:items-end">
                         <div className="grid gap-4 sm:grid-cols-3">
-                            <div className="border border-[#D1D5DB] p-4">
+                            <div className="border border-input p-4">
                                 <p className="broadsheet-kicker">
                                     Đã phát hành
                                 </p>
-                                <p className="mt-3 text-[34px] font-bold text-[#0A0A0A]">
+                                <p className="mt-3 text-[34px] font-bold text-primary">
                                     {totalIssuedCertificates}
                                 </p>
-                                <p className="mt-2 text-[14px] leading-6 text-[#4B5563]">
+                                <p className="mt-2 text-[14px] leading-6 text-muted-foreground">
                                     Chứng nhận đang có hiệu lực trong hồ sơ sinh
                                     viên
                                 </p>
                             </div>
 
-                            <div className="border border-[#D1D5DB] p-4">
+                            <div className="border border-input p-4">
                                 <p className="broadsheet-kicker">
                                     Giờ ghi nhận
                                 </p>
-                                <p className="mt-3 text-[34px] font-bold text-[#0A0A0A]">
+                                <p className="mt-3 text-[34px] font-bold text-primary">
                                     {totalCertifiedHours}
                                 </p>
-                                <p className="mt-2 text-[14px] leading-6 text-[#4B5563]">
+                                <p className="mt-2 text-[14px] leading-6 text-muted-foreground">
                                     Tổng giờ tình nguyện đã được xác thực
                                 </p>
                             </div>
 
-                            <div className="border border-[#D1D5DB] p-4">
+                            <div className="border border-input p-4">
                                 <p className="broadsheet-kicker">Chờ cấp mới</p>
-                                <p className="mt-3 text-[34px] font-bold text-[#DC2626]">
+                                <p className="mt-3 text-[34px] font-bold text-destructive">
                                     {pendingCertificates}
                                 </p>
-                                <p className="mt-2 text-[14px] leading-6 text-[#4B5563]">
+                                <p className="mt-2 text-[14px] leading-6 text-muted-foreground">
                                     Hoạt động đã hoàn thành nhưng chưa phát hành
                                     chứng nhận
                                 </p>
                             </div>
                         </div>
 
-                        <label className="inline-flex items-center gap-2 border border-[#D1D5DB] px-4 py-3 text-[14px] text-[#0A0A0A]">
+                        <label className="inline-flex items-center gap-2 border border-input px-4 py-3 text-[14px] text-primary">
                             <Award className="size-4" strokeWidth={1.75} />
-                            <span className="broadsheet-kicker text-[#0A0A0A]">
+                            <span className="broadsheet-kicker text-primary">
                                 Sắp xếp
                             </span>
                             <select
@@ -410,15 +410,15 @@ export const CertificateList = () => {
                         <CertificateLoadingState />
                     ) : (
                         <>
-                            <div className="flex flex-col gap-3 border-b border-[#E5E7EB] pb-5 lg:flex-row lg:items-center lg:justify-between">
-                                <div className="text-[14px] leading-6 text-[#4B5563]">
+                            <div className="flex flex-col gap-3 border-b border-border pb-5 lg:flex-row lg:items-center lg:justify-between">
+                                <div className="text-[14px] leading-6 text-muted-foreground">
                                     Hiển thị {visibleCertificates.length} trên{' '}
                                     {certificates.length} chứng nhận đã ghi
                                     nhận.
                                 </div>
-                                <div className="text-[14px] leading-6 text-[#4B5563]">
+                                <div className="text-[14px] leading-6 text-muted-foreground">
                                     Cấp gần nhất:{' '}
-                                    <span className="font-semibold text-[#0A0A0A]">
+                                    <span className="font-semibold text-primary">
                                         {latestIssuedCertificate
                                             ? formatDate(
                                                   latestIssuedCertificate.issuedAt ??
@@ -448,7 +448,7 @@ export const CertificateList = () => {
                                 <CertificateEmptyState />
                             )}
 
-                            <section className="mt-10 border border-[#0A0A0A] bg-[#0A0A0A] p-6 text-white">
+                            <section className="mt-10 border border-primary bg-primary p-6 text-white">
                                 <p className="broadsheet-kicker text-white/70">
                                     Tổng kết thành tích
                                 </p>
@@ -468,7 +468,7 @@ export const CertificateList = () => {
                                         </p>
                                         <a
                                             href={paths.app.myImpact.getHref()}
-                                            className="mt-6 inline-flex h-12 items-center justify-center border border-white bg-white px-6 text-[16px] font-semibold text-[#0A0A0A] transition hover:bg-transparent hover:text-white"
+                                            className="mt-6 inline-flex h-12 items-center justify-center border border-white bg-white px-6 text-[16px] font-semibold text-primary transition hover:bg-transparent hover:text-white"
                                         >
                                             Mở lịch sử hoạt động
                                         </a>
@@ -520,7 +520,7 @@ const CertificateCard = ({
     );
 
     return (
-        <article className="border border-[#D1D5DB] bg-white">
+        <article className="border border-input bg-white">
             <div
                 className={`aspect-[1.414/1] border-b ${tone.frame} ${tone.surface} p-4`}
             >
@@ -539,17 +539,17 @@ const CertificateCard = ({
                         />
                     </div>
                     <div className="space-y-2 text-center">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#4B5563]">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                             Giấy chứng nhận điện tử
                         </p>
-                        <p className="text-[20px] font-bold leading-8 text-[#0A0A0A]">
+                        <p className="text-[20px] font-bold leading-8 text-primary">
                             {toDisplayTitle(certificate.campaignTitle)}
                         </p>
-                        <p className="text-[13px] leading-6 text-[#4B5563]">
+                        <p className="text-[13px] leading-6 text-muted-foreground">
                             {certificate.templateName}
                         </p>
                     </div>
-                    <div className="flex items-end justify-between text-[12px] text-[#4B5563]">
+                    <div className="flex items-end justify-between text-[12px] text-muted-foreground">
                         <span>{issuedLabel}</span>
                         <span className="font-semibold">
                             {certificate.certificateNo}
@@ -560,24 +560,24 @@ const CertificateCard = ({
 
             <div className="space-y-4 p-5">
                 <div>
-                    <h3 className="text-[28px] font-semibold leading-[1.2] text-[#0A0A0A]">
+                    <h3 className="text-[28px] font-semibold leading-[1.2] text-primary">
                         {toDisplayTitle(certificate.campaignTitle)}
                     </h3>
-                    <div className="mt-3 flex items-center gap-2 text-[14px] leading-6 text-[#4B5563]">
+                    <div className="mt-3 flex items-center gap-2 text-[14px] leading-6 text-muted-foreground">
                         <CalendarDays className="size-4" strokeWidth={1.75} />
                         Ngày cấp: {issuedLabel}
                     </div>
                     {certificate.moduleTitle ? (
-                        <p className="mt-2 text-[14px] leading-6 text-[#4B5563]">
+                        <p className="mt-2 text-[14px] leading-6 text-muted-foreground">
                             Hạng mục: {toDisplayTitle(certificate.moduleTitle)}
                         </p>
                     ) : null}
                 </div>
 
-                <div className="flex items-center justify-between gap-3 border border-[#D1D5DB] bg-[#F9FAFB] px-4 py-3">
+                <div className="flex items-center justify-between gap-3 border border-input bg-muted px-4 py-3">
                     <div>
                         <p className="broadsheet-kicker">Mã chứng chỉ</p>
-                        <p className="mt-2 text-[24px] font-bold tracking-[0.08em] text-[#0A0A0A]">
+                        <p className="mt-2 text-[24px] font-bold tracking-[0.08em] text-primary">
                             {certificate.certificateNo}
                         </p>
                     </div>
@@ -596,20 +596,20 @@ const CertificateCard = ({
                             href={certificate.fileUrl ?? undefined}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex h-12 items-center justify-center gap-2 border border-[#0A0A0A] bg-[#0A0A0A] px-5 text-[16px] font-semibold text-white transition hover:bg-[#1F2937]"
+                            className="inline-flex h-12 items-center justify-center gap-2 border border-primary bg-primary px-5 text-[16px] font-semibold text-white transition hover:bg-[#1F2937]"
                         >
                             <Download className="size-4" strokeWidth={1.75} />
                             Tải PDF
                         </a>
                     ) : (
-                        <div className="inline-flex h-12 items-center justify-center border border-[#D1D5DB] bg-[#F9FAFB] px-5 text-[14px] font-semibold text-[#4B5563]">
+                        <div className="inline-flex h-12 items-center justify-center border border-input bg-muted px-5 text-[14px] font-semibold text-muted-foreground">
                             Chưa khả dụng
                         </div>
                     )}
                     <button
                         type="button"
                         onClick={() => void onShare(certificate.certificateNo)}
-                        className="inline-flex h-12 w-14 items-center justify-center border border-[#D1D5DB] bg-white text-[#0A0A0A] transition hover:bg-[#F9FAFB]"
+                        className="inline-flex h-12 w-14 items-center justify-center border border-input bg-white text-primary transition hover:bg-muted"
                         aria-label={`Chia sẻ ${certificate.certificateNo}`}
                     >
                         <Copy className="size-4" strokeWidth={1.75} />
@@ -621,12 +621,12 @@ const CertificateCard = ({
 };
 
 const PendingCard = ({ count }: { count: number }) => (
-    <article className="flex min-h-[520px] flex-col items-center justify-center border border-dashed border-[#D1D5DB] bg-[#F9FAFB] p-6 text-center">
-        <FileSearch className="size-10 text-[#4B5563]" strokeWidth={1.5} />
-        <p className="mt-5 text-[28px] font-semibold leading-[1.2] text-[#0A0A0A]">
+    <article className="flex min-h-[520px] flex-col items-center justify-center border border-dashed border-input bg-muted p-6 text-center">
+        <FileSearch className="size-10 text-muted-foreground" strokeWidth={1.5} />
+        <p className="mt-5 text-[28px] font-semibold leading-[1.2] text-primary">
             Đang chờ cấp mới
         </p>
-        <p className="mt-3 max-w-sm text-[16px] leading-7 text-[#4B5563]">
+        <p className="mt-3 max-w-sm text-[16px] leading-7 text-muted-foreground">
             Hiện có {count} hoạt động đã hoàn thành nhưng chứng nhận điện tử
             chưa được phát hành.
         </p>
@@ -638,19 +638,19 @@ const CertificateLoadingState = () => (
         {Array.from({ length: 3 }, (_, index) => (
             <div
                 key={index}
-                className="min-h-[520px] animate-pulse border border-[#E5E7EB] bg-[#F9FAFB]"
+                className="min-h-[520px] animate-pulse border border-border bg-muted"
             />
         ))}
     </div>
 );
 
 const CertificateEmptyState = () => (
-    <div className="flex flex-col items-center justify-center border border-dashed border-[#D1D5DB] bg-[#F9FAFB] px-6 py-16 text-center">
-        <Award className="size-10 text-[#4B5563]" strokeWidth={1.5} />
-        <h2 className="mt-5 text-[32px] font-semibold leading-[1.2] text-[#0A0A0A]">
+    <div className="flex flex-col items-center justify-center border border-dashed border-input bg-muted px-6 py-16 text-center">
+        <Award className="size-10 text-muted-foreground" strokeWidth={1.5} />
+        <h2 className="mt-5 text-[32px] font-semibold leading-[1.2] text-primary">
             Chưa có chứng nhận phù hợp
         </h2>
-        <p className="mt-3 max-w-xl text-[16px] leading-7 text-[#4B5563]">
+        <p className="mt-3 max-w-xl text-[16px] leading-7 text-muted-foreground">
             Hãy thử thay đổi bộ lọc tìm kiếm hoặc hoàn thành thêm chiến dịch để
             hệ thống phát hành chứng nhận điện tử mới cho hồ sơ của bạn.
         </p>
