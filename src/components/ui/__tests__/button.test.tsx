@@ -13,7 +13,7 @@ describe('Button', () => {
     it('applies the correct variant class', () => {
         render(<Button variant="destructive">Delete</Button>);
         const button = screen.getByRole('button', { name: /delete/i });
-        expect(button.className).toContain('text-destructive');
+        expect(button.className).toContain('bg-destructive');
     });
 
     it('calls onClick when clicked', () => {

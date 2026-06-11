@@ -30,8 +30,13 @@ export const useAuthStore = create<AuthState>()(
                             ? state.refreshToken
                             : refreshToken,
                 })),
-            clearAuth: () =>
-                set({ user: null, accessToken: null, refreshToken: null }),
+            clearAuth: () => {
+                localStorage.removeItem('returnUrl');
+                localStorage.removeItem('redirectTo');
+                localStorage.removeItem('intendedRoute');
+                sessionStorage.clear();
+                set({ user: null, accessToken: null, refreshToken: null });
+            },
         }),
         {
             name: 'auth-storage',

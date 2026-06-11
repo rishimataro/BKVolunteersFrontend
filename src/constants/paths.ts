@@ -31,13 +31,11 @@ export const paths = {
     auth: {
         register: {
             path: '/auth/register',
-            getHref: (redirectTo?: string | null | undefined) =>
-                `/auth/register${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ''}`,
+            getHref: () => '/auth/register',
         },
         login: {
             path: '/auth/login',
-            getHref: (redirectTo?: string | null | undefined) =>
-                `/auth/login${redirectTo ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ''}`,
+            getHref: () => '/auth/login',
         },
         forgotPassword: {
             path: '/auth/forgot-password',
@@ -54,10 +52,6 @@ export const paths = {
         microsoftCallback: {
             path: '/auth/microsoft/callback',
             getHref: () => '/auth/microsoft/callback',
-        },
-        microsoftMockLogin: {
-            path: '/auth/microsoft/mock-login',
-            getHref: () => '/auth/microsoft/mock-login',
         },
     },
 

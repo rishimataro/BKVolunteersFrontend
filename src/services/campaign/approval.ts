@@ -13,7 +13,25 @@ export const getApprovalQueue = (params?: {
     page?: number;
     limit?: number;
 }) =>
-    api.get('/approvals/campaigns', { params }) as Promise<ApprovalQueueItem[]>;
+    api
+        .get('/approvals/campaigns', { params })
+        .then((response: unknown) => {
+            const data = response as
+                | ApprovalQueueItem[]
+                | { items?: ApprovalQueueItem[] }
+                | null
+                | undefined;
+
+            if (Array.isArray(data)) {
+                return data;
+            }
+
+            if (Array.isArray(data?.items)) {
+                return data.items;
+            }
+
+            return [];
+        }) as Promise<ApprovalQueueItem[]>;
 
 export const getApprovalCampaignDetail = (id: string) =>
     api.get(`/approvals/campaigns/${id}`) as Promise<ManagedCampaignDetail>;

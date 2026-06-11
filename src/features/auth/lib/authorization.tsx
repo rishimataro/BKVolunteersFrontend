@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router';
+import { Navigate } from 'react-router';
 
 import { paths } from '@/config/paths';
 
@@ -42,12 +42,11 @@ export const Authorization = ({
 
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const user = useUser();
-    const location = useLocation();
 
     if (!user.data) {
         return (
             <Navigate
-                to={paths.auth.login.getHref(location.pathname)}
+                to={paths.auth.login.getHref()}
                 replace
             />
         );

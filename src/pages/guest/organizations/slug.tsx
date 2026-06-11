@@ -13,10 +13,8 @@ import {
 } from '@/features/campaign/components/state-blocks';
 
 const orgTypeLabel: Record<string, string> = {
-    CLUB: 'CLB',
-    TEAM: 'Đội',
-    GROUP: 'Nhóm',
-    CENTER: 'Trung tâm',
+    CLUB: 'Câu lạc bộ',
+    FACULTY: 'Khoa',
 };
 
 export const OrganizationDetailRoute = () => {

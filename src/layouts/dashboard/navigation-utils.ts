@@ -137,7 +137,7 @@ export const useNavigationItems = () => {
                 name: isStudent
                     ? 'Chiến dịch công khai'
                     : role === ROLES.LCD
-                      ? 'Phê duyệt chiến dịch'
+                      ? 'Quản lý chiến dịch'
                       : 'Vận hành chiến dịch',
                 to: paths.app.campaigns.getHref(),
                 icon: isStudent ? Compass : Heart,

@@ -14,7 +14,13 @@ export type CampaignCertificate = {
     template_name: string;
     status: string;
     snapshot_json: unknown;
+    layout_json: unknown;
+    background_file_url: string | null;
+    preview_image_url: string | null;
+    generated_file_url: string | null;
+    signed_file_url: string | null;
     file_url: string | null;
+    student_history_saved: boolean;
     file_hash: string | null;
     issued_at: string | null;
     revoked_at: string | null;
@@ -23,6 +29,19 @@ export type CampaignCertificate = {
     replacement_certificate_id: string | null;
     created_at: string;
     updated_at: string;
+};
+
+export type CertificateCandidate = CampaignCertificate & {
+    student_email?: string | null;
+    faculty_name?: string | null;
+    class_name?: string | null;
+    phone?: string | null;
+    total_points?: number | null;
+    titles?: string[];
+    eligibility_source?: 'VOLUNTEER' | 'FUNDRAISING' | 'ITEM_DONATION';
+    registration_id?: string | null;
+    money_contribution_id?: string | null;
+    item_contribution_id?: string | null;
 };
 
 export type GenerateResult = {
@@ -39,24 +58,70 @@ const toAbsoluteFileUrl = (value: string | null) => {
     return `${apiBase}${value.startsWith('/') ? value : `/${value}`}`;
 };
 
-const normalizeCertificate = (
-    item: CampaignCertificate,
-): CampaignCertificate => ({
+const normalizeCertificate = <T extends { file_url: string | null }>(
+    item: T,
+): T => ({
     ...item,
     file_url: toAbsoluteFileUrl(item.file_url),
+    preview_image_url: toAbsoluteFileUrl(
+        (item as T & { preview_image_url?: string | null }).preview_image_url ??
+            null,
+    ),
+    background_file_url: toAbsoluteFileUrl(
+        (item as T & { background_file_url?: string | null })
+            .background_file_url ?? null,
+    ),
+    generated_file_url: toAbsoluteFileUrl(
+        (item as T & { generated_file_url?: string | null }).generated_file_url ??
+            null,
+    ),
+    signed_file_url: toAbsoluteFileUrl(
+        (item as T & { signed_file_url?: string | null }).signed_file_url ?? null,
+    ),
 });
 
-export const listCampaignCertificates = (campaignId: string) => {
+export const listCampaignCertificates = (
+    campaignId: string,
+    params?: { module_id?: string },
+) => {
+    const query = new URLSearchParams();
+    if (params?.module_id) {
+        query.set('module_id', params.module_id);
+    }
+    const search = query.toString();
     return (
-        api.get(`/certificates/campaigns/${campaignId}`) as Promise<
+        api.get(
+            search
+                ? `/certificates/campaigns/${campaignId}?${search}`
+                : `/certificates/campaigns/${campaignId}`,
+        ) as Promise<
             CampaignCertificate[]
         >
     ).then((items) => items.map(normalizeCertificate));
 };
 
+export const previewCertificateCandidates = (
+    campaignId: string,
+    moduleId: string,
+) => {
+    const query = new URLSearchParams({
+        module_id: moduleId,
+    });
+    return (
+        api.get(
+            `/certificates/campaigns/${campaignId}/candidates?${query.toString()}`,
+        ) as Promise<CertificateCandidate[]>
+    ).then((items) => items.map(normalizeCertificate));
+};
+
 export const generateCertificates = (
     campaignId: string,
-    data: { template_id?: string; module_id?: string; dry_run?: boolean },
+    data: {
+        template_id?: string;
+        module_id?: string;
+        dry_run?: boolean;
+        student_ids?: string[];
+    },
 ) => {
     return (
         api.post(
@@ -88,6 +153,23 @@ export const getCertificateDownload = (id: string) => {
         ...item,
         file_url: toAbsoluteFileUrl(item.file_url),
     }));
+};
+
+export const attachRenderedCertificateFiles = (
+    id: string,
+    data: {
+        preview_image_file_id?: string;
+        generated_file_id?: string;
+        signed_file_id?: string;
+        checksum_sha256?: string;
+    },
+) => {
+    return (
+        api.patch(
+            `/certificates/${id}/rendered-files`,
+            data,
+        ) as Promise<CampaignCertificate>
+    ).then(normalizeCertificate);
 };
 
 export const revokeCertificate = (

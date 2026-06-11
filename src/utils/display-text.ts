@@ -1,3 +1,5 @@
+import { normalizeVietnameseText } from '@/utils/vietnamese-text';
+
 const replacementPairs: Array<[RegExp, string]> = [
     [/\bmoney_donation\b/gi, 'đóng góp tiền'],
     [/\bitem_pledge\b/gi, 'quyên góp hiện vật'],
@@ -29,13 +31,13 @@ const replacementPairs: Array<[RegExp, string]> = [
 
 export const toDisplayText = (value: string | null | undefined) => {
     if (!value) return '';
-    let next = value.trim();
+    let next = normalizeVietnameseText(value);
 
     for (const [pattern, replacement] of replacementPairs) {
         next = next.replace(pattern, replacement);
     }
 
-    return next.replace(/\s+/g, ' ').trim();
+    return normalizeVietnameseText(next);
 };
 
 export const toDisplayTitle = (value: string | null | undefined) => {

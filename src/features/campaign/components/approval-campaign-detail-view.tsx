@@ -57,7 +57,8 @@ type AttachmentItem = {
 const moduleTypeLabel: Record<ModuleType, string> = {
     fundraising: 'Gây quỹ',
     item_donation: 'Quyên góp hiện vật',
-    event: 'Tuyển tình nguyện viên',
+    event: 'Tình nguyện',
+    volunteer: 'Tuyển tình nguyện viên',
 };
 
 const statusAccentClassName: Record<string, string> = {
@@ -141,7 +142,7 @@ const getAttachmentItems = (
             id: `${review.id}-attachment`,
             name: `Tệp phản hồi ${index + 1}`,
             href: review.attachment_url,
-            meta: `Nhật ký thẩm định · ${formatDateTime(review.created_at)}`,
+            meta: `Nhật ký thẩm định · ${formatDateTime(review.created_at)}` ,
             icon: review.attachment_url.endsWith('.xlsx')
                 ? 'sheet'
                 : review.attachment_url.match(/\.(png|jpg|jpeg|webp)$/i)
@@ -915,3 +916,4 @@ export const ApprovalCampaignDetailView = ({
         </>
     );
 };
+

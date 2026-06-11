@@ -40,7 +40,11 @@ export type ModuleStatus =
     | 'CLOSED'
     | 'CANCELLED';
 
-export type ModuleType = 'fundraising' | 'item_donation' | 'event';
+export type ModuleType =
+    | 'fundraising'
+    | 'item_donation'
+    | 'event'
+    | 'volunteer';
 
 export type LocationType = 'CAMPUS' | 'COMMUNITY' | 'PARTNER';
 
@@ -134,6 +138,49 @@ export type PublicCampaignDetail = PublicCampaignCard & {
             label: string;
             action: string | null;
         };
+    }>;
+};
+
+export type PublicHomeData = {
+    metrics: {
+        total_campaigns: number;
+        total_organizations: number;
+        total_students: number;
+        total_certificates: number;
+        total_money_donations: number;
+        total_completed_event_hours: number;
+    };
+    featured_campaigns: Array<{
+        id: string;
+        slug: string;
+        title: string;
+        summary: string;
+        cover_image_url?: string | null;
+        organization: PublicCampaignCard['organization'];
+        status: PublicCampaignCard['status'];
+        start_at: string;
+        end_at: string;
+        module_types: ModuleType[];
+        progress: CampaignProgress;
+    }>;
+    organization_leaderboard: Array<{
+        rank: number;
+        organization_id: string;
+        organization_code: string;
+        organization_name: string;
+        campaign_count: number;
+        completed_event_hours: number;
+        verified_money_amount: number;
+        issued_certificates: number;
+    }>;
+    spotlight_organizations: Array<{
+        id: string;
+        slug: string;
+        code: string;
+        name: string;
+        type: string;
+        campaign_count: number;
+        completed_event_hours: number;
     }>;
 };
 

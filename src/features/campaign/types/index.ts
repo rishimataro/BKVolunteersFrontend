@@ -16,6 +16,7 @@ export type ManagedCampaignItem = {
     organization_id: string;
     start_at: string;
     end_at: string;
+    ended_at?: string | null;
     module_types?: ModuleType[];
 };
 
@@ -25,13 +26,16 @@ export type ManagedCampaignDetail = {
     slug: string;
     title: string;
     summary: string;
+    slogan?: string | null;
     description?: string | null;
     cover_image_url?: string | null;
+    logo_url?: string | null;
     beneficiary?: string | null;
     scope_type: 'FACULTY' | 'SCHOOL' | 'PUBLIC';
     status: CampaignStatus;
     start_at: string;
     end_at: string;
+    ended_at?: string | null;
     published_at?: string | null;
     organization?: {
         id: string;
@@ -48,7 +52,15 @@ export type ManagedCampaignDetail = {
         status: ModuleStatus;
         start_at: string;
         end_at: string;
+        registration_start_at?: string | null;
+        registration_end_at?: string | null;
         settings: Record<string, unknown>;
+        progress?: {
+            current: number;
+            target: number;
+            percent: number;
+        };
+        report?: Record<string, unknown>;
     }>;
     reviews?: Array<{
         id: string;
@@ -58,6 +70,60 @@ export type ManagedCampaignDetail = {
         attachment_url?: string | null;
         created_at: string;
     }>;
+    documents?: Array<{
+        id: string;
+        type: string;
+        is_public: boolean;
+        file_id: string;
+        file_url?: string | null;
+        file_name: string;
+        mime_type?: string;
+        size_bytes?: number;
+    }>;
+    media?: Array<{
+        id: string;
+        media_type: string;
+        caption?: string | null;
+        is_public: boolean;
+        file_id: string;
+        file_url?: string | null;
+        file_name?: string | null;
+        mime_type?: string | null;
+        size_bytes?: number;
+    }>;
+    status_history?: Array<{
+        id: string;
+        from_status?: string | null;
+        to_status: string;
+        note?: string | null;
+        created_at: string;
+        changed_by: {
+            id: string;
+            full_name: string;
+            role: string;
+        };
+    }>;
+    completion_report?: {
+        title?: string | null;
+        content: string;
+        result_summary?: string | null;
+        completed_tasks?: string[];
+        volunteer_count?: number | null;
+        verified_money_amount?: number | null;
+        received_item_quantity?: number | null;
+        challenges?: string | null;
+        conclusion?: string | null;
+        submitted_at?: string | null;
+        images?: Array<{
+            id: string;
+            file_id: string;
+            file_url?: string | null;
+            file_name?: string | null;
+            mime_type?: string | null;
+            size_bytes?: number;
+            caption?: string | null;
+        }>;
+    } | null;
 };
 
 export type ApprovalQueueItem = {
@@ -183,6 +249,12 @@ export type ItemPledgeItem = {
         id: string;
         full_name: string;
         student_code: string;
+        email?: string;
+        faculty_name?: string;
+        class_name?: string | null;
+        phone?: string | null;
+        total_points?: number;
+        titles?: string[];
     };
     donor_name: string;
     quantity: number;
@@ -203,6 +275,11 @@ export type EventRegistrationItem = {
         full_name: string;
         student_code: string;
         email: string;
+        faculty_name?: string;
+        class_name?: string | null;
+        phone?: string | null;
+        total_points?: number;
+        titles?: string[];
     };
     status: EventRegistrationStatus;
     answers?: Record<string, unknown>;

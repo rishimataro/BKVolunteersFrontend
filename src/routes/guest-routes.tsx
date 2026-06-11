@@ -1,6 +1,5 @@
 import { Navigate, type RouteObject } from 'react-router';
 
-import { env } from '@/config/env';
 import { paths } from '@/constants/paths';
 
 export const guestRoutes: RouteObject[] = [
@@ -98,17 +97,4 @@ export const guestRoutes: RouteObject[] = [
             return { Component: MicrosoftCallbackPage };
         },
     },
-    ...(env.ENABLE_API_MOCKING
-        ? [
-              {
-                  path: paths.auth.microsoftMockLogin.path,
-                  lazy: async () => {
-                      const { MicrosoftMockLoginPage } = await import(
-                          '@/pages/guest/auth/microsoft-mock-login'
-                      );
-                      return { Component: MicrosoftMockLoginPage };
-                  },
-              } satisfies RouteObject,
-          ]
-        : []),
 ];

@@ -16,10 +16,8 @@ import {
 } from '@/features/campaign/components/state-blocks';
 
 const orgTypeLabel: Record<string, string> = {
-    CLUB: 'CLB',
-    TEAM: 'Đội',
-    GROUP: 'Nhóm',
-    CENTER: 'Trung tâm',
+    CLUB: 'Câu lạc bộ',
+    FACULTY: 'Khoa',
 };
 
 export const OrganizationsRoute = () => {
@@ -66,10 +64,10 @@ export const OrganizationsRoute = () => {
                             BK Volunteers
                         </p>
                         <h1 className="mt-3 text-3xl font-bold text-slate-950 sm:text-4xl">
-                            CLB / Đội / Nhóm
+                            Khoa và câu lạc bộ
                         </h1>
                         <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">
-                            Danh sách các tổ chức thiện nguyện trong hệ thống.
+                            Danh sách các khoa và câu lạc bộ đang hoạt động trong hệ thống.
                         </p>
                     </div>
                 </section>
@@ -81,7 +79,7 @@ export const OrganizationsRoute = () => {
                             <Input
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Tìm theo tên hoặc mã tổ chức"
+                                placeholder="Tìm theo tên hoặc mã đơn vị"
                                 className="pl-9"
                             />
                         </div>

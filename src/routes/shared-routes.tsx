@@ -34,8 +34,8 @@ export const sharedAppRoutes: RouteObject[] = [
     {
         path: paths.app.campaigns.create.path,
         lazy: () =>
-            import('@/pages/shared/campaigns').then((m) => ({
-                Component: m.CampaignCreateRoute,
+            import('@/pages/shared/campaign-create-wizard').then((m) => ({
+                Component: m.CampaignCreateWizardRoute,
             })),
     },
     {

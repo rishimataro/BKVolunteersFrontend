@@ -8,6 +8,10 @@ import { Link } from '@/components/ui/link';
 import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
 import { MicrosoftIcon } from '@/components/ui/icon';
+import {
+    normalizeVietnameseText,
+    toVietnameseSearchKey,
+} from '@/utils/vietnamese-text';
 import { loginInputSchema } from '../types';
 import { useLogin } from '../lib/auth-provider';
 
@@ -131,7 +135,7 @@ export const LoginForm = () => {
         const rawMessage =
             (error.response?.data as { message?: string } | undefined)
                 ?.message ?? error.message;
-        const normalizedMessage = rawMessage.toLowerCase();
+        const normalizedMessage = toVietnameseSearchKey(rawMessage);
 
         if (
             normalizedMessage.includes('tai khoan da bi khoa hoac vo hieu hoa')
@@ -149,7 +153,7 @@ export const LoginForm = () => {
             return 'Vui lòng nhập định danh và mật khẩu.';
         }
 
-        return rawMessage || 'Đăng nhập thất bại, vui lòng thử lại.';
+        return normalizeVietnameseText(rawMessage) || 'Đăng nhập thất bại, vui lòng thử lại.';
     }, []);
 
     const onFieldBlur = React.useCallback(

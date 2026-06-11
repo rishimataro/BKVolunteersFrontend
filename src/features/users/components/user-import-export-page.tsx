@@ -1,4 +1,4 @@
-import * as React from 'react';
+﻿import * as React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
     ArrowLeft,
@@ -35,15 +35,20 @@ import {
     buildImportDrafts,
     convertCsvRowsToObjects,
     createEmptyImportMapping,
-    createImportTemplateCsv,
     createSuggestedImportMapping,
-    createUsersExportCsv,
     getImportFieldConfigs,
     parseCsvText,
     type ImportDraftRow,
     type ImportMapping,
     type ParsedImportRow,
 } from '@/features/users/lib/bulk-user-transfer';
+import {
+    convertXlsxRowsToObjects,
+    createImportTemplateWorkbook,
+    createUsersExportWorkbook,
+    getWorkbookMimeType,
+    parseXlsxRows,
+} from '@/features/users/lib/bulk-user-transfer-xlsx';
 
 type TransferTab = 'import' | 'export';
 type ImportStep = 1 | 2 | 3;
@@ -89,6 +94,8 @@ const inputClassName =
 const tableCellClassName =
     'border-b border-[#E1E3E4] px-4 py-3 text-[14px] leading-6 text-[#191C1D] align-top';
 
+const EXPORT_PAGE_SIZE = 100;
+
 const getErrorMessage = (error: unknown) => {
     if (
         typeof error === 'object' &&
@@ -112,12 +119,13 @@ const getErrorMessage = (error: unknown) => {
     return 'Không thể xử lý yêu cầu.';
 };
 
-const downloadTextFile = (
+const downloadBinaryFile = (
     filename: string,
-    content: string,
+    content: Uint8Array,
     mimeType: string,
 ) => {
-    const blob = new Blob([content], {
+    const safeContent = new Uint8Array(content);
+    const blob = new Blob([safeContent], {
         type: mimeType,
     });
     const url = window.URL.createObjectURL(blob);
@@ -134,6 +142,15 @@ const readFileAsText = (file: File) =>
         reader.onload = () => resolve(String(reader.result ?? ''));
         reader.onerror = () => reject(new Error('Không đọc được tệp tải lên.'));
         reader.readAsText(file, 'utf-8');
+    });
+
+const readFileAsArrayBuffer = (file: File) =>
+    new Promise<ArrayBuffer>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as ArrayBuffer);
+        reader.onerror = () =>
+            reject(new Error('Không đọc được tệp tải lên.'));
+        reader.readAsArrayBuffer(file);
     });
 
 const formatRoleLabel = (role: UserRole) =>
@@ -297,7 +314,7 @@ const ExportPreviewTable = ({ users }: { users: UserManagementItem[] }) => {
                                 <td className={tableCellClassName}>
                                     {user.managedClubName ||
                                         user.facultyName ||
-                                        'Chưa gán đơn vị'}
+                                            'Chưa gán đơn vị'}
                                 </td>
                                 <td className={tableCellClassName}>
                                     {formatStatusLabel(user.status)}
@@ -420,17 +437,16 @@ export const UserImportExportPage = () => {
     };
 
     const handleTemplateDownload = () => {
-        downloadTextFile(
-            `mau-nhap-du-lieu-${importRole.toLowerCase()}.csv`,
-            createImportTemplateCsv(importRole),
-            'text/csv;charset=utf-8;',
+        downloadBinaryFile(
+            `mau-nhap-du-lieu-${importRole.toLowerCase()}.xlsx`,
+            createImportTemplateWorkbook(importRole),
+            getWorkbookMimeType(),
         );
 
         addNotification({
             type: 'success',
-            title: 'Đã tải mẫu CSV',
-            message:
-                'Biểu mẫu nhập dữ liệu đã được tải xuống thiết bị của bạn.',
+            title: 'Đã tải mẫu Excel',
+            message: 'Biểu mẫu nhập dữ liệu đã được tải xuống thiết bị của bạn.',
         });
     };
 
@@ -446,22 +462,16 @@ export const UserImportExportPage = () => {
             return;
         }
 
-        const lowerName = file.name.toLowerCase();
-        if (lowerName.endsWith('.xlsx')) {
-            addNotification({
-                type: 'warning',
-                title: 'Định dạng chưa được hỗ trợ trực tiếp',
-                message:
-                    'Màn nhập dữ liệu hiện đọc CSV theo API hiện có. Vui lòng lưu tệp Excel sang CSV rồi tải lên lại.',
-            });
-            event.target.value = '';
-            return;
-        }
-
         try {
-            const content = await readFileAsText(file);
-            const parsedRows = parseCsvText(content);
-            const { headers, records } = convertCsvRowsToObjects(parsedRows);
+            const lowerName = file.name.toLowerCase();
+            const isWorkbook = lowerName.endsWith('.xlsx');
+            const { headers, records } = isWorkbook
+                ? convertXlsxRowsToObjects(
+                      parseXlsxRows(await readFileAsArrayBuffer(file)),
+                  )
+                : convertCsvRowsToObjects(
+                      parseCsvText(await readFileAsText(file)),
+                  );
 
             if (!headers.length || !records.length) {
                 throw new Error(
@@ -478,7 +488,7 @@ export const UserImportExportPage = () => {
 
             addNotification({
                 type: 'success',
-                title: 'Đã đọc tệp CSV',
+                title: isWorkbook ? 'Đã đọc tệp Excel' : 'Đã đọc tệp CSV',
                 message: `Hệ thống đã nhận ${records.length.toLocaleString('vi-VN')} dòng dữ liệu để đối chiếu.`,
             });
         } catch (error) {
@@ -540,7 +550,7 @@ export const UserImportExportPage = () => {
                     : 'Nhập dữ liệu thành công',
                 message: failures.length
                     ? `Đã tạo ${successCount} tài khoản, ${failures.length} dòng còn lỗi cần xử lý lại.`
-                    : `Đã tạo ${successCount} tài khoản mới từ tệp CSV.`,
+                    : `Đã tạo ${successCount} tài khoản mới từ tệp đã tải lên.`,
             });
         } finally {
             setIsImporting(false);
@@ -557,29 +567,41 @@ export const UserImportExportPage = () => {
                     type: 'warning',
                     title: 'Không có dữ liệu để xuất',
                     message:
-                        'Bộ lọc hiện tại chưa trả về tài khoản nào để tạo tệp CSV.',
+                        'Bộ lọc hiện tại chưa trả về tài khoản nào để tạo tệp Excel.',
                 });
                 return;
             }
 
-            const response = await getUsers({
-                page: 1,
-                limit: total,
-                search: exportSearch || undefined,
-                role: exportRoleFilter,
-                status: exportStatusFilter,
-            });
+            const totalPages = Math.max(
+                1,
+                Math.ceil(total / EXPORT_PAGE_SIZE),
+            );
+            const pages = await Promise.all(
+                Array.from({ length: totalPages }, (_, index) =>
+                    getUsers({
+                        page: index + 1,
+                        limit: EXPORT_PAGE_SIZE,
+                        search: exportSearch || undefined,
+                        role: exportRoleFilter,
+                        status: exportStatusFilter,
+                    }),
+                ),
+            );
+            const exportUsers = pages.flatMap((page) => page.data);
 
-            downloadTextFile(
-                'danh-sach-nguoi-dung.csv',
-                createUsersExportCsv(response.data),
-                'text/csv;charset=utf-8;',
+            downloadBinaryFile(
+                'danh-sach-nguoi-dung.xlsx',
+                createUsersExportWorkbook(exportUsers, {
+                    roleFilter: exportRoleFilter,
+                    statusFilter: exportStatusFilter,
+                }),
+                getWorkbookMimeType(),
             );
 
             addNotification({
                 type: 'success',
                 title: 'Đã xuất dữ liệu',
-                message: `Tệp CSV chứa ${response.data.length.toLocaleString('vi-VN')} tài khoản đã được tạo.`,
+                message: `Tệp Excel chứa ${exportUsers.length.toLocaleString('vi-VN')} tài khoản đã được tạo.`,
             });
         } catch (error) {
             addNotification({
@@ -630,9 +652,9 @@ export const UserImportExportPage = () => {
                                     </h2>
                                     <p className="max-w-3xl text-[16px] leading-6 text-[#424750]">
                                         Giữ nguyên API hiện tại, nhập dữ liệu
-                                        bằng biểu mẫu CSV theo mẫu hệ thống và
-                                        xuất danh sách tài khoản theo bộ lọc
-                                        quản trị.
+                                        bằng biểu mẫu Excel hoặc CSV theo mẫu hệ
+                                        thống và xuất danh sách tài khoản theo
+                                        bộ lọc quản trị.
                                     </p>
                                 </div>
                             </div>
@@ -661,7 +683,7 @@ export const UserImportExportPage = () => {
                                     className="size-4"
                                     strokeWidth={1.5}
                                 />
-                                Tải mẫu CSV
+                                Tải mẫu Excel
                             </Button>
                         </div>
                     </section>
@@ -695,7 +717,7 @@ export const UserImportExportPage = () => {
                         </div>
 
                         {activeTab === 'import' ? (
-                            <div className="space-y-6 p-5 sm:p-6">
+                            <div className="p-5 space-y-6 sm:p-6">
                                 <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
                                     <div
                                         className={`${panelClassName} border-dashed p-5 shadow-none`}
@@ -742,11 +764,11 @@ export const UserImportExportPage = () => {
                                                 </select>
                                             </label>
                                             <div className="rounded-xl bg-[#F3F4F5] p-4 text-[14px] leading-6 text-[#424750]">
-                                                Tệp import hiện hỗ trợ CSV theo
-                                                mẫu hệ thống. Nếu bạn đang có
-                                                Excel, hãy lưu lại sang CSV
-                                                trước khi tải lên để giữ nguyên
-                                                luồng API hiện tại.
+                                                Tệp import hỗ trợ cả Excel
+                                                (`.xlsx`) và CSV theo mẫu hệ
+                                                thống. Hệ thống sẽ đọc tệp,
+                                                đối chiếu cột và rà soát lỗi
+                                                trước khi tạo tài khoản.
                                             </div>
                                         </div>
                                     </div>
@@ -765,12 +787,12 @@ export const UserImportExportPage = () => {
                                                 Tải tệp dữ liệu người dùng
                                             </h3>
                                             <p className="mx-auto mt-3 max-w-2xl text-[16px] leading-7 text-[#424750]">
-                                                Chọn đúng biểu mẫu CSV theo vai
-                                                trò, sau đó hệ thống sẽ hỗ trợ
-                                                ánh xạ cột và rà soát lỗi trước
-                                                khi tạo tài khoản.
+                                                Chọn đúng biểu mẫu theo vai trò,
+                                                sau đó hệ thống sẽ hỗ trợ ánh xạ
+                                                cột và rà soát lỗi trước khi tạo
+                                                tài khoản.
                                             </p>
-                                            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+                                            <div className="flex flex-wrap items-center justify-center gap-4 mt-8">
                                                 <Button
                                                     type="button"
                                                     className="rounded-lg bg-[#002A58] px-6 normal-case tracking-normal text-white hover:bg-[#004080]"
@@ -780,7 +802,7 @@ export const UserImportExportPage = () => {
                                                         className="size-4"
                                                         strokeWidth={1.5}
                                                     />
-                                                    Chọn tệp CSV
+                                                    Chọn tệp Excel hoặc CSV
                                                 </Button>
                                                 <Button
                                                     type="button"
@@ -813,24 +835,6 @@ export const UserImportExportPage = () => {
                                                 onChange={handleFileChange}
                                             />
                                         </section>
-
-                                        <div className="grid gap-4 lg:grid-cols-3">
-                                            <SummaryCard
-                                                label="Tiêu đề chuẩn"
-                                                value={fieldConfigs.length.toString()}
-                                                note="Biểu mẫu sẽ sinh đúng số cột cần thiết cho vai trò đang chọn."
-                                            />
-                                            <SummaryCard
-                                                label="Rà soát dữ liệu"
-                                                value="3 bước"
-                                                note="Tải tệp, ánh xạ cột và xem lại lỗi trước khi ghi dữ liệu."
-                                            />
-                                            <SummaryCard
-                                                label="An toàn nghiệp vụ"
-                                                value="API cũ"
-                                                note="Hệ thống chỉ gọi lại các API tạo tài khoản đang có, không thêm nghiệp vụ mới."
-                                            />
-                                        </div>
                                     </>
                                 ) : null}
 
@@ -849,7 +853,7 @@ export const UserImportExportPage = () => {
                                                         Tệp đang xử lý
                                                     </p>
                                                     <h3 className="mt-2 text-[24px] font-semibold leading-8 text-[#191C1D]">
-                                                        Ánh xạ cột CSV
+                                                        Ánh xạ cột dữ liệu
                                                     </h3>
                                                 </div>
                                                 <FileSpreadsheet
@@ -1013,8 +1017,8 @@ export const UserImportExportPage = () => {
                                                                                                       .key
                                                                                               ]
                                                                                           ] ||
-                                                                                          'Chưa có dữ liệu'
-                                                                                        : 'Chưa ánh xạ'}
+                                                                                                                                                                                    'Chưa có dữ liệu'
+                                                                                                                                                                                : 'Chưa ánh xạ'}
                                                                                 </td>
                                                                             ),
                                                                         )}
@@ -1234,7 +1238,7 @@ export const UserImportExportPage = () => {
                                                         Kết quả lần nhập gần
                                                         nhất
                                                     </p>
-                                                    <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                                                    <div className="grid gap-4 mt-4 sm:grid-cols-2 xl:grid-cols-3">
                                                         <SummaryCard
                                                             label="Tạo thành công"
                                                             value={importResult.successCount.toLocaleString(
@@ -1320,34 +1324,7 @@ export const UserImportExportPage = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="space-y-6 p-5 sm:p-6">
-                                <div className="grid gap-4 lg:grid-cols-4">
-                                    <SummaryCard
-                                        label="Bản ghi hiện có"
-                                        value={(
-                                            exportPreviewMeta?.total ?? 0
-                                        ).toLocaleString('vi-VN')}
-                                        note="Theo bộ lọc xuất dữ liệu hiện tại."
-                                    />
-                                    <SummaryCard
-                                        label="Loại xuất"
-                                        value="CSV"
-                                        note="Phù hợp để bàn giao hoặc xử lý tiếp bằng Excel."
-                                    />
-                                    <SummaryCard
-                                        label="Phạm vi"
-                                        value="Bộ lọc động"
-                                        note="Xuất theo tìm kiếm, vai trò và trạng thái đang chọn."
-                                    />
-                                    <SummaryCard
-                                        label="Dữ liệu xem trước"
-                                        value={exportPreviewUsers.length.toLocaleString(
-                                            'vi-VN',
-                                        )}
-                                        note="Màn hình chỉ hiển thị một phần nhỏ trước khi tải CSV đầy đủ."
-                                    />
-                                </div>
-
+                            <div className="p-5 space-y-6 sm:p-6">
                                 <section
                                     className={`${panelClassName} p-5 sm:p-6`}
                                 >
@@ -1358,8 +1335,8 @@ export const UserImportExportPage = () => {
                                             </h3>
                                             <p className="mt-2 text-[14px] leading-6 text-[#424750]">
                                                 Chọn phạm vi dữ liệu cần xuất.
-                                                Tệp CSV sẽ được tạo từ danh sách
-                                                khớp với bộ lọc này.
+                                                Tệp Excel sẽ được tạo từ danh
+                                                sách khớp với bộ lọc này.
                                             </p>
                                         </div>
                                         <Button
@@ -1377,7 +1354,7 @@ export const UserImportExportPage = () => {
                                             />
                                             {isExporting
                                                 ? 'Đang xuất dữ liệu...'
-                                                : 'Xuất tệp CSV'}
+                                                : 'Xuất tệp Excel'}
                                         </Button>
                                     </div>
 
@@ -1481,9 +1458,9 @@ export const UserImportExportPage = () => {
                                                     Xem trước dữ liệu sẽ xuất
                                                 </h3>
                                                 <p className="mt-2 text-[14px] leading-6 text-[#424750]">
-                                                    Bảng xem trước này dùng cùng
-                                                    bộ lọc với tệp CSV tải
-                                                    xuống.
+                                                    Bảng xem trước này dùng
+                                                    cùng bộ lọc với tệp Excel
+                                                    tải xuống.
                                                 </p>
                                             </div>
                                             <div className="rounded-full bg-[#F3F4F5] px-4 py-2 text-[13px] font-semibold text-[#424750]">
@@ -1521,3 +1498,4 @@ export const UserImportExportPage = () => {
         </Authorization>
     );
 };
+

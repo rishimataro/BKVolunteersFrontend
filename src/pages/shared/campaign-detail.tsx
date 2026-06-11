@@ -1,20 +1,18 @@
 import * as React from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
-import { ArrowLeft, CalendarDays, FileText } from 'lucide-react';
+import { ArrowLeft, CalendarDays, FileText, HandCoins, UserPlus } from 'lucide-react';
 
 import { Head } from '@/components/seo';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { useNotifications } from '@/components/ui/notifications';
 import { paths } from '@/config/paths';
 import { ROLES, useUser } from '@/features/auth';
 import { getPublicCampaignDetail } from '@/features/campaign/api/public';
-import {
-    createItemPledge,
-    getItemTargets,
-    type ItemTargetItem,
-} from '@/features/campaign/api/item-donations';
 import { ApprovalCampaignDetailView } from '@/features/campaign/components/approval-campaign-detail-view';
+import {
+    StudentEventRegistrationDialog,
+    StudentFundraisingDialog,
+    StudentItemDonationDialog,
+} from '@/features/campaign/components/student-module-cta-dialogs';
 import { ModuleBlock } from '@/components/ui/module-block';
 import { StatusBadge } from '@/features/campaign/components/status-badge';
 import {
@@ -73,6 +71,21 @@ type CampaignDetailViewProps = {
     headTitle: string;
 };
 
+const getStudentFullName = (
+    user: ReturnType<typeof useUser>['data'] | null | undefined,
+) => {
+    const fullName = String(user?.fullName ?? '').trim();
+    if (fullName) {
+        return fullName;
+    }
+
+    return `${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim();
+};
+
+const getStudentCode = (
+    user: ReturnType<typeof useUser>['data'] | null | undefined,
+) => String(user?.studentCode ?? user?.mssv ?? '').trim();
+
 const CampaignDetailView = ({
     backHref,
     backLabel,
@@ -81,31 +94,22 @@ const CampaignDetailView = ({
     const { slug } = useParams();
     const navigate = useNavigate();
     const user = useUser();
-    const { addNotification } = useNotifications();
     const [campaign, setCampaign] = React.useState<PublicCampaignDetail | null>(
         null,
     );
     const [isLoading, setIsLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
-    const [itemTargetsByModule, setItemTargetsByModule] = React.useState<
-        Record<string, ItemTargetItem[]>
-    >({});
-    const [itemForm, setItemForm] = React.useState<
-        Record<
-            string,
-            {
-                item_target_id: string;
-                quantity: number;
-                donor_name: string;
-                expected_handover_at: string;
-                note: string;
-            }
-        >
-    >({});
-    const [submittingModuleId, setSubmittingModuleId] = React.useState<
-        string | null
+    const [eventDialogModule, setEventDialogModule] = React.useState<
+        PublicCampaignDetail['modules'][number] | null
     >(null);
+    const [fundraisingDialogModule, setFundraisingDialogModule] =
+        React.useState<PublicCampaignDetail['modules'][number] | null>(null);
+    const [itemDonationDialogModule, setItemDonationDialogModule] =
+        React.useState<PublicCampaignDetail['modules'][number] | null>(null);
     const isStudent = user.data?.role === 'SINHVIEN';
+    const studentFullName = getStudentFullName(user.data);
+    const studentCode = getStudentCode(user.data);
+    const studentPhone = String(user.data?.phone ?? '').trim();
 
     React.useEffect(() => {
         if (!slug) {
@@ -135,98 +139,6 @@ const CampaignDetailView = ({
             isMounted = false;
         };
     }, [slug]);
-
-    const loadItemTargets = React.useCallback(
-        async (moduleId: string) => {
-            if (itemTargetsByModule[moduleId]) return;
-            try {
-                const targets = await getItemTargets(moduleId, 'ACTIVE');
-                setItemTargetsByModule((current) => ({
-                    ...current,
-                    [moduleId]: targets,
-                }));
-                if (targets.length > 0) {
-                    setItemForm((current) => ({
-                        ...current,
-                        [moduleId]: {
-                            item_target_id:
-                                current[moduleId]?.item_target_id ??
-                                targets[0].id,
-                            quantity: current[moduleId]?.quantity ?? 1,
-                            donor_name:
-                                current[moduleId]?.donor_name ??
-                                `${user.data?.firstName ?? ''} ${user.data?.lastName ?? ''}`.trim(),
-                            expected_handover_at:
-                                current[moduleId]?.expected_handover_at ?? '',
-                            note: current[moduleId]?.note ?? '',
-                        },
-                    }));
-                }
-            } catch (targetError) {
-                addNotification({
-                    type: 'error',
-                    title: 'Không tải được danh sách nhu cầu hiện vật',
-                    message:
-                        targetError instanceof Error
-                            ? targetError.message
-                            : 'Lỗi hệ thống',
-                });
-            }
-        },
-        [
-            addNotification,
-            itemTargetsByModule,
-            user.data?.firstName,
-            user.data?.lastName,
-        ],
-    );
-
-    const onSubmitItemPledge = async (moduleId: string) => {
-        const form = itemForm[moduleId];
-        if (!form) return;
-
-        try {
-            setSubmittingModuleId(moduleId);
-            await createItemPledge(moduleId, {
-                item_target_id: form.item_target_id,
-                quantity: form.quantity,
-                donor_name: form.donor_name,
-                expected_handover_at: form.expected_handover_at
-                    ? new Date(form.expected_handover_at).toISOString()
-                    : undefined,
-                note: form.note || undefined,
-            });
-            addNotification({
-                type: 'success',
-                title: 'Đăng ký hiện vật thành công',
-                message: 'Yêu cầu của bạn đã được ghi nhận.',
-            });
-            const targets = await getItemTargets(moduleId, 'ACTIVE');
-            setItemTargetsByModule((current) => ({
-                ...current,
-                [moduleId]: targets,
-            }));
-            setItemForm((current) => ({
-                ...current,
-                [moduleId]: {
-                    ...current[moduleId],
-                    quantity: 1,
-                    note: '',
-                },
-            }));
-        } catch (submitError) {
-            addNotification({
-                type: 'error',
-                title: 'Đăng ký hiện vật thất bại',
-                message:
-                    submitError instanceof Error
-                        ? submitError.message
-                        : 'Lỗi hệ thống',
-            });
-        } finally {
-            setSubmittingModuleId(null);
-        }
-    };
 
     return (
         <>
@@ -395,340 +307,59 @@ const CampaignDetailView = ({
                                             />
                                         }
                                     >
-                                        <Button
-                                            type="button"
-                                            className="mt-4 w-full"
-                                            disabled={!module.cta.enabled}
-                                        >
-                                            {toDisplayText(module.cta.label)}
-                                        </Button>
+                                        {module.cta.enabled &&
+                                        isStudent &&
+                                        module.type === 'fundraising' ? (
+                                            <Button
+                                                type="button"
+                                                className="mt-4 w-full gap-2"
+                                                onClick={() =>
+                                                    setFundraisingDialogModule(
+                                                        module,
+                                                    )
+                                                }
+                                            >
+                                                <HandCoins
+                                                    className="size-4"
+                                                    strokeWidth={1.75}
+                                                />
+                                                Ủng hộ tài chính
+                                            </Button>
+                                        ) : module.cta.enabled &&
+                                          isStudent &&
+                                          (module.type === 'event' ||
+                                              module.type ===
+                                                  'item_donation') ? null : (
+                                            <Button
+                                                type="button"
+                                                className="mt-4 w-full"
+                                                disabled={!module.cta.enabled}
+                                            >
+                                                {toDisplayText(
+                                                    module.cta.label,
+                                                )}
+                                            </Button>
+                                        )}
 
                                         {module.cta.enabled &&
                                         isStudent &&
                                         module.type === 'item_donation' ? (
-                                            <div className="mt-4 space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-3">
-                                                <div className="flex items-center justify-between gap-2">
-                                                    <p className="text-sm font-semibold text-slate-900">
-                                                        Đăng ký quyên góp hiện
-                                                        vật
-                                                    </p>
-                                                    <Button
-                                                        type="button"
-                                                        variant="outline"
-                                                        onClick={() =>
-                                                            void loadItemTargets(
-                                                                module.id,
-                                                            )
-                                                        }
-                                                    >
-                                                        Tải nhu cầu
-                                                    </Button>
-                                                </div>
-                                                <select
-                                                    value={
-                                                        itemForm[module.id]
-                                                            ?.item_target_id ??
-                                                        ''
-                                                    }
-                                                    onChange={(event) =>
-                                                        setItemForm(
-                                                            (current) => ({
-                                                                ...current,
-                                                                [module.id]: {
-                                                                    ...current[
-                                                                        module
-                                                                            .id
-                                                                    ],
-                                                                    item_target_id:
-                                                                        event
-                                                                            .target
-                                                                            .value,
-                                                                    quantity:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.quantity ??
-                                                                        1,
-                                                                    donor_name:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.donor_name ??
-                                                                        `${user.data?.firstName ?? ''} ${user.data?.lastName ?? ''}`.trim(),
-                                                                    expected_handover_at:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.expected_handover_at ??
-                                                                        '',
-                                                                    note:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.note ??
-                                                                        '',
-                                                                },
-                                                            }),
-                                                        )
-                                                    }
-                                                    className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900"
-                                                >
-                                                    <option value="">
-                                                        Chọn nhu cầu hiện vật
-                                                    </option>
-                                                    {(
-                                                        itemTargetsByModule[
-                                                            module.id
-                                                        ] ?? []
-                                                    ).map((target) => (
-                                                        <option
-                                                            key={target.id}
-                                                            value={target.id}
-                                                        >
-                                                            {toDisplayText(
-                                                                target.name,
-                                                            )}{' '}
-                                                            (
-                                                            {
-                                                                target.received_quantity
-                                                            }
-                                                            /
-                                                            {
-                                                                target.target_quantity
-                                                            }{' '}
-                                                            {target.unit})
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                                <Input
-                                                    type="number"
-                                                    min={1}
-                                                    placeholder="Số lượng"
-                                                    value={
-                                                        itemForm[module.id]
-                                                            ?.quantity ?? ''
-                                                    }
-                                                    onChange={(event) =>
-                                                        setItemForm(
-                                                            (current) => ({
-                                                                ...current,
-                                                                [module.id]: {
-                                                                    ...current[
-                                                                        module
-                                                                            .id
-                                                                    ],
-                                                                    item_target_id:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.item_target_id ??
-                                                                        '',
-                                                                    quantity:
-                                                                        Number(
-                                                                            event
-                                                                                .target
-                                                                                .value ||
-                                                                                0,
-                                                                        ),
-                                                                    donor_name:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.donor_name ??
-                                                                        `${user.data?.firstName ?? ''} ${user.data?.lastName ?? ''}`.trim(),
-                                                                    expected_handover_at:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.expected_handover_at ??
-                                                                        '',
-                                                                    note:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.note ??
-                                                                        '',
-                                                                },
-                                                            }),
-                                                        )
-                                                    }
-                                                />
-                                                <Input
-                                                    placeholder="Tên người quyên góp"
-                                                    value={
-                                                        itemForm[module.id]
-                                                            ?.donor_name ?? ''
-                                                    }
-                                                    onChange={(event) =>
-                                                        setItemForm(
-                                                            (current) => ({
-                                                                ...current,
-                                                                [module.id]: {
-                                                                    ...current[
-                                                                        module
-                                                                            .id
-                                                                    ],
-                                                                    item_target_id:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.item_target_id ??
-                                                                        '',
-                                                                    quantity:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.quantity ??
-                                                                        1,
-                                                                    donor_name:
-                                                                        event
-                                                                            .target
-                                                                            .value,
-                                                                    expected_handover_at:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.expected_handover_at ??
-                                                                        '',
-                                                                    note:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.note ??
-                                                                        '',
-                                                                },
-                                                            }),
-                                                        )
-                                                    }
-                                                />
-                                                <Input
-                                                    type="datetime-local"
-                                                    value={
-                                                        itemForm[module.id]
-                                                            ?.expected_handover_at ??
-                                                        ''
-                                                    }
-                                                    onChange={(event) =>
-                                                        setItemForm(
-                                                            (current) => ({
-                                                                ...current,
-                                                                [module.id]: {
-                                                                    ...current[
-                                                                        module
-                                                                            .id
-                                                                    ],
-                                                                    item_target_id:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.item_target_id ??
-                                                                        '',
-                                                                    quantity:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.quantity ??
-                                                                        1,
-                                                                    donor_name:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.donor_name ??
-                                                                        `${user.data?.firstName ?? ''} ${user.data?.lastName ?? ''}`.trim(),
-                                                                    expected_handover_at:
-                                                                        event
-                                                                            .target
-                                                                            .value,
-                                                                    note:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.note ??
-                                                                        '',
-                                                                },
-                                                            }),
-                                                        )
-                                                    }
-                                                />
-                                                <Input
-                                                    placeholder="Ghi chú"
-                                                    value={
-                                                        itemForm[module.id]
-                                                            ?.note ?? ''
-                                                    }
-                                                    onChange={(event) =>
-                                                        setItemForm(
-                                                            (current) => ({
-                                                                ...current,
-                                                                [module.id]: {
-                                                                    ...current[
-                                                                        module
-                                                                            .id
-                                                                    ],
-                                                                    item_target_id:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.item_target_id ??
-                                                                        '',
-                                                                    quantity:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.quantity ??
-                                                                        1,
-                                                                    donor_name:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.donor_name ??
-                                                                        `${user.data?.firstName ?? ''} ${user.data?.lastName ?? ''}`.trim(),
-                                                                    expected_handover_at:
-                                                                        current[
-                                                                            module
-                                                                                .id
-                                                                        ]
-                                                                            ?.expected_handover_at ??
-                                                                        '',
-                                                                    note: event
-                                                                        .target
-                                                                        .value,
-                                                                },
-                                                            }),
-                                                        )
-                                                    }
-                                                />
+                                            <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+                                                <p className="text-sm font-semibold text-slate-900">
+                                                    Đăng ký quyên góp hiện vật
+                                                </p>
+                                                <p className="mt-2 text-[15px] leading-7 text-muted-foreground">
+                                                    Mở biểu mẫu để chọn nhu cầu,
+                                                    số lượng và thời điểm bàn
+                                                    giao hiện vật phù hợp.
+                                                </p>
                                                 <Button
                                                     type="button"
+                                                    className="mt-4 w-full"
                                                     onClick={() =>
-                                                        void onSubmitItemPledge(
-                                                            module.id,
+                                                        setItemDonationDialogModule(
+                                                            module,
                                                         )
-                                                    }
-                                                    disabled={
-                                                        submittingModuleId ===
-                                                            module.id ||
-                                                        !itemForm[module.id]
-                                                            ?.item_target_id
                                                     }
                                                 >
                                                     Gửi đăng ký hiện vật
@@ -741,22 +372,29 @@ const CampaignDetailView = ({
                                         module.type === 'event' ? (
                                             <div className="mt-4 border border-input bg-muted p-4">
                                                 <p className="broadsheet-kicker">
-                                                    Phiếu tham gia
+                                                    Phiếu tham gia tình nguyện
                                                 </p>
                                                 <p className="mt-2 text-[15px] leading-7 text-muted-foreground">
-                                                    Mở phiếu đăng ký riêng để
-                                                    cập nhật số điện thoại, kỹ
-                                                    năng và cam kết tham gia.
+                                                    Cập nhật số điện thoại, kỹ
+                                                    năng và xác nhận cam kết
+                                                    tham gia hoạt động tình
+                                                    nguyện.
                                                 </p>
-                                                <Link
-                                                    to={paths.app.campaigns.registration.getHref(
-                                                        campaign.slug,
-                                                        module.id,
-                                                    )}
-                                                    className="mt-4 inline-flex h-10 items-center justify-center border border-primary bg-primary px-5 text-[14px] font-semibold uppercase tracking-[0.08em] text-white transition hover:bg-[#1F2937]"
+                                                <Button
+                                                    type="button"
+                                                    className="mt-4 w-full gap-2"
+                                                    onClick={() =>
+                                                        setEventDialogModule(
+                                                            module,
+                                                        )
+                                                    }
                                                 >
+                                                    <UserPlus
+                                                        className="size-4"
+                                                        strokeWidth={1.75}
+                                                    />
                                                     Đăng ký tham gia
-                                                </Link>
+                                                </Button>
                                             </div>
                                         ) : null}
 
@@ -773,6 +411,58 @@ const CampaignDetailView = ({
                     ) : null}
                 </section>
             </main>
+
+            {campaign ? (
+                <>
+                    <StudentEventRegistrationDialog
+                        campaign={campaign}
+                        module={eventDialogModule}
+                        open={Boolean(eventDialogModule)}
+                        onOpenChange={(open) => {
+                            if (!open) {
+                                setEventDialogModule(null);
+                            }
+                        }}
+                        student={{
+                            fullName: studentFullName,
+                            studentCode: studentCode,
+                            phone: studentPhone,
+                        }}
+                    />
+
+                    <StudentFundraisingDialog
+                        campaign={campaign}
+                        module={fundraisingDialogModule}
+                        open={Boolean(fundraisingDialogModule)}
+                        onOpenChange={(open) => {
+                            if (!open) {
+                                setFundraisingDialogModule(null);
+                            }
+                        }}
+                        student={{
+                            fullName: studentFullName,
+                            studentCode: studentCode,
+                            phone: studentPhone,
+                        }}
+                    />
+
+                    <StudentItemDonationDialog
+                        campaign={campaign}
+                        module={itemDonationDialogModule}
+                        open={Boolean(itemDonationDialogModule)}
+                        onOpenChange={(open) => {
+                            if (!open) {
+                                setItemDonationDialogModule(null);
+                            }
+                        }}
+                        student={{
+                            fullName: studentFullName,
+                            studentCode: studentCode,
+                            phone: studentPhone,
+                        }}
+                    />
+                </>
+            ) : null}
         </>
     );
 };

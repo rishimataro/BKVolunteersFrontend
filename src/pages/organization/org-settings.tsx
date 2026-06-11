@@ -4,10 +4,8 @@ import { ContentLayout } from '@/components/layouts';
 import { ROLES, useUser } from '@/features/auth';
 
 const orgTypeLabel: Record<string, string> = {
-    CLUB: 'CLB',
-    TEAM: 'Đội',
-    GROUP: 'Nhóm',
-    CENTER: 'Trung tâm',
+    CLUB: 'Câu lạc bộ',
+    FACULTY: 'Khoa',
 };
 
 export const OrgSettingsRoute = () => {

@@ -136,6 +136,12 @@ const sortCertificates = (
     });
 };
 
+const getCertificateDisplayImageUrl = (certificate: CertificateItem) =>
+    certificate.signedFileUrl ??
+    certificate.generatedFileUrl ??
+    certificate.previewImageUrl ??
+    null;
+
 export const CertificateList = () => {
     const { addNotification } = useNotifications();
     const [summary, setSummary] =
@@ -519,43 +525,60 @@ const CertificateCard = ({
         certificate.fileUrl && certificate.status !== 'REVOKED',
     );
 
+    const displayImageUrl = getCertificateDisplayImageUrl(certificate);
+    const hasRealImage = Boolean(displayImageUrl);
+
     return (
         <article className="border border-input bg-white">
             <div
-                className={`aspect-[1.414/1] border-b ${tone.frame} ${tone.surface} p-4`}
+                className={`aspect-[1.414/1] border-b ${!hasRealImage ? `${tone.frame} ${tone.surface}` : 'border-border bg-muted'} overflow-hidden p-4`}
             >
-                <div
-                    className={`flex h-full flex-col justify-between border ${tone.inner} bg-white p-5`}
-                >
-                    <div className="flex items-start justify-between">
-                        <p
-                            className={`text-[12px] font-semibold uppercase tracking-[0.16em] ${tone.accent}`}
-                        >
-                            BK Volunteers
-                        </p>
-                        <Award
-                            className={`size-5 ${tone.accent}`}
-                            strokeWidth={1.5}
+                {hasRealImage && displayImageUrl ? (
+                    <div className="relative flex h-full w-full items-center justify-center overflow-hidden">
+                        <img
+                            src={displayImageUrl}
+                            alt={`Chứng nhận ${certificate.certificateNo}`}
+                            className="h-full w-full object-contain"
                         />
-                    </div>
-                    <div className="space-y-2 text-center">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                            Giấy chứng nhận điện tử
-                        </p>
-                        <p className="text-[20px] font-bold leading-8 text-primary">
-                            {toDisplayTitle(certificate.campaignTitle)}
-                        </p>
-                        <p className="text-[13px] leading-6 text-muted-foreground">
-                            {certificate.templateName}
-                        </p>
-                    </div>
-                    <div className="flex items-end justify-between text-[12px] text-muted-foreground">
-                        <span>{issuedLabel}</span>
-                        <span className="font-semibold">
+                        {/* Overlay certificate number */}
+                        <div className="pointer-events-none absolute bottom-2 right-2 rounded bg-black/50 px-2 py-1 text-[11px] font-semibold text-white">
                             {certificate.certificateNo}
-                        </span>
+                        </div>
                     </div>
-                </div>
+                ) : (
+                    <div
+                        className={`flex h-full flex-col justify-between border ${tone.inner} bg-white p-5`}
+                    >
+                        <div className="flex items-start justify-between">
+                            <p
+                                className={`text-[12px] font-semibold uppercase tracking-[0.16em] ${tone.accent}`}
+                            >
+                                BK Volunteers
+                            </p>
+                            <Award
+                                className={`size-5 ${tone.accent}`}
+                                strokeWidth={1.5}
+                            />
+                        </div>
+                        <div className="space-y-2 text-center">
+                            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                                Giấy chứng nhận điện tử
+                            </p>
+                            <p className="text-[20px] font-bold leading-8 text-primary">
+                                {toDisplayTitle(certificate.campaignTitle)}
+                            </p>
+                            <p className="text-[13px] leading-6 text-muted-foreground">
+                                {certificate.templateName}
+                            </p>
+                        </div>
+                        <div className="flex items-end justify-between text-[12px] text-muted-foreground">
+                            <span>{issuedLabel}</span>
+                            <span className="font-semibold">
+                                {certificate.certificateNo}
+                            </span>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className="space-y-4 p-5">
@@ -619,6 +642,7 @@ const CertificateCard = ({
         </article>
     );
 };
+
 
 const PendingCard = ({ count }: { count: number }) => (
     <article className="flex min-h-[520px] flex-col items-center justify-center border border-dashed border-input bg-muted p-6 text-center">

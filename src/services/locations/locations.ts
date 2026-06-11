@@ -49,3 +49,33 @@ export const getLocations = async (): Promise<LocationItem[]> => {
         .map(normalizeLocation)
         .filter((location): location is LocationItem => location !== null);
 };
+
+export const searchLocations = async (query: string): Promise<LocationItem[]> => {
+    const data = (await api.get('/locations/search', {
+        params: {
+            q: query,
+        },
+    })) as unknown;
+
+    if (!Array.isArray(data)) {
+        return [];
+    }
+
+    return data
+        .map(normalizeLocation)
+        .filter((location): location is LocationItem => location !== null);
+};
+
+export const reverseGeocode = async (
+    latitude: number,
+    longitude: number,
+): Promise<LocationItem | null> => {
+    const data = (await api.get('/locations/reverse', {
+        params: {
+            latitude,
+            longitude,
+        },
+    })) as unknown;
+
+    return normalizeLocation(data);
+};

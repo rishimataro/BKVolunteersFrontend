@@ -3,25 +3,21 @@ import * as z from 'zod';
 const createEnv = () => {
     const EnvSchema = z.object({
         API_URL: z.string(),
-        ENABLE_API_MOCKING: z
-            .string()
-            .refine((s) => s === 'true' || s === 'false')
-            .transform((s) => s === 'true')
-            .optional(),
         APP_URL: z.string().optional().default('http://localhost:3000'),
-        APP_MOCK_API_PORT: z.string().optional().default('8080'),
     });
 
-    const envVars = Object.entries(import.meta.env).reduce<
-        Record<string, string>
-    >((acc, curr) => {
-        const [key, value] = curr;
-        if (key.startsWith('VITE_APP_')) {
-            acc[key.replace('VITE_APP_', '')] = value;
-        }
+    const rawEnv = import.meta.env as Record<string, string | undefined>;
+    const envVars: Record<string, string> = {};
 
-        return acc;
-    }, {});
+    const apiUrl = rawEnv.VITE_API_BASE_URL ?? rawEnv.VITE_APP_API_URL;
+    if (apiUrl) {
+        envVars.API_URL = apiUrl;
+    }
+
+    const appUrl = rawEnv.VITE_APP_APP_URL ?? rawEnv.VITE_APP_URL;
+    if (appUrl) {
+        envVars.APP_URL = appUrl;
+    }
 
     const parsedEnv = EnvSchema.safeParse(envVars);
 

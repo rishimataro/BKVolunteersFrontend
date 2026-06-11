@@ -68,6 +68,16 @@ export const updateFundraisingConfig = (
         status: string;
     }>;
 
+export const extendFundraisingDeadline = (
+    moduleId: string,
+    payload: {
+        end_at: string;
+        reason?: string;
+        notify_participants?: boolean;
+    },
+) =>
+    api.patch(`/fundraising/modules/${moduleId}/extend`, payload) as Promise<FundraisingModuleDetail>;
+
 export const getFundraisingDonations = (
     moduleId: string,
     params?: {

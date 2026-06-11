@@ -1,8 +1,7 @@
 <!-- gitnexus:start -->
-
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **BKVolunteersFrontend** (56353 symbols, 69463 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **BKVolunteersFrontend** (57114 symbols, 70697 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -23,23 +22,23 @@ This project is indexed by GitNexus as **BKVolunteersFrontend** (56353 symbols, 
 
 ## Resources
 
-| Resource                                              | Use for                                  |
-| ----------------------------------------------------- | ---------------------------------------- |
-| `gitnexus://repo/BKVolunteersFrontend/context`        | Codebase overview, check index freshness |
-| `gitnexus://repo/BKVolunteersFrontend/clusters`       | All functional areas                     |
-| `gitnexus://repo/BKVolunteersFrontend/processes`      | All execution flows                      |
-| `gitnexus://repo/BKVolunteersFrontend/process/{name}` | Step-by-step execution trace             |
+| Resource | Use for |
+|----------|---------|
+| `gitnexus://repo/BKVolunteersFrontend/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/BKVolunteersFrontend/clusters` | All functional areas |
+| `gitnexus://repo/BKVolunteersFrontend/processes` | All execution flows |
+| `gitnexus://repo/BKVolunteersFrontend/process/{name}` | Step-by-step execution trace |
 
 ## CLI
 
-| Task                                         | Read this skill file                                        |
-| -------------------------------------------- | ----------------------------------------------------------- |
-| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md`       |
-| Blast radius / "What breaks if I change X?"  | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
-| Trace bugs / "Why is X failing?"             | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md`       |
-| Rename / extract / split / refactor          | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md`     |
-| Tools, resources, schema reference           | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md`           |
-| Index, status, clean, wiki CLI commands      | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md`             |
+| Task | Read this skill file |
+|------|---------------------|
+| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md` |
+| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
+| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md` |
+| Rename / extract / split / refactor | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md` |
+| Tools, resources, schema reference | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md` |
+| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
 
 <!-- gitnexus:end -->
 
@@ -51,6 +50,7 @@ Bắt buộc:
 
 - Mọi label, button, menu, tiêu đề, placeholder, validation message, toast, empty state, modal, tooltip phải dùng tiếng Việt có dấu.
 - Không được viết tiếng Việt không dấu như: "Dang nhap", "Quan ly", "Cap nhat", "Thong tin".
+- Không được để xảy ra lỗi mojibake hoặc lỗi mã hóa kiểu "Äƒ", "Ã´", "á»…".
 - Không được tự ý chuyển nội dung tiếng Việt có dấu thành ASCII.
 - Chỉ được bỏ dấu trong slug, route path, enum, key, className, biến code, mã định danh kỹ thuật.
 - Không đổi tên API field, database column, env key, route hoặc permission key sang tiếng Việt có dấu.

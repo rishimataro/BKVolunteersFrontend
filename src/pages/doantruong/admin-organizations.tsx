@@ -1,10 +1,7 @@
-import * as React from 'react';
+﻿import * as React from 'react';
 import { Link } from 'react-router';
 import {
     ArrowRight,
-    Bolt,
-    Building2,
-    CircleDollarSign,
     Eye,
     FileBarChart2,
     PencilLine,
@@ -12,7 +9,6 @@ import {
     Search,
     Trash2,
     X,
-    type LucideIcon,
 } from 'lucide-react';
 
 import { paths } from '@/config/paths';
@@ -35,6 +31,8 @@ import {
     getAdminOrganizations,
     updateAdminOrganization,
     type AdminOrganization,
+    type AdminOrganizationStatus,
+    type AdminOrganizationType,
 } from '@/features/admin/api/organizations';
 import {
     EmptyState,
@@ -55,33 +53,27 @@ type FormMode = 'create' | 'edit';
 type OrgFormState = {
     code: string;
     name: string;
-    type: string;
-    status: string;
-    description: string;
+    type: AdminOrganizationType;
+    status: AdminOrganizationStatus;
+    facultyId: string;
 };
 
-type QuickTypeFilter = '' | 'CLUB' | 'TEAM';
+type QuickTypeFilter = '' | AdminOrganizationType;
 
 const DEFAULT_FORM: OrgFormState = {
     code: '',
     name: '',
     type: 'CLUB',
     status: 'ACTIVE',
-    description: '',
+    facultyId: '',
 };
+
+const ORGANIZATIONS_PER_PAGE = 10;
 
 const orgTypeOptions = [
     { value: 'CLUB', label: 'Câu lạc bộ' },
-    { value: 'TEAM', label: 'Đội' },
-    { value: 'GROUP', label: 'Nhóm' },
-    { value: 'CENTER', label: 'Trung tâm' },
-];
-
-const quickTypeTabs: Array<{ value: QuickTypeFilter; label: string }> = [
-    { value: '', label: 'Tất cả' },
-    { value: 'CLUB', label: 'Câu lạc bộ' },
-    { value: 'TEAM', label: 'Đội' },
-];
+    { value: 'FACULTY', label: 'Khoa' },
+] as const;
 
 const panelClassName =
     'rounded-xl border border-[#C3C6D2] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.05)]';
@@ -114,8 +106,8 @@ const getTypeBadgeClassName = (type: string) => {
         return 'bg-[#D6E3FF] text-[#0E4686]';
     }
 
-    if (type === 'TEAM') {
-        return 'bg-[#E7F6EE] text-[#006D37]';
+    if (type === 'FACULTY') {
+        return 'bg-[#FFDBCB] text-[#6F2D00]';
     }
 
     return 'bg-[#E7E8E9] text-[#424750]';
@@ -148,18 +140,6 @@ const formatDate = (value?: string | null) => {
 };
 
 const formatCurrency = (value: number) => `${value.toLocaleString('vi-VN')} đ`;
-
-const formatCompactCurrency = (value: number) => {
-    if (value >= 1_000_000_000) {
-        return `${(value / 1_000_000_000).toFixed(1).replace(/\.0$/, '')} tỷ`;
-    }
-
-    if (value >= 1_000_000) {
-        return `${(value / 1_000_000).toFixed(0)} triệu`;
-    }
-
-    return value.toLocaleString('vi-VN');
-};
 
 const getModuleTypeLabel = (value: string) => {
     if (value === 'fundraising') {
@@ -273,74 +253,6 @@ const FilterField = ({ label, hint, children }: FilterFieldProps) => (
     </label>
 );
 
-type SummaryCardProps = {
-    icon: LucideIcon;
-    label: string;
-    value: string;
-    note: string;
-    tone: 'blue' | 'green' | 'orange' | 'red';
-};
-
-const summaryToneMap: Record<
-    SummaryCardProps['tone'],
-    { iconBox: string; iconColor: string; noteColor: string }
-> = {
-    blue: {
-        iconBox: 'bg-[#D6E3FF]',
-        iconColor: 'text-[#002A58]',
-        noteColor: 'text-[#006D37]',
-    },
-    green: {
-        iconBox: 'bg-[#6BFE9C]/30',
-        iconColor: 'text-[#006D37]',
-        noteColor: 'text-[#006D37]',
-    },
-    orange: {
-        iconBox: 'bg-[#FFDBCB]',
-        iconColor: 'text-[#6F2D00]',
-        noteColor: 'text-[#6F2D00]',
-    },
-    red: {
-        iconBox: 'bg-[#FFDAD6]',
-        iconColor: 'text-[#BA1A1A]',
-        noteColor: 'text-[#BA1A1A]',
-    },
-};
-
-const SummaryCard = ({
-    icon: Icon,
-    label,
-    value,
-    note,
-    tone,
-}: SummaryCardProps) => {
-    const toneClass = summaryToneMap[tone];
-
-    return (
-        <section className={`${panelClassName} p-5`}>
-            <div className="flex items-center justify-between gap-4">
-                <div
-                    className={`flex h-11 w-11 items-center justify-center rounded-xl ${toneClass.iconBox}`}
-                >
-                    <Icon
-                        className={`size-5 ${toneClass.iconColor}`}
-                        strokeWidth={1.5}
-                    />
-                </div>
-                <p
-                    className={`text-[15px] font-semibold ${toneClass.noteColor}`}
-                >
-                    {note}
-                </p>
-            </div>
-            <p className={`mt-5 ${cardLabelClassName}`}>{label}</p>
-            <p className="mt-3 text-[18px] font-semibold leading-7 text-[#191C1D]">
-                {value}
-            </p>
-        </section>
-    );
-};
-
 export const AdminOrganizationsRoute = () => {
     const user = useUser();
     const canManageOrganizations = user.data?.role === ROLES.DOANTRUONG;
@@ -361,7 +273,10 @@ export const AdminOrganizationsRoute = () => {
 
     const [filterQ, setFilterQ] = React.useState('');
     const [filterType, setFilterType] = React.useState<QuickTypeFilter>('');
-    const [filterStatus, setFilterStatus] = React.useState('');
+    const [filterStatus, setFilterStatus] = React.useState<
+        '' | AdminOrganizationStatus
+    >('');
+    const [currentPage, setCurrentPage] = React.useState(1);
 
     const [formMode, setFormMode] = React.useState<FormMode>('create');
     const [editingId, setEditingId] = React.useState<string | null>(null);
@@ -370,7 +285,11 @@ export const AdminOrganizationsRoute = () => {
     const [isFormDialogOpen, setIsFormDialogOpen] = React.useState(false);
 
     const loadData = React.useCallback(
-        async (override?: { q?: string; type?: string; status?: string }) => {
+        async (override?: {
+            q?: string;
+            type?: QuickTypeFilter;
+            status?: '' | AdminOrganizationStatus;
+        }) => {
             if (!canManageOrganizations) {
                 setIsLoading(false);
                 return;
@@ -412,13 +331,26 @@ export const AdminOrganizationsRoute = () => {
             return;
         }
 
-        setSelectedOrgId(orgs[0]?.id ?? null);
+        setSelectedOrgId(null);
     }, [orgs, selectedOrgId]);
 
     const selectedOrg = React.useMemo(
         () => orgs.find((org) => org.id === selectedOrgId) ?? null,
         [orgs, selectedOrgId],
     );
+    const facultyOptions = React.useMemo(
+        () =>
+            orgs
+                .filter((org) => org.type === 'FACULTY')
+                .map((org) => ({
+                    id: org.faculty?.id ?? org.id.replace('faculty-', ''),
+                    name: org.name,
+                    code: org.code,
+                })),
+        [orgs],
+    );
+    const isFacultyForm = form.type === 'FACULTY';
+    const isClubForm = form.type === 'CLUB';
 
     React.useEffect(() => {
         if (!selectedOrg?.slug) {
@@ -466,7 +398,14 @@ export const AdminOrganizationsRoute = () => {
         setIsFormDialogOpen(true);
     };
 
+    const closeDetailDialog = () => {
+        setSelectedOrgId(null);
+        setSelectedOrgDetail(null);
+        setDetailError(null);
+    };
+
     const openEditDialog = (organization: AdminOrganization) => {
+        closeDetailDialog();
         setFormMode('edit');
         setEditingId(organization.id);
         setForm({
@@ -474,7 +413,7 @@ export const AdminOrganizationsRoute = () => {
             name: organization.name,
             type: organization.type,
             status: organization.status,
-            description: organization.description ?? '',
+            facultyId: organization.type === 'CLUB' ? (organization.faculty?.id ?? '') : '',
         });
         setIsFormDialogOpen(true);
     };
@@ -482,34 +421,34 @@ export const AdminOrganizationsRoute = () => {
     const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        if (!form.name.trim() || !form.code.trim()) {
+        if (!form.name.trim() || (isFacultyForm && !form.code.trim())) {
             return;
         }
 
         setSaving(true);
 
         try {
+            const payload = {
+                name: form.name.trim(),
+                type: form.type,
+                ...(isFacultyForm ? { code: form.code.trim() } : {}),
+                ...(isClubForm ? { status: form.status } : {}),
+                ...(isClubForm
+                    ? {
+                          faculty_id: form.facultyId.trim() || undefined,
+                      }
+                    : {}),
+            };
+
             if (editingId) {
-                await updateAdminOrganization(editingId, {
-                    name: form.name.trim(),
-                    code: form.code.trim(),
-                    type: form.type,
-                    status: form.status,
-                    description: form.description.trim() || undefined,
-                });
+                await updateAdminOrganization(editingId, payload);
                 addNotification({
                     type: 'success',
                     title: 'Cập nhật thành công',
                     message: 'Thông tin đơn vị đã được cập nhật.',
                 });
             } else {
-                await createAdminOrganization({
-                    name: form.name.trim(),
-                    code: form.code.trim(),
-                    type: form.type,
-                    status: form.status,
-                    description: form.description.trim() || undefined,
-                });
+                await createAdminOrganization(payload);
                 addNotification({
                     type: 'success',
                     title: 'Tạo đơn vị thành công',
@@ -565,6 +504,7 @@ export const AdminOrganizationsRoute = () => {
         setFilterQ('');
         setFilterType('');
         setFilterStatus('');
+        setCurrentPage(1);
         void loadData({
             q: '',
             type: '',
@@ -591,38 +531,30 @@ export const AdminOrganizationsRoute = () => {
         [organizationReports],
     );
 
-    const averageImpactScore = React.useMemo(() => {
-        if (scoredOrganizations.length === 0) {
-            return 0;
-        }
-
-        return Math.round(
-            scoredOrganizations.reduce(
-                (total, item) => total + item.impactScore,
-                0,
-            ) / scoredOrganizations.length,
-        );
-    }, [scoredOrganizations]);
-
-    const totalManagedFund = React.useMemo(
-        () =>
-            organizationReports.reduce(
-                (total, item) =>
-                    total + (item.report?.verified_money_amount ?? 0),
-                0,
-            ),
-        [organizationReports],
+    const totalPages = Math.max(
+        1,
+        Math.ceil(scoredOrganizations.length / ORGANIZATIONS_PER_PAGE),
     );
 
-    const organizationsNeedingReview = React.useMemo(
-        () =>
-            orgs.filter(
-                (org) =>
-                    org.status !== 'ACTIVE' ||
-                    !findOrganizationReport(org, overview) ||
-                    findOrganizationReport(org, overview)?.campaign_count === 0,
-            ).length,
-        [orgs, overview],
+    React.useEffect(() => {
+        setCurrentPage((page) => Math.min(page, totalPages));
+    }, [totalPages]);
+
+    const paginatedOrganizations = React.useMemo(() => {
+        const startIndex = (currentPage - 1) * ORGANIZATIONS_PER_PAGE;
+
+        return scoredOrganizations.slice(
+            startIndex,
+            startIndex + ORGANIZATIONS_PER_PAGE,
+        );
+    }, [currentPage, scoredOrganizations]);
+
+    const currentPageStart = scoredOrganizations.length
+        ? (currentPage - 1) * ORGANIZATIONS_PER_PAGE + 1
+        : 0;
+    const currentPageEnd = Math.min(
+        currentPage * ORGANIZATIONS_PER_PAGE,
+        scoredOrganizations.length,
     );
 
     const selectedOrgReport = React.useMemo(
@@ -678,27 +610,21 @@ export const AdminOrganizationsRoute = () => {
     return (
         <>
             <Head title="Quản lý đơn vị" />
-            <div className="space-y-6 font-sans">
-                <section className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+            <div className="mx-auto max-w-[1680px] space-y-8 px-4 pb-10 font-sans sm:px-6 xl:px-8">
+                <section className="flex flex-col gap-6 2xl:flex-row 2xl:items-end 2xl:justify-between">
                     <div className="space-y-3">
                         <p className={cardLabelClassName}>Quản trị đơn vị</p>
                         <div className="space-y-2">
                             <h1 className="text-[40px] font-bold leading-[48px] text-[#002A58]">
-                                Danh mục đơn vị và báo cáo vận hành
+                                Quản lý các đơn vị
                             </h1>
-                            <p className="max-w-3xl text-[16px] leading-6 text-[#424750]">
-                                Quản lý các câu lạc bộ, đội, nhóm và theo dõi
-                                tác động của từng đơn vị trên cùng một mặt phẳng
-                                quản trị, bám theo ngôn ngữ giao diện học thuật
-                                của Unity Academic.
-                            </p>
                         </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                         <Link
                             to={paths.app.reports.getHref()}
-                            className="inline-flex items-center gap-2 rounded-lg border border-[#C3C6D2] bg-white px-5 py-3 text-[15px] font-semibold text-[#191C1D] transition hover:bg-[#F3F4F5]"
+                            className="inline-flex min-h-12 min-w-[220px] items-center justify-center gap-2 rounded-lg border border-[#C3C6D2] bg-white px-5 py-3 text-[15px] font-semibold text-[#191C1D] transition hover:bg-[#F3F4F5]"
                         >
                             <FileBarChart2
                                 className="size-4"
@@ -709,7 +635,7 @@ export const AdminOrganizationsRoute = () => {
                         <Button
                             type="button"
                             size="lg"
-                            className="rounded-lg bg-[#002A58] px-6 normal-case tracking-normal text-white hover:bg-[#004080]"
+                            className="min-h-12 min-w-[240px] rounded-lg bg-[#002A58] px-6 normal-case tracking-normal text-white hover:bg-[#004080]"
                             onClick={openCreateDialog}
                         >
                             <Plus className="size-4" strokeWidth={1.5} />
@@ -718,42 +644,9 @@ export const AdminOrganizationsRoute = () => {
                     </div>
                 </section>
 
-                <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                    <SummaryCard
-                        icon={Building2}
-                        label="Tổng đơn vị"
-                        value={orgs.length.toLocaleString('vi-VN')}
-                        note={`+${Math.max(0, Math.round(orgs.length * 0.12))}`}
-                        tone="blue"
-                    />
-                    <SummaryCard
-                        icon={Bolt}
-                        label="Impact score trung bình"
-                        value={`${averageImpactScore}/100`}
-                        note="+5.4"
-                        tone="green"
-                    />
-                    <SummaryCard
-                        icon={CircleDollarSign}
-                        label="Quỹ đang quản lý"
-                        value={formatCompactCurrency(totalManagedFund)}
-                        note={formatCurrency(totalManagedFund)}
-                        tone="orange"
-                    />
-                    <SummaryCard
-                        icon={FileBarChart2}
-                        label="Đơn vị cần rà soát"
-                        value={organizationsNeedingReview.toLocaleString(
-                            'vi-VN',
-                        )}
-                        note="Cần duyệt"
-                        tone="red"
-                    />
-                </section>
-
-                <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_520px]">
+                <section className="space-y-6">
                     <div className="space-y-6">
-                        <section className={`${panelClassName} p-5 sm:p-6`}>
+                        <section className={`${panelClassName} p-6 lg:p-7`}>
                             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                                 <div>
                                     <h2 className="text-[24px] font-semibold leading-8 text-[#002A58]">
@@ -765,114 +658,98 @@ export const AdminOrganizationsRoute = () => {
                                         cần quản trị.
                                     </p>
                                 </div>
-                                <div className="flex flex-wrap gap-2">
-                                    {quickTypeTabs.map((tab) => (
-                                        <button
-                                            key={tab.value || 'all'}
-                                            type="button"
-                                            className={`rounded-lg border px-4 py-2 text-[14px] font-semibold transition ${
-                                                filterType === tab.value
-                                                    ? 'border-[#002A58] bg-[#002A58] text-white'
-                                                    : 'border-[#C3C6D2] bg-white text-[#424750] hover:bg-[#F3F4F5]'
-                                            }`}
-                                            onClick={() => {
-                                                setFilterType(tab.value);
-                                                void loadData({
-                                                    q: filterQ,
-                                                    type: tab.value,
-                                                    status: filterStatus,
-                                                });
-                                            }}
-                                        >
-                                            {tab.label}
-                                        </button>
-                                    ))}
-                                </div>
                             </div>
 
                             <form
                                 onSubmit={(event) => {
                                     event.preventDefault();
+                                    setCurrentPage(1);
                                     void loadData();
                                 }}
-                                className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_220px_220px_auto]"
+                                className="mt-6"
                             >
-                                <FilterField label="Từ khóa tìm kiếm">
-                                    <div className="relative">
-                                        <Search
-                                            className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[#737781]"
-                                            strokeWidth={1.5}
-                                        />
-                                        <Input
-                                            data-testid="admin-org-filter-q"
-                                            value={filterQ}
+                                <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_240px_240px]">
+                                    <FilterField label="Từ khóa tìm kiếm">
+                                        <div className="relative">
+                                            <Search
+                                                className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[#737781]"
+                                                strokeWidth={1.5}
+                                            />
+                                            <Input
+                                                data-testid="admin-org-filter-q"
+                                                value={filterQ}
+                                                onChange={(event) =>
+                                                    setFilterQ(event.target.value)
+                                                }
+                                                placeholder="Tìm theo mã khoa, tên khoa hoặc tên câu lạc bộ"
+                                                className={`${inputClassName} pl-11`}
+                                            />
+                                        </div>
+                                    </FilterField>
+
+                                    <FilterField label="Loại đơn vị">
+                                        <select
+                                            data-testid="admin-org-filter-type"
+                                            value={filterType}
                                             onChange={(event) =>
-                                                setFilterQ(event.target.value)
+                                                setFilterType(
+                                                    event.target
+                                                        .value as QuickTypeFilter,
+                                                )
                                             }
-                                            placeholder="Tìm mã đơn vị, câu lạc bộ hoặc tên hiển thị"
-                                            className={`${inputClassName} pl-11`}
-                                        />
-                                    </div>
-                                </FilterField>
-
-                                <FilterField label="Loại đơn vị">
-                                    <select
-                                        data-testid="admin-org-filter-type"
-                                        value={filterType}
-                                        onChange={(event) =>
-                                            setFilterType(
-                                                event.target
-                                                    .value as QuickTypeFilter,
-                                            )
-                                        }
-                                        className={selectClassName}
-                                    >
-                                        <option value="">
-                                            Tất cả loại hình
-                                        </option>
-                                        {orgTypeOptions.map((option) => (
-                                            <option
-                                                key={option.value}
-                                                value={option.value}
-                                            >
-                                                {option.label}
+                                            className={selectClassName}
+                                        >
+                                            <option value="">
+                                                Tất cả loại đơn vị
                                             </option>
-                                        ))}
-                                    </select>
-                                </FilterField>
+                                            {orgTypeOptions.map((option) => (
+                                                <option
+                                                    key={option.value}
+                                                    value={option.value}
+                                                >
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </FilterField>
 
-                                <FilterField label="Trạng thái">
-                                    <select
-                                        data-testid="admin-org-filter-status"
-                                        value={filterStatus}
-                                        onChange={(event) =>
-                                            setFilterStatus(event.target.value)
-                                        }
-                                        className={selectClassName}
-                                    >
-                                        <option value="">
-                                            Tất cả trạng thái
-                                        </option>
-                                        <option value="ACTIVE">
-                                            Đang hoạt động
-                                        </option>
-                                        <option value="INACTIVE">
-                                            Ngừng hoạt động
-                                        </option>
-                                    </select>
-                                </FilterField>
+                                    <FilterField label="Trạng thái">
+                                        <select
+                                            data-testid="admin-org-filter-status"
+                                            value={filterStatus}
+                                            onChange={(event) =>
+                                                setFilterStatus(
+                                                    event.target.value as
+                                                        | ''
+                                                        | AdminOrganizationStatus,
+                                                )
+                                            }
+                                            className={selectClassName}
+                                        >
+                                            <option value="">
+                                                Tất cả trạng thái
+                                            </option>
+                                            <option value="ACTIVE">
+                                                Đang hoạt động
+                                            </option>
+                                            <option value="INACTIVE">
+                                                Ngừng hoạt động
+                                            </option>
+                                        </select>
+                                    </FilterField>
+                                </div>
 
-                                <div className="flex items-end gap-2">
+                                <div className="mt-5 flex flex-col gap-3 border-t border-[#E1E3E4] pt-4 sm:flex-row sm:justify-end">
                                     <Button
                                         type="submit"
-                                        className="rounded-lg bg-[#002A58] normal-case tracking-normal text-white hover:bg-[#004080]"
+                                        className="min-h-11 min-w-[160px] rounded-lg bg-[#002A58] normal-case tracking-normal text-white hover:bg-[#004080]"
                                     >
                                         Lọc dữ liệu
                                     </Button>
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="rounded-lg border-[#C3C6D2] normal-case tracking-normal"
+                                        className="min-h-11 min-w-[132px] rounded-lg border-[#C3C6D2] normal-case tracking-normal"
                                         onClick={handleResetFilters}
                                     >
                                         Đặt lại
@@ -887,15 +764,17 @@ export const AdminOrganizationsRoute = () => {
                             <div className="flex flex-col gap-4 border-b border-[#E1E3E4] px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                                 <div>
                                     <h2 className="text-[24px] font-semibold leading-8 text-[#002A58]">
-                                        Danh sách đơn vị và câu lạc bộ
+                                        Danh sách khoa và câu lạc bộ
                                     </h2>
                                     <p className="mt-2 text-[14px] leading-6 text-[#424750]">
-                                        Chọn một dòng để mở panel chi tiết và
-                                        xem báo cáo vận hành của đơn vị đó.
+                                        Chọn một dòng để mở hộp thoại hồ sơ vận hành
+                                        và kiểm tra dữ liệu đúng theo từng đơn vị
+                                        trong cơ sở dữ liệu.
                                     </p>
                                 </div>
                                 <div className="rounded-lg border border-[#C3C6D2] bg-[#F3F4F5] px-3 py-2 text-[13px] text-[#424750]">
-                                    Hiển thị {orgs.length} đơn vị
+                                    Hiển thị {currentPageStart}-{currentPageEnd} /{' '}
+                                    {orgs.length} đơn vị
                                 </div>
                             </div>
 
@@ -911,8 +790,17 @@ export const AdminOrganizationsRoute = () => {
                             ) : null}
 
                             {!isLoading && !error && orgs.length > 0 ? (
-                                <div className="overflow-x-auto">
-                                    <table className="min-w-full border-collapse">
+                                <>
+                                    <div className="overflow-x-auto">
+                                    <table className="w-full min-w-[1120px] table-fixed border-collapse">
+                                        <colgroup>
+                                            <col className="w-[34%]" />
+                                            <col className="w-[16%]" />
+                                            <col className="w-[15%]" />
+                                            <col className="w-[15%]" />
+                                            <col className="w-[12%]" />
+                                            <col className="w-[8%]" />
+                                        </colgroup>
                                         <thead className="bg-[#F3F4F5]">
                                             <tr className="border-b border-[#E1E3E4] text-left">
                                                 <th className="px-5 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-[#424750] sm:px-6">
@@ -924,19 +812,19 @@ export const AdminOrganizationsRoute = () => {
                                                 <th className="px-5 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-[#424750]">
                                                     Trạng thái
                                                 </th>
-                                                <th className="px-5 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-[#424750]">
+                                                <th className="px-5 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-[#424750] whitespace-nowrap">
                                                     Impact score
                                                 </th>
                                                 <th className="px-5 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-[#424750]">
                                                     Tổng quỹ ghi nhận
                                                 </th>
-                                                <th className="px-5 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-[#424750]">
+                                                <th className="px-5 py-4 text-[12px] font-bold uppercase tracking-[0.08em] text-[#424750] whitespace-nowrap">
                                                     Thao tác
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {scoredOrganizations.map(
+                                            {paginatedOrganizations.map(
                                                 ({
                                                     organization,
                                                     report,
@@ -963,7 +851,7 @@ export const AdminOrganizationsRoute = () => {
                                                             <td className="px-5 py-5 sm:px-6">
                                                                 <button
                                                                     type="button"
-                                                                    className="flex w-full items-start gap-4 text-left"
+                                                                    className="flex items-start w-full min-w-0 gap-4 text-left"
                                                                     onClick={() =>
                                                                         setSelectedOrgId(
                                                                             organization.id,
@@ -975,16 +863,13 @@ export const AdminOrganizationsRoute = () => {
                                                                             organization,
                                                                         )}
                                                                     </div>
-                                                                    <div className="space-y-1">
+                                                                    <div className="min-w-0 flex-1 space-y-1.5">
                                                                         <p className="text-[16px] font-semibold leading-6 text-[#191C1D]">
                                                                             {
                                                                                 organization.name
                                                                             }
                                                                         </p>
-                                                                        <p className="text-[14px] leading-5 text-[#424750]">
-                                                                            {organization.description ||
-                                                                                'Chưa có mô tả vận hành cho đơn vị này.'}
-                                                                        </p>
+                                                                        
                                                                         <p className="text-[13px] leading-5 text-[#737781]">
                                                                             Tạo
                                                                             ngày{' '}
@@ -1018,10 +903,13 @@ export const AdminOrganizationsRoute = () => {
                                                                         )}
                                                                     </span>
                                                                     <p className="text-[13px] leading-5 text-[#737781]">
-                                                                        {organization
-                                                                            .faculty
-                                                                            ?.name ??
-                                                                            'Chưa gán khoa'}
+                                                                        {organization.type ===
+                                                                        'FACULTY'
+                                                                            ? 'Đơn vị gốc'
+                                                                            : organization
+                                                                                  .faculty
+                                                                                  ?.name ??
+                                                                              'Cấp trường'}
                                                                     </p>
                                                                 </div>
                                                             </td>
@@ -1052,44 +940,42 @@ export const AdminOrganizationsRoute = () => {
                                                                 )}
                                                             </td>
                                                             <td className="px-5 py-5 align-top">
-                                                                <div className="flex flex-wrap gap-2">
+                                                                <div className="flex flex-col gap-2">
                                                                     <Button
                                                                         type="button"
                                                                         variant="ghost"
-                                                                        size="icon-sm"
-                                                                        className="rounded-lg border border-[#C3C6D2] bg-white text-[#424750] hover:bg-[#EEF3FB] hover:text-[#002A58]"
+                                                                        className="h-10 rounded-lg border border-[#C3C6D2] bg-white px-3 text-[#424750] hover:bg-[#EEF3FB] hover:text-[#002A58]"
                                                                         title="Xem chi tiết"
                                                                         onClick={() =>
                                                                             setSelectedOrgId(
                                                                                 organization.id,
                                                                             )
                                                                         }
-                                                                    >
-                                                                        <Eye
-                                                                            className="size-4"
-                                                                            strokeWidth={
-                                                                                1.5
-                                                                            }
-                                                                        />
+                                                                        >
+                                                                            <Eye
+                                                                                className="size-4"
+                                                                                strokeWidth={
+                                                                                    1.5
+                                                                                }
+                                                                            />
                                                                     </Button>
                                                                     <Button
                                                                         type="button"
                                                                         variant="ghost"
-                                                                        size="icon-sm"
-                                                                        className="rounded-lg border border-[#C3C6D2] bg-white text-[#424750] hover:bg-[#EEF3FB] hover:text-[#002A58]"
+                                                                        className="h-10 rounded-lg border border-[#C3C6D2] bg-white px-3 text-[#424750] hover:bg-[#EEF3FB] hover:text-[#002A58]"
                                                                         title="Chỉnh sửa"
                                                                         onClick={() =>
                                                                             openEditDialog(
                                                                                 organization,
                                                                             )
                                                                         }
-                                                                    >
-                                                                        <PencilLine
-                                                                            className="size-4"
-                                                                            strokeWidth={
-                                                                                1.5
-                                                                            }
-                                                                        />
+                                                                        >
+                                                                            <PencilLine
+                                                                                className="size-4"
+                                                                                strokeWidth={
+                                                                                    1.5
+                                                                                }
+                                                                            />
                                                                     </Button>
                                                                 </div>
                                                             </td>
@@ -1099,357 +985,478 @@ export const AdminOrganizationsRoute = () => {
                                             )}
                                         </tbody>
                                     </table>
-                                </div>
-                            ) : null}
-                        </section>
-                    </div>
-
-                    <aside className={`${panelClassName} overflow-hidden`}>
-                        <div className="flex items-center justify-between border-b border-[#E1E3E4] px-5 py-5 sm:px-6">
-                            <div>
-                                <p className={cardLabelClassName}>
-                                    Hồ sơ vận hành
-                                </p>
-                                <h2 className="mt-2 text-[24px] font-semibold leading-8 text-[#002A58]">
-                                    Chi tiết đơn vị
-                                </h2>
-                            </div>
-                            {selectedOrg ? (
-                                <Link
-                                    to={paths.app.reports.getHref()}
-                                    className="inline-flex items-center gap-2 rounded-lg border border-[#C3C6D2] bg-white px-4 py-2 text-[14px] font-semibold text-[#191C1D] transition hover:bg-[#F3F4F5]"
-                                >
-                                    <ArrowRight
-                                        className="size-4"
-                                        strokeWidth={1.5}
-                                    />
-                                    Báo cáo
-                                </Link>
-                            ) : null}
-                        </div>
-
-                        {!selectedOrg ? (
-                            <div className="p-6">
-                                <EmptyState
-                                    title="Chưa chọn đơn vị"
-                                    description="Hãy chọn một dòng trong danh sách để mở hồ sơ chi tiết và xem các chỉ số báo cáo."
-                                />
-                            </div>
-                        ) : null}
-
-                        {selectedOrg ? (
-                            <div className="flex h-full flex-col">
-                                <div className="space-y-6 px-5 py-5 sm:px-6">
-                                    <div className="flex items-start gap-5">
-                                        <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-[#D6E3FF] text-[20px] font-bold text-[#002A58]">
-                                            {selectedOrgDetail?.logo_url ? (
-                                                <img
-                                                    src={
-                                                        selectedOrgDetail.logo_url
-                                                    }
-                                                    alt={selectedOrg.name}
-                                                    className="h-full w-full object-cover"
-                                                />
-                                            ) : (
-                                                getOrganizationInitials(
-                                                    selectedOrg,
-                                                )
-                                            )}
-                                        </div>
-                                        <div className="min-w-0 flex-1 space-y-2">
-                                            <div className="flex flex-wrap items-start justify-between gap-3">
-                                                <div>
-                                                    <h3 className="text-[20px] font-semibold leading-8 text-[#191C1D]">
-                                                        {selectedOrg.name}
-                                                    </h3>
-                                                    <p className="text-[14px] leading-6 text-[#424750]">
-                                                        {selectedOrg.description ||
-                                                            'Đơn vị chưa bổ sung mô tả sứ mệnh hoặc phạm vi hoạt động.'}
-                                                    </p>
-                                                </div>
-                                                <span
-                                                    className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] ${getStatusBadgeClassName(
-                                                        selectedOrg.status,
-                                                    )}`}
-                                                >
-                                                    {getStatusLabel(
-                                                        selectedOrg.status,
-                                                    )}
-                                                </span>
-                                            </div>
-
-                                            <div className="flex flex-wrap gap-3 pt-2">
-                                                <div className="rounded-xl bg-[#F3F4F5] px-4 py-3">
-                                                    <p
-                                                        className={
-                                                            cardLabelClassName
-                                                        }
-                                                    >
-                                                        Impact score
-                                                    </p>
-                                                    <p className="mt-2 text-[18px] font-semibold leading-7 text-[#006D37]">
-                                                        {selectedImpactScore}
-                                                        /100
-                                                    </p>
-                                                </div>
-                                                <div className="rounded-xl bg-[#F3F4F5] px-4 py-3">
-                                                    <p
-                                                        className={
-                                                            cardLabelClassName
-                                                        }
-                                                    >
-                                                        Xếp hạng
-                                                    </p>
-                                                    <p className="mt-2 text-[18px] font-semibold leading-7 text-[#002A58]">
-                                                        {selectedOrgRanking
-                                                            ? `#${selectedOrgRanking}`
-                                                            : 'Chưa có'}
-                                                    </p>
-                                                </div>
-                                                <div className="rounded-xl bg-[#F3F4F5] px-4 py-3">
-                                                    <p
-                                                        className={
-                                                            cardLabelClassName
-                                                        }
-                                                    >
-                                                        Campaigns
-                                                    </p>
-                                                    <p className="mt-2 text-[18px] font-semibold leading-7 text-[#191C1D]">
-                                                        {sortedCampaigns.length}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
-
-                                    {detailLoading ? <LoadingState /> : null}
-                                    {detailError ? (
-                                        <ErrorState message={detailError} />
-                                    ) : null}
-
-                                    <section className="space-y-4 border-t border-[#E1E3E4] pt-5">
-                                        <div className="flex items-center justify-between">
-                                            <h4 className={cardLabelClassName}>
-                                                Minh bạch vận hành
-                                            </h4>
-                                            <p className="text-[12px] font-semibold text-[#006D37]">
-                                                {selectedOrgReport
-                                                    ? 'Đã có dữ liệu tổng hợp'
-                                                    : 'Đang chờ dữ liệu báo cáo'}
-                                            </p>
-                                        </div>
-
-                                        <div className="grid gap-4 sm:grid-cols-2">
-                                            <div className="rounded-xl border border-[#C3C6D2] bg-white p-4">
-                                                <p className="text-[14px] leading-6 text-[#424750]">
-                                                    Tổng quỹ ghi nhận
-                                                </p>
-                                                <p className="mt-2 text-[18px] font-semibold leading-7 text-[#191C1D]">
-                                                    {formatCurrency(
-                                                        selectedOrgReport?.verified_money_amount ??
-                                                            0,
-                                                    )}
-                                                </p>
-                                            </div>
-                                            <div className="rounded-xl border border-[#C3C6D2] bg-white p-4">
-                                                <p className="text-[14px] leading-6 text-[#424750]">
-                                                    Lượt tham gia hoàn thành
-                                                </p>
-                                                <p className="mt-2 text-[18px] font-semibold leading-7 text-[#191C1D]">
-                                                    {(
-                                                        selectedOrgReport?.completed_event_registrations ??
-                                                        0
-                                                    ).toLocaleString('vi-VN')}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="rounded-xl border border-[#C3C6D2] bg-white p-4">
-                                            <div className="flex items-center justify-between gap-3 border-b border-[#E1E3E4] pb-3">
-                                                <p className="text-[14px] font-semibold leading-6 text-[#191C1D]">
-                                                    Tóm tắt báo cáo nhanh
-                                                </p>
-                                                <span className="text-[12px] leading-5 text-[#737781]">
-                                                    Mã đơn vị {selectedOrg.code}
-                                                </span>
-                                            </div>
-                                            <div className="mt-3 grid gap-3 text-[14px] leading-6 text-[#424750]">
-                                                <div className="flex items-center justify-between gap-3">
-                                                    <span>
-                                                        Chiến dịch đã ghi nhận
-                                                    </span>
-                                                    <span className="font-semibold text-[#191C1D]">
-                                                        {(
-                                                            selectedOrgReport?.campaign_count ??
-                                                            sortedCampaigns.length
-                                                        ).toLocaleString(
-                                                            'vi-VN',
-                                                        )}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center justify-between gap-3">
-                                                    <span>
-                                                        Tổng giờ tình nguyện
-                                                    </span>
-                                                    <span className="font-semibold text-[#191C1D]">
-                                                        {(
-                                                            selectedOrgReport?.completed_event_hours ??
-                                                            0
-                                                        ).toLocaleString(
-                                                            'vi-VN',
-                                                        )}{' '}
-                                                        giờ
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center justify-between gap-3">
-                                                    <span>
-                                                        Chứng nhận đã cấp
-                                                    </span>
-                                                    <span className="font-semibold text-[#191C1D]">
-                                                        {(
-                                                            selectedOrgReport?.issued_certificates ??
-                                                            0
-                                                        ).toLocaleString(
-                                                            'vi-VN',
-                                                        )}
-                                                    </span>
-                                                </div>
-                                                <div className="flex items-center justify-between gap-3">
-                                                    <span>Ngày tạo hồ sơ</span>
-                                                    <span className="font-semibold text-[#191C1D]">
-                                                        {formatDate(
-                                                            selectedOrg.created_at,
-                                                        )}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </section>
-
-                                    <section className="space-y-4 border-t border-[#E1E3E4] pt-5">
-                                        <h4 className={cardLabelClassName}>
-                                            Lịch sử chiến dịch và tác động
-                                        </h4>
-
-                                        {detailLoading ? null : sortedCampaigns.length >
-                                          0 ? (
-                                            <div className="space-y-3">
-                                                {sortedCampaigns
-                                                    .slice(0, 4)
-                                                    .map((campaign) => (
-                                                        <article
-                                                            key={campaign.id}
-                                                            className="rounded-xl border border-[#C3C6D2] bg-white p-4"
-                                                        >
-                                                            <div className="flex flex-wrap items-center justify-between gap-3">
-                                                                <h5 className="text-[16px] font-semibold leading-6 text-[#191C1D]">
-                                                                    {
-                                                                        campaign.title
-                                                                    }
-                                                                </h5>
-                                                                <span
-                                                                    className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] ${getCampaignStatusBadgeClassName(
-                                                                        campaign.status,
-                                                                    )}`}
-                                                                >
-                                                                    {getCampaignStatusLabel(
-                                                                        campaign.status,
-                                                                    )}
-                                                                </span>
-                                                            </div>
-                                                            <p className="mt-2 text-[14px] leading-6 text-[#424750]">
-                                                                {
-                                                                    campaign.summary
-                                                                }
-                                                            </p>
-                                                            <div className="mt-3 flex flex-wrap gap-2">
-                                                                {campaign.module_types.map(
-                                                                    (
-                                                                        moduleType,
-                                                                    ) => (
-                                                                        <span
-                                                                            key={
-                                                                                moduleType
-                                                                            }
-                                                                            className="inline-flex rounded-lg bg-[#F3F4F5] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-[#424750]"
-                                                                        >
-                                                                            {getModuleTypeLabel(
-                                                                                moduleType,
-                                                                            )}
-                                                                        </span>
-                                                                    ),
-                                                                )}
-                                                            </div>
-                                                            <div className="mt-3 flex items-center justify-between gap-3 text-[13px] leading-5 text-[#737781]">
-                                                                <span>
-                                                                    Bắt đầu{' '}
-                                                                    {formatDate(
-                                                                        campaign.start_at,
-                                                                    )}
-                                                                </span>
-                                                                <Link
-                                                                    to={paths.app.campaigns.detail.getHref(
-                                                                        campaign.slug,
-                                                                    )}
-                                                                    className="inline-flex items-center gap-1 font-semibold text-[#002A58] hover:text-[#004080]"
-                                                                >
-                                                                    Xem chiến
-                                                                    dịch
-                                                                    <ArrowRight
-                                                                        className="size-4"
-                                                                        strokeWidth={
-                                                                            1.5
-                                                                        }
-                                                                    />
-                                                                </Link>
-                                                            </div>
-                                                        </article>
-                                                    ))}
-                                            </div>
-                                        ) : (
-                                            <EmptyState
-                                                title="Chưa có chiến dịch"
-                                                description="Đơn vị này chưa có chiến dịch công khai hoặc dữ liệu campaign chưa sẵn sàng."
-                                            />
-                                        )}
-                                    </section>
-                                </div>
-
-                                <div className="mt-auto border-t border-[#E1E3E4] px-5 py-5 sm:px-6">
-                                    <div className="flex flex-col gap-3 sm:flex-row">
+                                <div className="flex flex-col gap-4 border-t border-[#E1E3E4] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+                                    <p className="text-[13px] leading-5 text-[#737781]">
+                                        Trang {currentPage}/{totalPages} · Hiển thị tối đa{' '}
+                                        {ORGANIZATIONS_PER_PAGE} đơn vị mỗi trang
+                                    </p>
+                                    <div className="flex flex-wrap items-center gap-2">
                                         <Button
                                             type="button"
-                                            size="lg"
-                                            className="flex-1 rounded-lg bg-[#002A58] normal-case tracking-normal text-white hover:bg-[#004080]"
-                                            onClick={() =>
-                                                openEditDialog(selectedOrg)
-                                            }
+                                            variant="outline"
+                                            className="min-h-10 rounded-lg border-[#C3C6D2] px-4 normal-case tracking-normal"
+                                            disabled={currentPage === 1}
+                                            onClick={() => setCurrentPage(1)}
                                         >
-                                            <PencilLine
-                                                className="size-4"
-                                                strokeWidth={1.5}
-                                            />
-                                            Cập nhật thông tin đơn vị
+                                            Về trang đầu
                                         </Button>
                                         <Button
                                             type="button"
                                             variant="outline"
-                                            className="rounded-lg border-[#F2B8B5] bg-white text-[#BA1A1A] hover:bg-[#FFF8F7] hover:text-[#93000A]"
+                                            className="min-h-10 rounded-lg border-[#C3C6D2] px-4 normal-case tracking-normal"
+                                            disabled={currentPage === 1}
                                             onClick={() =>
-                                                void handleDelete(selectedOrg)
+                                                setCurrentPage((page) =>
+                                                    Math.max(1, page - 1),
+                                                )
                                             }
                                         >
-                                            <Trash2
-                                                className="size-4"
-                                                strokeWidth={1.5}
-                                            />
+                                            Trang trước
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            className="min-h-10 rounded-lg border-[#C3C6D2] px-4 normal-case tracking-normal"
+                                            disabled={currentPage === totalPages}
+                                            onClick={() =>
+                                                setCurrentPage((page) =>
+                                                    Math.min(totalPages, page + 1),
+                                                )
+                                            }
+                                        >
+                                            Trang sau
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            className="min-h-10 rounded-lg border-[#C3C6D2] px-4 normal-case tracking-normal"
+                                            disabled={currentPage === totalPages}
+                                            onClick={() => setCurrentPage(totalPages)}
+                                        >
+                                            Về trang cuối
                                         </Button>
                                     </div>
                                 </div>
-                            </div>
-                        ) : null}
-                    </aside>
+                                </>
+                            ) : null}
+                        </section>
+                    </div>
                 </section>
+
+                <Dialog
+                    open={Boolean(selectedOrg)}
+                    onOpenChange={(open) => {
+                        if (!open) {
+                            closeDetailDialog();
+                        }
+                    }}
+                >
+                    <DialogContent className="max-w-[min(1120px,calc(100vw-2rem))] p-0">
+                        {selectedOrg ? (
+                            <>
+                                <div className="flex flex-col gap-4 border-b border-[#E1E3E4] px-5 py-5 sm:flex-row sm:items-start sm:justify-between sm:px-6">
+                                    <div className="space-y-2">
+                                        <p className={cardLabelClassName}>
+                                            Hồ sơ vận hành
+                                        </p>
+                                        <DialogTitle className="text-[28px] font-semibold leading-9 text-[#002A58]">
+                                            {selectedOrg.name}
+                                        </DialogTitle>
+                                        <DialogDescription className="max-w-3xl text-[14px] leading-6 text-[#424750]">
+                                            Theo dõi dữ liệu vận hành, chiến dịch và
+                                            báo cáo của đơn vị này trong một hộp
+                                            thoại riêng để kiểm tra thuận tiện hơn.
+                                        </DialogDescription>
+                                    </div>
+
+                                    <div className="flex flex-wrap items-center gap-3">
+                                        <Link
+                                            to={paths.app.reports.getHref()}
+                                            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[#C3C6D2] bg-white px-4 text-[14px] font-semibold text-[#191C1D] transition hover:bg-[#F3F4F5]"
+                                        >
+                                            <ArrowRight
+                                                className="size-4"
+                                                strokeWidth={1.5}
+                                            />
+                                            Mở báo cáo
+                                        </Link>
+                                        <DialogClose
+                                            render={
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon-sm"
+                                                    className="rounded-lg border border-[#C3C6D2] bg-white text-[#424750] hover:bg-[#F3F4F5]"
+                                                />
+                                            }
+                                        >
+                                            <X
+                                                className="size-4"
+                                                strokeWidth={1.5}
+                                            />
+                                        </DialogClose>
+                                    </div>
+                                </div>
+
+                                <div className="max-h-[calc(100vh-9rem)] overflow-y-auto px-5 py-5 sm:px-6">
+                                    <div className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_320px]">
+                                        <div className="space-y-6">
+                                            <section
+                                                className={`${panelClassName} p-5`}
+                                            >
+                                                <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
+                                                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[#D6E3FF] text-[24px] font-semibold text-[#002A58]">
+                                                        {getOrganizationInitials(
+                                                            selectedOrg,
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0 space-y-4">
+                                                        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                                                            <div className="space-y-2">
+                                                                <div className="flex flex-wrap gap-2">
+                                                                    <span
+                                                                        className={`inline-flex rounded-lg px-3 py-1 text-[12px] font-bold uppercase tracking-[0.08em] ${getTypeBadgeClassName(
+                                                                            selectedOrg.type,
+                                                                        )}`}
+                                                                    >
+                                                                        {getOrgTypeLabel(
+                                                                            selectedOrg.type,
+                                                                        )}
+                                                                    </span>
+                                                                    <span
+                                                                        className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] ${getStatusBadgeClassName(
+                                                                            selectedOrg.status,
+                                                                        )}`}
+                                                                    >
+                                                                        {getStatusLabel(
+                                                                            selectedOrg.status,
+                                                                        )}
+                                                                    </span>
+                                                                </div>
+                                                                <p className="text-[15px] leading-6 text-[#424750]">
+                                                                    {selectedOrg.description?.trim() ||
+                                                                        (selectedOrg.type ===
+                                                                        'FACULTY'
+                                                                            ? 'Đơn vị cấp khoa được lưu trực tiếp trong bảng khoa của hệ thống.'
+                                                                            : 'Câu lạc bộ được lưu trực tiếp trong bảng câu lạc bộ của hệ thống.')}
+                                                                </p>
+                                                            </div>
+                                                            <div className="grid gap-2 text-[13px] leading-5 text-[#424750] sm:grid-cols-2">
+                                                                <div className="rounded-lg border border-[#E1E3E4] bg-[#F8F9FA] px-4 py-3">
+                                                                    <p className={fieldLabelClassName}>
+                                                                        Mã đơn vị
+                                                                    </p>
+                                                                    <p className="mt-1 text-[15px] font-semibold text-[#191C1D]">
+                                                                        {
+                                                                            selectedOrg.code
+                                                                        }
+                                                                    </p>
+                                                                </div>
+                                                                <div className="rounded-lg border border-[#E1E3E4] bg-[#F8F9FA] px-4 py-3">
+                                                                    <p className={fieldLabelClassName}>
+                                                                        Đơn vị gốc
+                                                                    </p>
+                                                                    <p className="mt-1 text-[15px] font-semibold text-[#191C1D]">
+                                                                        {selectedOrg.type ===
+                                                                        'FACULTY'
+                                                                            ? 'Khoa'
+                                                                            : selectedOrg
+                                                                                  .faculty
+                                                                                  ?.name ??
+                                                                              'Cấp trường'}
+                                                                    </p>
+                                                                </div>
+                                                                <div className="rounded-lg border border-[#E1E3E4] bg-[#F8F9FA] px-4 py-3">
+                                                                    <p className={fieldLabelClassName}>
+                                                                        Tạo ngày
+                                                                    </p>
+                                                                    <p className="mt-1 text-[15px] font-semibold text-[#191C1D]">
+                                                                        {formatDate(
+                                                                            selectedOrg.created_at,
+                                                                        )}
+                                                                    </p>
+                                                                </div>
+                                                                <div className="rounded-lg border border-[#E1E3E4] bg-[#F8F9FA] px-4 py-3">
+                                                                    <p className={fieldLabelClassName}>
+                                                                        Số chiến dịch
+                                                                    </p>
+                                                                    <p className="mt-1 text-[15px] font-semibold text-[#191C1D]">
+                                                                        {
+                                                                            sortedCampaigns.length
+                                                                        }
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </section>
+
+                                            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                                                <div
+                                                    className={`${panelClassName} p-5`}
+                                                >
+                                                    <p className={cardLabelClassName}>
+                                                        Impact score
+                                                    </p>
+                                                    <p className="mt-3 text-[30px] font-semibold leading-9 text-[#006D37]">
+                                                        {selectedImpactScore}/100
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    className={`${panelClassName} p-5`}
+                                                >
+                                                    <p className={cardLabelClassName}>
+                                                        Xếp hạng
+                                                    </p>
+                                                    <p className="mt-3 text-[30px] font-semibold leading-9 text-[#002A58]">
+                                                        {selectedOrgRanking
+                                                            ? `#${selectedOrgRanking}`
+                                                            : 'Chưa xếp hạng'}
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    className={`${panelClassName} p-5`}
+                                                >
+                                                    <p className={cardLabelClassName}>
+                                                        Tổng quỹ ghi nhận
+                                                    </p>
+                                                    <p className="mt-3 text-[30px] font-semibold leading-9 text-[#191C1D]">
+                                                        {formatCurrency(
+                                                            selectedOrgReport?.verified_money_amount ??
+                                                                0,
+                                                        )}
+                                                    </p>
+                                                </div>
+                                                <div
+                                                    className={`${panelClassName} p-5`}
+                                                >
+                                                    <p className={cardLabelClassName}>
+                                                        Lượt tham gia hoàn thành
+                                                    </p>
+                                                    <p className="mt-3 text-[30px] font-semibold leading-9 text-[#191C1D]">
+                                                        {(
+                                                            selectedOrgReport?.completed_event_registrations ??
+                                                            0
+                                                        ).toLocaleString(
+                                                            'vi-VN',
+                                                        )}
+                                                    </p>
+                                                </div>
+                                            </section>
+
+                                            <section
+                                                className={`${panelClassName} overflow-hidden`}
+                                            >
+                                                <div className="border-b border-[#E1E3E4] px-5 py-4 sm:px-6">
+                                                    <h3 className="text-[20px] font-semibold leading-7 text-[#002A58]">
+                                                        Danh sách chiến dịch
+                                                    </h3>
+                                                    <p className="mt-2 text-[14px] leading-6 text-[#424750]">
+                                                        Dữ liệu lấy trực tiếp từ API
+                                                        chi tiết đơn vị để đối chiếu
+                                                        hoạt động đang có.
+                                                    </p>
+                                                </div>
+
+                                                <div className="p-5 sm:p-6">
+                                                    {detailLoading ? (
+                                                        <LoadingState />
+                                                    ) : null}
+                                                    {detailError ? (
+                                                        <ErrorState
+                                                            message={detailError}
+                                                        />
+                                                    ) : null}
+                                                    {!detailLoading &&
+                                                    !detailError &&
+                                                    sortedCampaigns.length ===
+                                                        0 ? (
+                                                        <EmptyState
+                                                            title="Chưa có chiến dịch"
+                                                            description="Đơn vị này hiện chưa có chiến dịch nào để hiển thị trong hồ sơ vận hành."
+                                                        />
+                                                    ) : null}
+                                                    {!detailLoading &&
+                                                    !detailError &&
+                                                    sortedCampaigns.length >
+                                                        0 ? (
+                                                        <div className="space-y-4">
+                                                            {sortedCampaigns.map(
+                                                                (campaign) => (
+                                                                    <article
+                                                                        key={
+                                                                            campaign.id
+                                                                        }
+                                                                        className="rounded-xl border border-[#E1E3E4] bg-white p-4"
+                                                                    >
+                                                                        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                                                                            <div className="flex-1 min-w-0">
+                                                                                <p className="text-[18px] font-semibold leading-7 text-[#191C1D]">
+                                                                                    {
+                                                                                        campaign.title
+                                                                                    }
+                                                                                </p>
+                                                                                <p className="mt-2 text-[14px] leading-6 text-[#424750]">
+                                                                                    {campaign.summary?.trim() ||
+                                                                                        'Chưa có mô tả ngắn cho chiến dịch này.'}
+                                                                                </p>
+                                                                            </div>
+                                                                            <span
+                                                                                className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] ${getCampaignStatusBadgeClassName(
+                                                                                    campaign.status,
+                                                                                )}`}
+                                                                            >
+                                                                                {getCampaignStatusLabel(
+                                                                                    campaign.status,
+                                                                                )}
+                                                                            </span>
+                                                                        </div>
+                                                                        <div className="mt-4 flex flex-col gap-3 text-[13px] leading-5 text-[#424750] lg:flex-row lg:items-center lg:justify-between">
+                                                                            <p>
+                                                                                Thời gian:{' '}
+                                                                                <span className="font-semibold text-[#191C1D]">
+                                                                                    {formatDate(
+                                                                                        campaign.start_at,
+                                                                                    )}{' '}
+                                                                                    -{' '}
+                                                                                    {formatDate(
+                                                                                        campaign.end_at,
+                                                                                    )}
+                                                                                </span>
+                                                                            </p>
+                                                                            <div className="flex flex-wrap gap-2">
+                                                                                {campaign.module_types.map(
+                                                                                    (
+                                                                                        moduleType,
+                                                                                    ) => (
+                                                                                        <span
+                                                                                            key={`${campaign.id}-${moduleType}`}
+                                                                                            className="inline-flex rounded-lg border border-[#C3C6D2] bg-[#F8F9FA] px-3 py-1 text-[12px] font-semibold text-[#424750]"
+                                                                                        >
+                                                                                            {getModuleTypeLabel(
+                                                                                                moduleType,
+                                                                                            )}
+                                                                                        </span>
+                                                                                    ),
+                                                                                )}
+                                                                            </div>
+                                                                        </div>
+                                                                    </article>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                    ) : null}
+                                                </div>
+                                            </section>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <section
+                                                className={`${panelClassName} p-5`}
+                                            >
+                                                <h3 className="text-[18px] font-semibold leading-7 text-[#002A58]">
+                                                    Minh bạch vận hành
+                                                </h3>
+                                                <div className="mt-4 space-y-3 text-[14px] leading-6 text-[#424750]">
+                                                    <div className="rounded-lg border border-[#E1E3E4] bg-[#F8F9FA] px-4 py-3">
+                                                        <p className={fieldLabelClassName}>
+                                                            Quyên góp hiện vật
+                                                        </p>
+                                                        <p className="mt-1 text-[18px] font-semibold text-[#191C1D]">
+                                                            {(
+                                                                selectedOrgReport?.received_item_quantity ??
+                                                                0
+                                                            ).toLocaleString(
+                                                                'vi-VN',
+                                                            )}
+                                                        </p>
+                                                    </div>
+                                                    <div className="rounded-lg border border-[#E1E3E4] bg-[#F8F9FA] px-4 py-3">
+                                                        <p className={fieldLabelClassName}>
+                                                            Giờ hoạt động hoàn thành
+                                                        </p>
+                                                        <p className="mt-1 text-[18px] font-semibold text-[#191C1D]">
+                                                            {(
+                                                                selectedOrgReport?.completed_event_hours ??
+                                                                0
+                                                            ).toLocaleString(
+                                                                'vi-VN',
+                                                            )}
+                                                        </p>
+                                                    </div>
+                                                    <div className="rounded-lg border border-[#E1E3E4] bg-[#F8F9FA] px-4 py-3">
+                                                        <p className={fieldLabelClassName}>
+                                                            Chứng nhận đã cấp
+                                                        </p>
+                                                        <p className="mt-1 text-[18px] font-semibold text-[#191C1D]">
+                                                            {(
+                                                                selectedOrgReport?.issued_certificates ??
+                                                                0
+                                                            ).toLocaleString(
+                                                                'vi-VN',
+                                                            )}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </section>
+
+                                            <section
+                                                className={`${panelClassName} p-5`}
+                                            >
+                                                <h3 className="text-[18px] font-semibold leading-7 text-[#002A58]">
+                                                    Thao tác nhanh
+                                                </h3>
+                                                <div className="flex flex-col gap-3 mt-4">
+                                                    <Button
+                                                        type="button"
+                                                        className="min-h-11 rounded-lg bg-[#002A58] normal-case tracking-normal text-white hover:bg-[#004080]"
+                                                        onClick={() =>
+                                                            openEditDialog(
+                                                                selectedOrg,
+                                                            )
+                                                        }
+                                                    >
+                                                        <PencilLine
+                                                            className="size-4"
+                                                            strokeWidth={1.5}
+                                                        />
+                                                        Chỉnh sửa đơn vị
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        className="min-h-11 rounded-lg border-[#D44B2F] text-[#D44B2F] normal-case tracking-normal hover:bg-[#FFF4F0]"
+                                                        onClick={() =>
+                                                            void handleDelete(
+                                                                selectedOrg,
+                                                            )
+                                                        }
+                                                    >
+                                                        <Trash2
+                                                            className="size-4"
+                                                            strokeWidth={1.5}
+                                                        />
+                                                        Xóa đơn vị
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        variant="outline"
+                                                        className="min-h-11 rounded-lg border-[#C3C6D2] normal-case tracking-normal"
+                                                        onClick={closeDetailDialog}
+                                                    >
+                                                        Đóng hộp thoại
+                                                    </Button>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        ) : null}
+                    </DialogContent>
+                </Dialog>
 
                 <Dialog
                     open={isFormDialogOpen}
@@ -1473,9 +1480,8 @@ export const AdminOrganizationsRoute = () => {
                                         : 'Cập nhật thông tin đơn vị'}
                                 </DialogTitle>
                                 <DialogDescription className="mt-2 max-w-2xl text-[14px] leading-6 text-[#424750]">
-                                    Giữ canvas quản trị gọn như bản tham khảo và
-                                    đưa toàn bộ thao tác tạo, sửa vào một hộp
-                                    thoại tập trung.
+                                    Chỉ quản lý hai loại đơn vị có thật trong cơ sở dữ liệu:
+                                    khoa và câu lạc bộ. Các trường không tồn tại trong DB đã được loại bỏ khỏi biểu mẫu.
                                 </DialogDescription>
                             </div>
                             <DialogClose
@@ -1505,8 +1511,13 @@ export const AdminOrganizationsRoute = () => {
                                                     code: event.target.value,
                                                 }))
                                             }
-                                            placeholder="Ví dụ: CLB-XANH"
+                                            placeholder={
+                                                isFacultyForm
+                                                    ? 'Ví dụ: 102'
+                                                    : 'Mã CLB được sinh tự động sau khi tạo'
+                                            }
                                             className={inputClassName}
+                                            disabled={isClubForm}
                                         />
                                     </FilterField>
                                     <FilterField label="Loại đơn vị">
@@ -1516,10 +1527,27 @@ export const AdminOrganizationsRoute = () => {
                                             onChange={(event) =>
                                                 setForm((current) => ({
                                                     ...current,
-                                                    type: event.target.value,
+                                                    type: event.target
+                                                        .value as AdminOrganizationType,
+                                                    code:
+                                                        event.target.value ===
+                                                        'FACULTY'
+                                                            ? current.code
+                                                            : '',
+                                                    facultyId:
+                                                        event.target.value ===
+                                                        'CLUB'
+                                                            ? current.facultyId
+                                                            : '',
+                                                    status:
+                                                        event.target.value ===
+                                                        'CLUB'
+                                                            ? current.status
+                                                            : 'ACTIVE',
                                                 }))
                                             }
                                             className={selectClassName}
+                                            disabled={formMode === 'edit'}
                                         >
                                             {orgTypeOptions.map((option) => (
                                                 <option
@@ -1549,48 +1577,88 @@ export const AdminOrganizationsRoute = () => {
                                 </FilterField>
 
                                 <div className="grid gap-4 sm:grid-cols-2">
-                                    <FilterField label="Trạng thái">
-                                        <select
-                                            data-testid="admin-org-form-status"
-                                            value={form.status}
-                                            onChange={(event) =>
-                                                setForm((current) => ({
-                                                    ...current,
-                                                    status: event.target.value,
-                                                }))
-                                            }
-                                            className={selectClassName}
+                                    {isClubForm ? (
+                                        <FilterField
+                                            label="Khoa phụ trách"
+                                            hint="Để trống nếu đây là câu lạc bộ cấp trường."
                                         >
-                                            <option value="ACTIVE">
-                                                Đang hoạt động
-                                            </option>
-                                            <option value="INACTIVE">
-                                                Ngừng hoạt động
-                                            </option>
-                                        </select>
-                                    </FilterField>
-                                    <FilterField label="Mô tả ngắn">
-                                        <Input
-                                            data-testid="admin-org-form-description"
-                                            value={form.description}
-                                            onChange={(event) =>
-                                                setForm((current) => ({
-                                                    ...current,
-                                                    description:
-                                                        event.target.value,
-                                                }))
-                                            }
-                                            placeholder="Mô tả ngắn về đơn vị"
-                                            className={inputClassName}
-                                        />
-                                    </FilterField>
+                                            <select
+                                                value={form.facultyId}
+                                                onChange={(event) =>
+                                                    setForm((current) => ({
+                                                        ...current,
+                                                        facultyId:
+                                                            event.target.value,
+                                                    }))
+                                                }
+                                                className={selectClassName}
+                                            >
+                                                <option value="">
+                                                    Câu lạc bộ cấp trường
+                                                </option>
+                                                {facultyOptions.map((option) => (
+                                                    <option
+                                                        key={option.id}
+                                                        value={option.id}
+                                                    >
+                                                        {option.code} -{' '}
+                                                        {option.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </FilterField>
+                                    ) : (
+                                        <FilterField
+                                            label="Trạng thái"
+                                            hint="Theo schema hiện tại, khoa luôn ở trạng thái hoạt động."
+                                        >
+                                            <Input
+                                                value="Đang hoạt động"
+                                                className={inputClassName}
+                                                disabled
+                                            />
+                                        </FilterField>
+                                    )}
+                                    {isClubForm ? (
+                                        <FilterField label="Trạng thái">
+                                            <select
+                                                data-testid="admin-org-form-status"
+                                                value={form.status}
+                                                onChange={(event) =>
+                                                    setForm((current) => ({
+                                                        ...current,
+                                                        status: event.target
+                                                            .value as AdminOrganizationStatus,
+                                                    }))
+                                                }
+                                                className={selectClassName}
+                                            >
+                                                <option value="ACTIVE">
+                                                    Đang hoạt động
+                                                </option>
+                                                <option value="INACTIVE">
+                                                    Ngừng hoạt động
+                                                </option>
+                                            </select>
+                                        </FilterField>
+                                    ) : (
+                                        <FilterField
+                                            label="Liên kết dữ liệu"
+                                            hint="Khoa có thể được dùng làm đơn vị gốc cho sinh viên, cán bộ quản lý và câu lạc bộ."
+                                        >
+                                            <Input
+                                                value="Quản lý trực tiếp trong bảng khoa"
+                                                className={inputClassName}
+                                                disabled
+                                            />
+                                        </FilterField>
+                                    )}
                                 </div>
 
                                 <div className="rounded-xl border border-[#C3C6D2] bg-[#F3F4F5] p-4 text-[14px] leading-6 text-[#424750]">
-                                    Mã đơn vị nên ổn định theo chuẩn nội bộ để
-                                    thuận tiện cho việc tích hợp báo cáo, phân
-                                    quyền và đối soát dữ liệu trong các màn hình
-                                    quản trị sau này.
+                                    {isFacultyForm
+                                        ? 'Khoa lưu trực tiếp mã và tên trong cơ sở dữ liệu. Hãy nhập đúng mã khoa chuẩn để đồng bộ với hồ sơ sinh viên và cán bộ.'
+                                        : 'Câu lạc bộ không có cột mã riêng trong cơ sở dữ liệu. Hệ thống dùng mã hiển thị sinh tự động từ ID và lưu quan hệ với khoa nếu bạn chọn khoa phụ trách.'}
                                 </div>
 
                                 <div className="flex flex-col gap-3 border-t border-[#E1E3E4] pt-4 sm:flex-row sm:justify-end">
@@ -1609,7 +1677,7 @@ export const AdminOrganizationsRoute = () => {
                                         disabled={
                                             saving ||
                                             !form.name.trim() ||
-                                            !form.code.trim()
+                                            (isFacultyForm && !form.code.trim())
                                         }
                                     >
                                         {saving
@@ -1627,3 +1695,4 @@ export const AdminOrganizationsRoute = () => {
         </>
     );
 };
+

@@ -313,14 +313,16 @@ type FilterFieldProps = {
 
 const FilterField = ({ label, hint, children }: FilterFieldProps) => {
     return (
-        <label className="grid gap-2 text-left">
+        <label className="grid h-full content-start gap-2 text-left">
             <span className={fieldLabelClassName}>{label}</span>
             {children}
-            {hint ? (
-                <span className="text-[12px] leading-4 text-[#737781]">
-                    {hint}
-                </span>
-            ) : null}
+            <span
+                className={`min-h-4 text-[12px] leading-4 text-[#737781] ${
+                    hint ? '' : 'invisible'
+                }`}
+            >
+                {hint ?? 'Giữ khoảng trống để căn hàng'}
+            </span>
         </label>
     );
 };
@@ -971,7 +973,7 @@ export const UsersRoute = () => {
                             </p>
                         </div>
 
-                        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_220px_220px_auto]">
+                        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(220px,0.7fr)_minmax(220px,0.7fr)_180px]">
                             <FilterField
                                 label="Tìm kiếm"
                                 hint="Hỗ trợ email, tên đăng nhập và MSSV"
@@ -1037,7 +1039,12 @@ export const UsersRoute = () => {
                                     ))}
                                 </select>
                             </FilterField>
-                            <div className="flex items-end">
+                            <div className="grid h-full content-start gap-2">
+                                <span
+                                    className={`${fieldLabelClassName} invisible`}
+                                >
+                                    Thao tác
+                                </span>
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -1055,6 +1062,9 @@ export const UsersRoute = () => {
                                     />
                                     Đặt lại bộ lọc
                                 </Button>
+                                <span className="min-h-4 text-[12px] leading-4 invisible">
+                                    Giữ khoảng trống để căn hàng
+                                </span>
                             </div>
                         </div>
                     </FilterToolbar>

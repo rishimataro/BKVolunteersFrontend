@@ -4,8 +4,13 @@ import { useNotifications } from '@/components/ui/notifications';
 import { env } from '@/config/env';
 import { useAuthStore } from '@/store/auth-store';
 import { HttpStatus } from '@/types/http';
+import {
+    normalizeVietnameseText,
+    toVietnameseSearchKey,
+} from '@/utils/vietnamese-text';
 
 let isRefreshing = false;
+const normalizedApiUrl = env.API_URL.replace(/\/$/, '');
 
 type PromiseHandler = {
     resolve: (token: string | null) => void;
@@ -49,7 +54,7 @@ const getApiErrorMessage = (
         | undefined;
 
     if (!error.response) {
-        return `Không thể kết nối tới backend tại ${env.API_URL}. Hãy kiểm tra backend đang chạy và thử mở ${env.API_URL}/api/health.`;
+        return `Không thể kết nối tới backend tại ${normalizedApiUrl}. Hãy kiểm tra backend đang chạy và thử mở ${normalizedApiUrl}/api/health.`;
     }
 
     if (error.response.status === HttpStatus.NOT_FOUND) {
@@ -57,7 +62,9 @@ const getApiErrorMessage = (
         return `API ${endpoint} chưa sẵn sàng hoặc không tồn tại trên backend hiện tại.`;
     }
 
-    return data?.error?.message || data?.message || error.message;
+    return normalizeVietnameseText(
+        data?.error?.message || data?.message || error.message,
+    );
 };
 
 const shouldClearAuthForForbidden = (
@@ -68,7 +75,7 @@ const shouldClearAuthForForbidden = (
         return false;
     }
 
-    const normalizedMessage = message.toLowerCase();
+    const normalizedMessage = toVietnameseSearchKey(message);
 
     return (
         normalizedMessage.includes('tai khoan da bi khoa') ||
@@ -81,7 +88,7 @@ const shouldClearAuthForForbidden = (
 };
 
 export const api = Axios.create({
-    baseURL: `${env.API_URL.replace(/\/$/, '')}/api/v1`,
+    baseURL: `${normalizedApiUrl}/api/v1`,
 });
 
 api.interceptors.request.use(authRequestInterceptor);
@@ -177,7 +184,7 @@ api.interceptors.response.use(
             useNotifications.getState().addNotification({
                 type: 'error',
                 title: 'Lỗi kết nối API',
-                message,
+                message: normalizeVietnameseText(message),
             });
         }
 

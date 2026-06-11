@@ -12,8 +12,10 @@ import type { LoginInput } from '../types';
 const authConfig = {
     userFn: async () => {
         const { user, accessToken } = useAuthStore.getState();
-        if (user && accessToken) {
-            return user;
+
+        if (user && !accessToken) {
+            useAuthStore.getState().clearAuth();
+            return null;
         }
 
         if (accessToken) {

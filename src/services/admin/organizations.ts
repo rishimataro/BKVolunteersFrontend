@@ -1,11 +1,14 @@
 import { api } from '@/lib/api-clients';
 
+export type AdminOrganizationType = 'CLUB' | 'FACULTY';
+export type AdminOrganizationStatus = 'ACTIVE' | 'INACTIVE';
+
 export type AdminOrganization = {
     id: string;
     code: string;
     name: string;
-    type: string;
-    status: string;
+    type: AdminOrganizationType;
+    status: AdminOrganizationStatus;
     faculty: { id: string; name: string } | null;
     slug: string;
     description: string | null;
@@ -14,26 +17,24 @@ export type AdminOrganization = {
 
 export type AdminOrganizationsQuery = {
     q?: string;
-    type?: string;
-    status?: string;
+    type?: AdminOrganizationType;
+    status?: AdminOrganizationStatus;
 };
 
 export type CreateOrganizationInput = {
-    code: string;
+    code?: string;
     name: string;
-    type: string;
-    status?: string;
+    type: AdminOrganizationType;
+    status?: AdminOrganizationStatus;
     faculty_id?: string;
-    description?: string;
 };
 
 export type UpdateOrganizationInput = {
     code?: string;
     name?: string;
-    type?: string;
-    status?: string;
+    type?: AdminOrganizationType;
+    status?: AdminOrganizationStatus;
     faculty_id?: string;
-    description?: string;
 };
 
 export const getAdminOrganizations = async (

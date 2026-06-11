@@ -91,73 +91,94 @@ type SchoolApprovalQueueProps = {
 };
 
 const statusLabels: Record<string, string> = {
-    SUBMITTED: 'Chờ sơ duyệt',
-    PRE_APPROVED: 'Chờ duyệt cuối',
-    APPROVED: 'Đã duyệt',
-    REVISION_REQUIRED: 'Yêu cầu chỉnh sửa',
-    REJECTED: 'Từ chối',
-    PUBLISHED: 'Đã công khai',
-    ONGOING: 'Đang diễn ra',
-    ENDED: 'Đã kết thúc',
-    DRAFT: 'Nháp',
-    ARCHIVED: 'Lưu trữ',
+    SUBMITTED: 'Ch\u1edd s\u01a1 duy\u1ec7t',
+    PRE_APPROVED: 'Ch\u1edd duy\u1ec7t cu\u1ed1i',
+    APPROVED: '\u0110\u00e3 duy\u1ec7t',
+    REVISION_REQUIRED: 'Y\u00eau c\u1ea7u ch\u1ec9nh s\u1eeda',
+    REJECTED: 'T\u1eeb ch\u1ed1i',
+    PUBLISHED: '\u0110\u00e3 c\u00f4ng khai',
+    ONGOING: '\u0110ang di\u1ec5n ra',
+    ENDED: '\u0110\u00e3 k\u1ebft th\u00fac',
+    DRAFT: 'Nh\u00e1p',
+    ARCHIVED: 'L\u01b0u tr\u1eef',
 };
 
 const moduleTypeLabels: Record<ModuleType, string> = {
-    fundraising: 'Gây quỹ',
-    item_donation: 'Hiện vật',
-    event: 'Sự kiện',
+    fundraising: 'G\u00e2y qu\u1ef9',
+    item_donation: 'Hi\u1ec7n v\u1eadt',
+    event: 'S\u1ef1 ki\u1ec7n',
+    volunteer: 'Tuy\u1ec3n t\u00ecnh nguy\u1ec7n vi\u00ean',
 };
 
 const statusOptions: Array<{ value: CampaignStatus | ''; label: string }> = [
-    { value: '', label: 'Tất cả trạng thái' },
-    { value: 'SUBMITTED', label: 'Chờ sơ duyệt' },
-    { value: 'PRE_APPROVED', label: 'Chờ duyệt cuối' },
-    { value: 'REVISION_REQUIRED', label: 'Yêu cầu chỉnh sửa' },
-    { value: 'REJECTED', label: 'Từ chối' },
+    { value: '', label: 'T\u1ea5t c\u1ea3 tr\u1ea1ng th\u00e1i' },
+    { value: 'SUBMITTED', label: 'Ch\u1edd s\u01a1 duy\u1ec7t' },
+    { value: 'PRE_APPROVED', label: 'Ch\u1edd duy\u1ec7t cu\u1ed1i' },
+    { value: 'REVISION_REQUIRED', label: 'Y\u00eau c\u1ea7u ch\u1ec9nh s\u1eeda' },
+    { value: 'REJECTED', label: 'T\u1eeb ch\u1ed1i' },
 ];
 
 const moduleOptions: Array<{ value: ModuleType | ''; label: string }> = [
-    { value: '', label: 'Tất cả hạng mục' },
-    { value: 'fundraising', label: 'Gây quỹ' },
-    { value: 'item_donation', label: 'Hiện vật' },
-    { value: 'event', label: 'Sự kiện' },
+    { value: '', label: 'T\u1ea5t c\u1ea3 h\u1ea1ng m\u1ee5c' },
+    { value: 'fundraising', label: 'G\u00e2y qu\u1ef9' },
+    { value: 'item_donation', label: 'Hi\u1ec7n v\u1eadt' },
+    { value: 'event', label: 'S\u1ef1 ki\u1ec7n' },
+    { value: 'volunteer', label: 'Tuy\u1ec3n t\u00ecnh nguy\u1ec7n vi\u00ean' },
 ];
 
 const urgencyOptions = [
-    { value: '', label: 'Tất cả mức ưu tiên' },
-    { value: 'high', label: 'Khẩn cấp' },
-    { value: 'medium', label: 'Trung bình' },
-    { value: 'low', label: 'Theo dõi' },
+    { value: '', label: 'T\u1ea5t c\u1ea3 m\u1ee9c \u01b0u ti\u00ean' },
+    { value: 'high', label: 'Kh\u1ea9n c\u1ea5p' },
+    { value: 'medium', label: 'Trung b\u00ecnh' },
+    { value: 'low', label: 'Theo d\u00f5i' },
 ] as const;
 
 const sortOptions = [
-    { value: 'newest', label: 'Ngày gửi mới nhất' },
-    { value: 'oldest', label: 'Ngày gửi cũ nhất' },
+    { value: 'newest', label: 'Ng\u00e0y g\u1eedi m\u1edbi nh\u1ea5t' },
+    { value: 'oldest', label: 'Ng\u00e0y g\u1eedi c\u0169 nh\u1ea5t' },
 ] as const;
 
-const formatSubmittedAt = (value: string) =>
-    new Intl.DateTimeFormat('vi-VN', {
+const parseSubmittedAt = (value?: string | null) => {
+    if (!value) return null;
+    const parsed = new Date(value).getTime();
+    return Number.isFinite(parsed) ? parsed : null;
+};
+
+const formatSubmittedAt = (value?: string | null) => {
+    const timestamp = parseSubmittedAt(value);
+    if (timestamp === null) {
+        return 'Chưa có thời gian gửi';
+    }
+
+    return new Intl.DateTimeFormat('vi-VN', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-    }).format(new Date(value));
+    }).format(new Date(timestamp));
+};
 
 const getStatusLabel = (value: string) =>
     statusLabels[value] ?? toDisplayText(value);
 
-const getUrgency = (submittedAt: string, currentTime: number) => {
-    const diffHours = Math.max(
-        0,
-        (currentTime - new Date(submittedAt).getTime()) / 3_600_000,
-    );
+const getUrgency = (submittedAt: string | null | undefined, currentTime: number) => {
+    const submittedAtTime = parseSubmittedAt(submittedAt);
+    if (submittedAtTime === null) {
+        return {
+            value: 'low' as const,
+            label: 'Theo d\u00f5i',
+            dotClassName: 'bg-slate-400',
+            textClassName: 'text-slate-500',
+        };
+    }
+
+    const diffHours = Math.max(0, (currentTime - submittedAtTime) / 3_600_000);
 
     if (diffHours >= 72) {
         return {
             value: 'high' as const,
-            label: 'Khẩn cấp',
+            label: 'Kh\u1ea9n c\u1ea5p',
             dotClassName: 'bg-destructive',
             textClassName: 'text-destructive',
         };
@@ -166,7 +187,7 @@ const getUrgency = (submittedAt: string, currentTime: number) => {
     if (diffHours >= 24) {
         return {
             value: 'medium' as const,
-            label: 'Trung bình',
+            label: 'Trung b\u00ecnh',
             dotClassName: 'bg-[#D97706]',
             textClassName: 'text-[#D97706]',
         };
@@ -174,7 +195,7 @@ const getUrgency = (submittedAt: string, currentTime: number) => {
 
     return {
         value: 'low' as const,
-        label: 'Theo dõi',
+        label: 'Theo d\u00f5i',
         dotClassName: 'bg-[#16A34A]',
         textClassName: 'text-[#16A34A]',
     };
@@ -210,14 +231,14 @@ const getPrimaryAction = (
 ) => {
     if (status === 'SUBMITTED') {
         return {
-            label: 'Sơ duyệt',
+            label: 'S\u01a1 duy\u1ec7t',
             action: 'pre-approve' as const,
         };
     }
 
     if (role === 'DOANTRUONG' && status === 'PRE_APPROVED') {
         return {
-            label: 'Phê duyệt',
+            label: 'Ph\u00ea duy\u1ec7t',
             action: 'approve' as const,
         };
     }
@@ -243,55 +264,60 @@ export const SchoolApprovalQueue = ({
     onSubmitReviewDialog,
 }: SchoolApprovalQueueProps) => {
     const [currentTime, setCurrentTime] = React.useState(() => Date.now());
-
-    React.useEffect(() => {
-        setCurrentTime(Date.now());
-    }, [items]);
-
-    const totalSubmitted = React.useMemo(
-        () => items.filter((item) => item.status === 'SUBMITTED').length,
+    const safeItems = React.useMemo(
+        () => (Array.isArray(items) ? items : []),
         [items],
     );
 
+    React.useEffect(() => {
+        setCurrentTime(Date.now());
+    }, [safeItems]);
+
+    const totalSubmitted = React.useMemo(
+        () => safeItems.filter((item) => item.status === 'SUBMITTED').length,
+        [safeItems],
+    );
+
     const totalPreApproved = React.useMemo(
-        () => items.filter((item) => item.status === 'PRE_APPROVED').length,
-        [items],
+        () => safeItems.filter((item) => item.status === 'PRE_APPROVED').length,
+        [safeItems],
     );
 
     const urgentItems = React.useMemo(
         () =>
-            items.filter(
+            safeItems.filter(
                 (item) =>
                     getUrgency(item.submitted_at, currentTime).value === 'high',
             ).length,
-        [currentTime, items],
+        [currentTime, safeItems],
     );
 
     const averageWaitLabel = React.useMemo(() => {
-        if (items.length === 0) {
-            return '0 giờ';
+        if (safeItems.length === 0) {
+            return '0 gi\u1edd';
         }
 
-        const totalHours = items.reduce((sum, item) => {
-            const diffHours = Math.max(
-                0,
-                (currentTime - new Date(item.submitted_at).getTime()) /
-                    3_600_000,
-            );
+        const totalHours = safeItems.reduce((sum, item) => {
+            const submittedAtTime = parseSubmittedAt(item.submitted_at);
+            if (submittedAtTime === null) {
+                return sum;
+            }
+
+            const diffHours = Math.max(0, (currentTime - submittedAtTime) / 3_600_000);
             return sum + diffHours;
         }, 0);
 
-        const averageHours = totalHours / items.length;
+        const averageHours = totalHours / safeItems.length;
 
         if (averageHours >= 24) {
-            return `${(averageHours / 24).toFixed(1).replace(/\.0$/, '')} ngày`;
+            return `${(averageHours / 24).toFixed(1).replace(/\.0$/, '')} ng\u00e0y`;
         }
 
-        return `${Math.round(averageHours)} giờ`;
-    }, [currentTime, items]);
+        return `${Math.round(averageHours)} gi\u1edd`;
+    }, [currentTime, safeItems]);
 
     const filteredItems = React.useMemo(() => {
-        const byUrgency = items.filter((item) => {
+        const byUrgency = safeItems.filter((item) => {
             if (!filters.urgency) {
                 return true;
             }
@@ -303,8 +329,8 @@ export const SchoolApprovalQueue = ({
         });
 
         const sortedItems = [...byUrgency].sort((left, right) => {
-            const leftTime = new Date(left.submitted_at).getTime();
-            const rightTime = new Date(right.submitted_at).getTime();
+            const leftTime = parseSubmittedAt(left.submitted_at) ?? 0;
+            const rightTime = parseSubmittedAt(right.submitted_at) ?? 0;
 
             return filters.sort === 'oldest'
                 ? leftTime - rightTime
@@ -312,7 +338,7 @@ export const SchoolApprovalQueue = ({
         });
 
         return sortedItems;
-    }, [currentTime, filters.sort, filters.urgency, items]);
+    }, [currentTime, filters.sort, filters.urgency, safeItems]);
 
     const totalPages = Math.max(
         1,
@@ -339,18 +365,18 @@ export const SchoolApprovalQueue = ({
                         to={paths.app.dashboard.getHref()}
                         className="transition hover:text-primary"
                     >
-                        Tổng quan
+                        {'T\u1ed5ng quan'}
                     </Link>
                     <span>/</span>
                     <span className="text-primary">
-                        Danh sách phê duyệt chiến dịch
+                        {'Danh s\u00e1ch ph\u00ea duy\u1ec7t chi\u1ebfn d\u1ecbch'}
                     </span>
                 </nav>
 
                 <ManagementHeader
-                    badge="Hội đồng xét duyệt"
-                    title="Hàng đợi phê duyệt chiến dịch"
-                    description="Theo dõi toàn bộ hồ sơ đang chờ thẩm định từ câu lạc bộ và đơn vị trực thuộc. Luồng duyệt giữ nguyên theo hệ thống hiện tại; giao diện này chỉ tổ chức lại thông tin để xử lý nhanh hơn."
+                    badge={'H\u1ed9i \u0111\u1ed3ng x\u00e9t duy\u1ec7t'}
+                    title={'H\u00e0ng \u0111\u1ee3i ph\u00ea duy\u1ec7t chi\u1ebfn d\u1ecbch'}
+                    description={'Theo d\u00f5i to\u00e0n b\u1ed9 h\u1ed3 s\u01a1 \u0111ang ch\u1edd th\u1ea9m \u0111\u1ecbnh t\u1eeb c\u00e2u l\u1ea1c b\u1ed9 v\u00e0 \u0111\u01a1n v\u1ecb tr\u1ef1c thu\u1ed9c. Lu\u1ed3ng duy\u1ec7t gi\u1eef nguy\u00ean theo h\u1ec7 th\u1ed1ng hi\u1ec7n t\u1ea1i; giao di\u1ec7n n\u00e0y ch\u1ec9 t\u1ed5 ch\u1ee9c l\u1ea1i th\u00f4ng tin \u0111\u1ec3 x\u1eed l\u00fd nhanh h\u01a1n.'}
                     icon={ClipboardCheck}
                     actions={
                         <Button
@@ -359,37 +385,37 @@ export const SchoolApprovalQueue = ({
                             onClick={onRefresh}
                         >
                             <RefreshCw className="size-4" />
-                            Làm mới danh sách
+                            {'L\u00e0m m\u1edbi danh s\u00e1ch'}
                         </Button>
                     }
                 />
 
                 <ManagementGrid>
                     <ManagementStatCard
-                        label="Chờ sơ duyệt"
-                        value={`${totalSubmitted.toLocaleString('vi-VN')} hồ sơ`}
-                        note="Các chiến dịch vừa được gửi lên hội đồng xét duyệt."
+                        label={'Ch\u1edd s\u01a1 duy\u1ec7t'}
+                        value={`${totalSubmitted.toLocaleString('vi-VN')} h\u1ed3 s\u01a1`}
+                        note={'C\u00e1c chi\u1ebfn d\u1ecbch v\u1eeba \u0111\u01b0\u1ee3c g\u1eedi l\u00ean h\u1ed9i \u0111\u1ed3ng x\u00e9t duy\u1ec7t.'}
                         icon={TimerReset}
                         tone="warning"
                     />
                     <ManagementStatCard
-                        label="Chờ duyệt cuối"
-                        value={`${totalPreApproved.toLocaleString('vi-VN')} hồ sơ`}
-                        note="Hồ sơ đã qua bước sơ duyệt và chờ quyết định cuối."
+                        label={'Ch\u1edd duy\u1ec7t cu\u1ed1i'}
+                        value={`${totalPreApproved.toLocaleString('vi-VN')} h\u1ed3 s\u01a1`}
+                        note={'H\u1ed3 s\u01a1 \u0111\u00e3 qua b\u01b0\u1edbc s\u01a1 duy\u1ec7t v\u00e0 ch\u1edd quy\u1ebft \u0111\u1ecbnh cu\u1ed1i.'}
                         icon={CheckCheck}
                         tone="default"
                     />
                     <ManagementStatCard
-                        label="Thời gian chờ trung bình"
+                        label={'Th\u1eddi gian ch\u1edd trung b\u00ecnh'}
                         value={averageWaitLabel}
-                        note="Tính từ thời điểm hồ sơ được gửi vào hàng đợi."
+                        note={'T\u00ednh t\u1eeb th\u1eddi \u0111i\u1ec3m h\u1ed3 s\u01a1 \u0111\u01b0\u1ee3c g\u1eedi v\u00e0o h\u00e0ng \u0111\u1ee3i.'}
                         icon={TimerReset}
                         tone="success"
                     />
                     <ManagementStatCard
-                        label="Cần xử lý khẩn"
-                        value={`${urgentItems.toLocaleString('vi-VN')} hồ sơ`}
-                        note="Ưu tiên suy ra theo thời gian chờ trong hệ thống."
+                        label={'C\u1ea7n x\u1eed l\u00fd kh\u1ea9n'}
+                        value={`${urgentItems.toLocaleString('vi-VN')} h\u1ed3 s\u01a1`}
+                        note={'\u01afu ti\u00ean suy ra theo th\u1eddi gian ch\u1edd trong h\u1ec7 th\u1ed1ng.'}
                         icon={AlertTriangle}
                         tone="danger"
                     />
@@ -403,22 +429,22 @@ export const SchoolApprovalQueue = ({
 
                 <ManagementPanel className="p-0">
                     <ManagementPanelHeader
-                        title="Bộ lọc xét duyệt"
-                        description="Lọc theo từ khóa, trạng thái và hạng mục để gom các hồ sơ cần xử lý trong cùng một nhịp làm việc."
+                        title={'B\u1ed9 l\u1ecdc x\u00e9t duy\u1ec7t'}
+                        description={'L\u1ecdc theo t\u1eeb kh\u00f3a, tr\u1ea1ng th\u00e1i v\u00e0 h\u1ea1ng m\u1ee5c \u0111\u1ec3 gom c\u00e1c h\u1ed3 s\u01a1 c\u1ea7n x\u1eed l\u00fd trong c\u00f9ng m\u1ed9t nh\u1ecbp l\u00e0m vi\u1ec7c.'}
                         actions={
                             <button
                                 type="button"
                                 className="text-[13px] font-semibold uppercase tracking-[0.08em] text-primary transition hover:text-destructive"
                                 onClick={onResetFilters}
                             >
-                                Xóa bộ lọc
+                                {'X\u00f3a b\u1ed9 l\u1ecdc'}
                             </button>
                         }
                     />
 
                     <FilterToolbar>
                         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.3fr)_repeat(4,minmax(0,1fr))]">
-                            <FilterField label="Tìm kiếm">
+                            <FilterField label={'T\u00ecm ki\u1ebfm'}>
                                 <div className="relative">
                                     <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                                     <Input
@@ -428,13 +454,13 @@ export const SchoolApprovalQueue = ({
                                                 q: event.target.value,
                                             })
                                         }
-                                        placeholder="Tên chiến dịch hoặc đơn vị tổ chức"
+                                        placeholder={'T\u00ean chi\u1ebfn d\u1ecbch ho\u1eb7c \u0111\u01a1n v\u1ecb t\u1ed5 ch\u1ee9c'}
                                         className="pl-10"
                                     />
                                 </div>
                             </FilterField>
 
-                            <FilterField label="Trạng thái">
+                            <FilterField label={'Tr\u1ea1ng th\u00e1i'}>
                                 <select
                                     value={filters.status}
                                     onChange={(event) =>
@@ -457,7 +483,7 @@ export const SchoolApprovalQueue = ({
                                 </select>
                             </FilterField>
 
-                            <FilterField label="Hạng mục">
+                            <FilterField label={'H\u1ea1ng m\u1ee5c'}>
                                 <select
                                     value={filters.module_type}
                                     onChange={(event) =>
@@ -480,7 +506,7 @@ export const SchoolApprovalQueue = ({
                                 </select>
                             </FilterField>
 
-                            <FilterField label="Mức ưu tiên">
+                            <FilterField label={'M\u1ee9c \u01b0u ti\u00ean'}>
                                 <select
                                     value={filters.urgency}
                                     onChange={(event) =>
@@ -502,7 +528,7 @@ export const SchoolApprovalQueue = ({
                                 </select>
                             </FilterField>
 
-                            <FilterField label="Sắp xếp">
+                            <FilterField label={'S\u1eafp x\u1ebfp'}>
                                 <select
                                     value={filters.sort}
                                     onChange={(event) =>
@@ -527,15 +553,15 @@ export const SchoolApprovalQueue = ({
 
                         <div className={editorialInsetNoteClassName}>
                             <p>
-                                Vai trò hiện tại:{' '}
+                                {'Vai tr\u00f2 hi\u1ec7n t\u1ea1i:'}{' '}
                                 <strong>
                                     {role === 'DOANTRUONG'
-                                        ? 'Đoàn trường'
-                                        : 'Liên chi đoàn khoa'}
+                                        ? '\u0110o\u00e0n tr\u01b0\u1eddng'
+                                        : 'Li\u00ean chi \u0111o\u00e0n khoa'}
                                 </strong>
-                                . Các mức ưu tiên trên trang này được suy ra từ
-                                thời gian chờ kể từ lúc hồ sơ được gửi vào hệ
-                                thống.
+                                {'. C\u00e1c m\u1ee9c \u01b0u ti\u00ean tr\u00ean trang n\u00e0y \u0111\u01b0\u1ee3c suy ra t\u1eeb'}
+                                {'th\u1eddi gian ch\u1edd k\u1ec3 t\u1eeb l\u00fac h\u1ed3 s\u01a1 \u0111\u01b0\u1ee3c g\u1eedi v\u00e0o h\u1ec7'}
+                                {'th\u1ed1ng.'}
                             </p>
                         </div>
                     </FilterToolbar>
@@ -545,25 +571,25 @@ export const SchoolApprovalQueue = ({
                             <thead>
                                 <tr className="border-y border-border bg-muted text-left">
                                     <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                                        Chiến dịch
+                                        {'Chi\u1ebfn d\u1ecbch'}
                                     </th>
                                     <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                                        Đơn vị tổ chức
+                                        {'\u0110\u01a1n v\u1ecb t\u1ed5 ch\u1ee9c'}
                                     </th>
                                     <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                                        Ngày gửi
+                                        {'Ng\u00e0y g\u1eedi'}
                                     </th>
                                     <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                                        Hạng mục
+                                        {'H\u1ea1ng m\u1ee5c'}
                                     </th>
                                     <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                                        Ưu tiên
+                                        {'\u01afu ti\u00ean'}
                                     </th>
                                     <th className="px-5 py-4 text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                                        Trạng thái
+                                        {'Tr\u1ea1ng th\u00e1i'}
                                     </th>
                                     <th className="px-5 py-4 text-right text-[12px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                                        Hành động
+                                        {'H\u00e0nh \u0111\u1ed9ng'}
                                     </th>
                                 </tr>
                             </thead>
@@ -574,8 +600,8 @@ export const SchoolApprovalQueue = ({
                                             colSpan={7}
                                             className="px-5 py-8 text-[15px] text-muted-foreground"
                                         >
-                                            Đang tải danh sách chiến dịch chờ
-                                            phê duyệt...
+                                            {'\u0110ang t\u1ea3i danh s\u00e1ch chi\u1ebfn d\u1ecbch ch\u1edd'}
+                                            {'ph\u00ea duy\u1ec7t...'}
                                         </td>
                                     </tr>
                                 ) : visibleItems.length > 0 ? (
@@ -628,7 +654,7 @@ export const SchoolApprovalQueue = ({
                                                                 )}
                                                             </p>
                                                             <p className="text-[14px] leading-6 text-muted-foreground">
-                                                                Mã đơn vị:{' '}
+                                                                {'M\u00e3 \u0111\u01a1n v\u1ecb:'}{' '}
                                                                 {
                                                                     campaign
                                                                         .organization
@@ -709,7 +735,7 @@ export const SchoolApprovalQueue = ({
                                                             )}
                                                         >
                                                             <ArrowRight className="size-4" />
-                                                            Xem hồ sơ
+                                                            {'Xem h\u1ed3 s\u01a1'}
                                                         </Link>
                                                         {primaryAction ? (
                                                             <Button
@@ -728,7 +754,7 @@ export const SchoolApprovalQueue = ({
                                                                 {disableRowActions &&
                                                                 actionSubmitting?.action ===
                                                                     primaryAction.action
-                                                                    ? 'Đang xử lý'
+                                                                    ? '\u0110ang x\u1eed l\u00fd'
                                                                     : primaryAction.label}
                                                             </Button>
                                                         ) : null}
@@ -754,7 +780,7 @@ export const SchoolApprovalQueue = ({
                                                                 }
                                                             >
                                                                 <Undo2 className="size-4" />
-                                                                Yêu cầu sửa
+                                                                {'Y\u00eau c\u1ea7u s\u1eeda'}
                                                             </Button>
                                                         )}
                                                         {(campaign.status ===
@@ -779,7 +805,7 @@ export const SchoolApprovalQueue = ({
                                                                 }
                                                             >
                                                                 <XCircle className="size-4" />
-                                                                Từ chối
+                                                                {'T\u1eeb ch\u1ed1i'}
                                                             </Button>
                                                         )}
                                                     </div>
@@ -793,8 +819,8 @@ export const SchoolApprovalQueue = ({
                                             colSpan={7}
                                             className="px-5 py-10 text-center text-[15px] leading-6 text-muted-foreground"
                                         >
-                                            Không có hồ sơ phù hợp với bộ lọc
-                                            hiện tại.
+                                            {'Kh\u00f4ng c\u00f3 h\u1ed3 s\u01a1 ph\u00f9 h\u1ee3p v\u1edbi b\u1ed9 l\u1ecdc'}
+                                            {'hi\u1ec7n t\u1ea1i.'}
                                         </td>
                                     </tr>
                                 )}
@@ -805,15 +831,15 @@ export const SchoolApprovalQueue = ({
 
                 <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
                     <p className="text-[15px] leading-6 text-muted-foreground">
-                        Hiển thị{' '}
+                        {'Hi\u1ec3n th\u1ecb'}{' '}
                         <strong className="text-primary">
                             {visibleItems.length}
                         </strong>{' '}
-                        trên{' '}
+                        {'tr\u00ean'}{' '}
                         <strong className="text-primary">
                             {filteredItems.length}
                         </strong>{' '}
-                        hồ sơ trong danh sách đã tải.
+                        {'h\u1ed3 s\u01a1 trong danh s\u00e1ch \u0111\u00e3 t\u1ea3i.'}
                     </p>
                     <div className="flex items-center gap-2">
                         <Button
@@ -825,7 +851,7 @@ export const SchoolApprovalQueue = ({
                                 onFiltersChange({ page: currentPage - 1 })
                             }
                         >
-                            Trang trước
+                            {'Trang tr\u01b0\u1edbc'}
                         </Button>
                         <span className="border border-border px-3 py-1.5 text-[14px] font-semibold text-primary">
                             {currentPage}/{totalPages}
@@ -858,12 +884,12 @@ export const SchoolApprovalQueue = ({
                         <div className="border-b border-primary px-6 py-5">
                             <DialogTitle className="font-heading text-[32px] leading-[1.2] font-bold text-primary">
                                 {reviewDialog.action === 'reject'
-                                    ? 'Từ chối hồ sơ chiến dịch'
-                                    : 'Yêu cầu chỉnh sửa hồ sơ'}
+                                    ? 'T\u1eeb ch\u1ed1i h\u1ed3 s\u01a1 chi\u1ebfn d\u1ecbch'
+                                    : 'Y\u00eau c\u1ea7u ch\u1ec9nh s\u1eeda h\u1ed3 s\u01a1'}
                             </DialogTitle>
                             <DialogDescription className="mt-2 text-[16px] leading-7 text-muted-foreground">
-                                Nhập lý do phản hồi để đơn vị tổ chức nắm rõ yêu
-                                cầu điều chỉnh trước khi gửi lại hồ sơ.
+                                {'Nh\u1eadp l\u00fd do ph\u1ea3n h\u1ed3i \u0111\u1ec3 \u0111\u01a1n v\u1ecb t\u1ed5 ch\u1ee9c n\u1eafm r\u00f5 y\u00eau'}
+                                {'c\u1ea7u \u0111i\u1ec1u ch\u1ec9nh tr\u01b0\u1edbc khi g\u1eedi l\u1ea1i h\u1ed3 s\u01a1.'}
                             </DialogDescription>
                         </div>
 
@@ -875,7 +901,7 @@ export const SchoolApprovalQueue = ({
                                 )}
                             >
                                 <p className="broadsheet-kicker text-primary">
-                                    Chiến dịch
+                                    {'Chi\u1ebfn d\u1ecbch'}
                                 </p>
                                 <p className="mt-2 text-[18px] leading-7 text-primary">
                                     {reviewDialog.campaignTitle}
@@ -884,7 +910,7 @@ export const SchoolApprovalQueue = ({
 
                             <label className="grid gap-2">
                                 <span className="broadsheet-kicker">
-                                    Lý do phản hồi
+                                    {'L\u00fd do ph\u1ea3n h\u1ed3i'}
                                 </span>
                                 <textarea
                                     value={reviewDialog.value}
@@ -892,7 +918,7 @@ export const SchoolApprovalQueue = ({
                                         onReviewReasonChange(event.target.value)
                                     }
                                     rows={6}
-                                    placeholder="Mô tả rõ nội dung cần chỉnh sửa hoặc lý do từ chối."
+                                    placeholder={'M\u00f4 t\u1ea3 r\u00f5 n\u1ed9i dung c\u1ea7n ch\u1ec9nh s\u1eeda ho\u1eb7c l\u00fd do t\u1eeb ch\u1ed1i.'}
                                     className="min-h-[160px] border border-input bg-white px-3 py-3 text-[16px] leading-7 text-primary outline-none transition focus:border-2 focus:border-primary"
                                 />
                             </label>
@@ -904,7 +930,7 @@ export const SchoolApprovalQueue = ({
                                 variant="outline"
                                 onClick={onCloseReviewDialog}
                             >
-                                Đóng
+                                {'\u0110\u00f3ng'}
                             </Button>
                             <Button
                                 type="button"
@@ -923,10 +949,10 @@ export const SchoolApprovalQueue = ({
                                 {actionSubmitting?.campaignId ===
                                     reviewDialog.campaignId &&
                                 actionSubmitting.action === reviewDialog.action
-                                    ? 'Đang gửi phản hồi'
+                                    ? '\u0110ang g\u1eedi ph\u1ea3n h\u1ed3i'
                                     : reviewDialog.action === 'reject'
-                                      ? 'Xác nhận từ chối'
-                                      : 'Gửi yêu cầu chỉnh sửa'}
+                                      ? 'X\u00e1c nh\u1eadn t\u1eeb ch\u1ed1i'
+                                      : 'G\u1eedi y\u00eau c\u1ea7u ch\u1ec9nh s\u1eeda'}
                             </Button>
                         </div>
                     </DialogContent>
@@ -935,3 +961,4 @@ export const SchoolApprovalQueue = ({
         </>
     );
 };
+

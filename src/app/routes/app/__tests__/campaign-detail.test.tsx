@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router';
 
@@ -228,7 +228,7 @@ describe('AppCampaignDetailRoute', () => {
         expect(screen.queryByText(/Kế hoạch chi tiết/i)).toBeNull();
         expect(screen.getByText(/Chiến dịch công khai/i)).toBeTruthy();
     });
-    it('links students to the dedicated registration page for event modules', async () => {
+    it('opens the student registration dialog from the event CTA', async () => {
         mockUseUser.mockReturnValue({
             data: {
                 id: 'student-1',
@@ -251,14 +251,20 @@ describe('AppCampaignDetailRoute', () => {
 
         await waitFor(() => {
             expect(
-                screen.getByRole('link', { name: 'Đăng ký tham gia' }),
+                screen.getByRole('button', { name: 'Đăng ký tham gia' }),
             ).toBeTruthy();
         });
 
-        expect(
-            screen
-                .getByRole('link', { name: 'Đăng ký tham gia' })
-                .getAttribute('href'),
-        ).toBe('/app/campaigns/mua-he-xanh-dak-lak/register/m-1');
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Đăng ký tham gia' }),
+        );
+
+        await waitFor(() => {
+            expect(
+                screen.getByRole('heading', {
+                    name: 'Phiếu đăng ký tình nguyện',
+                }),
+            ).toBeTruthy();
+        });
     });
 });

@@ -104,6 +104,28 @@ export const getEventRegistrations = (
         params,
     }) as Promise<EventRegistrationItem[]>;
 
+export const bulkApproveEventRegistrations = (
+    moduleId: string,
+    payload: {
+        registration_ids: string[];
+        review_note?: string;
+    },
+) =>
+    api.patch(`/events/modules/${moduleId}/registrations/bulk-approve`, payload) as Promise<{
+        approved_ids: string[];
+        approved_count: number;
+    }>;
+
+export const extendEventRegistrationDeadline = (
+    moduleId: string,
+    payload: {
+        end_at: string;
+        reason?: string;
+        notify_participants?: boolean;
+    },
+) =>
+    api.patch(`/events/modules/${moduleId}/extend-registration`, payload) as Promise<EventModuleDetail>;
+
 export const approveEventRegistration = (
     registrationId: string,
     reviewNote?: string,

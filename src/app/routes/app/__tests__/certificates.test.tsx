@@ -74,6 +74,10 @@ describe('CertificatesRoute', () => {
                 moduleTitle: 'Đội hình hỗ trợ xã Hòa Bắc',
                 templateName: 'Chứng nhận hoàn thành chiến dịch',
                 status: 'SIGNED',
+                previewImageUrl: '/uploads/certificates/certificate-1.png',
+                backgroundFileUrl: '/uploads/certificates/template-1.png',
+                generatedFileUrl: '/uploads/certificates/generated-1.png',
+                signedFileUrl: '/uploads/certificates/signed-1.png',
                 fileUrl: 'https://example.com/certificate-1.pdf',
                 issuedAt: '2026-05-18T08:00:00.000Z',
                 revokedAt: null,
@@ -87,6 +91,10 @@ describe('CertificatesRoute', () => {
                 moduleTitle: 'Điểm trực cổng trường',
                 templateName: 'Giấy chứng nhận tình nguyện viên',
                 status: 'READY',
+                previewImageUrl: null,
+                backgroundFileUrl: '/uploads/certificates/template-2.png',
+                generatedFileUrl: '/uploads/certificates/generated-2.png',
+                signedFileUrl: null,
                 fileUrl: 'https://example.com/certificate-2.pdf',
                 issuedAt: '2025-07-12T08:00:00.000Z',
                 revokedAt: null,
@@ -127,6 +135,21 @@ describe('CertificatesRoute', () => {
         expect(
             screen.getByText('Hiển thị 2 trên 2 chứng nhận đã ghi nhận.'),
         ).toBeTruthy();
+        expect(
+            screen.getByRole('img', { name: 'Chứng nhận CERT-2026-001' }),
+        ).toBeTruthy();
+    });
+
+    it('prefers the actual rendered certificate image on the student card', async () => {
+        renderRoute();
+
+        const image = await screen.findByRole('img', {
+            name: 'Chứng nhận CERT-2026-001',
+        });
+
+        expect(image.getAttribute('src')).toBe(
+            '/uploads/certificates/signed-1.png',
+        );
     });
 
     it('filters certificates by year and search query', async () => {

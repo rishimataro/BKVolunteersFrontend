@@ -1,23 +1,36 @@
 import { useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useNavigate } from 'react-router';
 
 import { Head } from '@/components/seo';
 import { paths } from '@/config/paths';
 import { LoginForm, useUser } from '@/features/auth';
 
+function getDefaultDashboardByRole(role?: string): string {
+    switch (role) {
+        case 'DOANTRUONG':
+            return paths.app.dashboard.getHref();
+        case 'LCD':
+            return paths.app.dashboard.getHref();
+        case 'CLB':
+            return paths.app.dashboard.getHref();
+        case 'SINHVIEN':
+            return paths.app.dashboard.getHref();
+        default:
+            return paths.app.dashboard.getHref();
+    }
+}
+
 export const LoginPage = () => {
     const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
-    const redirectTo = searchParams.get('redirectTo');
     const user = useUser();
 
     useEffect(() => {
         if (user.data) {
-            navigate(redirectTo || paths.app.dashboard.getHref(), {
+            navigate(getDefaultDashboardByRole(user.data.role), {
                 replace: true,
             });
         }
-    }, [navigate, redirectTo, user.data]);
+    }, [navigate, user.data]);
 
     return (
         <>

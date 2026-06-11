@@ -1,14 +1,15 @@
-import * as React from 'react';
-import { cn } from '@/lib/utils';
+﻿import * as React from 'react';
 import {
-    Layers3Icon,
-    GiftIcon,
     CalendarIcon,
+    GiftIcon,
     HandHeartIcon,
+    Layers3Icon,
+    UsersIcon,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-type ModuleType = 'fundraising' | 'item_donation' | 'event';
+import type { ModuleType } from '@/types/api';
+import { cn } from '@/lib/utils';
 
 const moduleConfig: Record<
     ModuleType,
@@ -27,6 +28,11 @@ const moduleConfig: Record<
     event: {
         label: 'Tình nguyện',
         icon: CalendarIcon,
+        color: 'text-emerald-600',
+    },
+    volunteer: {
+        label: 'Tuyển tình nguyện viên',
+        icon: UsersIcon,
         color: 'text-emerald-600',
     },
 };
